@@ -1,14 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+{{-- <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">{{ __('Register') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('register') }}">
+                    <form method="POST" action="{{ route('register') }}" aria-label="{{ __('Register') }}">
                         @csrf
 
                         <div class="form-group row">
@@ -73,5 +73,60 @@
             </div>
         </div>
     </div>
+</div> --}}
+
+<div class="register-box">
+    <div class="register-logo">
+        <a href="{{ route('index') }}"><b>WMS</b></a>
+    </div>
+    
+    <div class="register-box-body">
+        <p class="login-box-msg">Register a new account</p>
+    
+        <form method="POST" action="{{ route('register') }}" aria-label="{{ __('Register') }}">
+        <div class="form-group has-feedback">
+            <input type="text" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" name="name" value="{{ old('name') }}" required autofocus placeholder="Full name">
+            @if ($errors->has('name'))
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $errors->first('name') }}</strong>
+                </span>
+            @endif
+            <span class="glyphicon glyphicon-user form-control-feedback"></span>
+        </div>
+        <div class="form-group has-feedback">
+            <input type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" required placeholder="Email">
+            @if ($errors->has('email'))
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $errors->first('email') }}</strong>
+                </span>
+            @endif
+            <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+        </div>
+        <div class="form-group has-feedback">
+            <input type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" required placeholder="Password">
+            @if ($errors->has('password'))
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $errors->first('password') }}</strong>
+                </span>
+            @endif
+            <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+        </div>
+        <div class="form-group has-feedback">
+            <input type="password" class="form-control" name="password_confirmation" required placeholder="Retype password">
+            <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
+        </div>
+        <div class="row">
+            <div class="col-xs-4 pull-right">
+            <button type="submit" class="btn btn-primary btn-block btn-flat">Register</button>
+            </div>
+            <!-- /.col -->
+            <div class="clearfix"></div>
+        </div>
+        </form>
+    
+        <a href="{{ route('login') }}" class="text-center">I already have an account</a>
+    </div>
+    <!-- /.form-box -->
 </div>
+<!-- /.register-box -->
 @endsection
