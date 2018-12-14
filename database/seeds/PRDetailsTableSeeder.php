@@ -24,7 +24,7 @@ class PRDetailsTableSeeder extends Seeder
             'purchase_requisition_id' => 1,
             'quantity' => 12,
             'reserved' => 12,
-            'material_id' => 6,
+            'material_id' => 5,
             'wbs_id' => 2,
         ]);
 
@@ -40,7 +40,7 @@ class PRDetailsTableSeeder extends Seeder
             'purchase_requisition_id' => 2,
             'quantity' => 22,
             'reserved' => 0,
-            'material_id' => 6,
+            'material_id' => 4,
             'wbs_id' => 2,
         ]);
 

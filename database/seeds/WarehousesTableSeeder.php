@@ -13,8 +13,8 @@ class WarehousesTableSeeder extends Seeder
     {
         DB::table('mst_warehouse')->insert([
             'code' => 'WRH0001',
-            'name' => 'Warehouse 1',
-            'description' => 'Gudang pertama',
+            'name' => 'DUMMY - Warehouse 1',
+            'description' => 'DUMMY - Gudang pertama',
             'status' => '1',
             'branch_id' => '1',
             'user_id' => 5,                    
@@ -22,8 +22,8 @@ class WarehousesTableSeeder extends Seeder
 
         DB::table('mst_warehouse')->insert([
             'code' => 'WRH0002',
-            'name' => 'Warehouse 2',
-            'description' => 'Gudang kedua',
+            'name' => 'DUMMY - Warehouse 2',
+            'description' => 'DUMMY - Gudang kedua',
             'status' => '1',
             'branch_id' => '1',
             'user_id' => 5,                    
@@ -31,39 +31,11 @@ class WarehousesTableSeeder extends Seeder
 
         DB::table('mst_warehouse')->insert([
             'code' => 'WRH0003',
-            'name' => 'Warehouse 3',
-            'description' => 'Gudang ketiga',
+            'name' => 'DUMMY - Warehouse 3',
+            'description' => 'DUMMY - Gudang ketiga',
             'status' => '1',
             'branch_id' => '1',
             'user_id' => 5,                    
             ]);
-
-        DB::table('mst_warehouse')->insert([
-            'code' => 'WRH0004',
-            'name' => 'Warehouse 4',
-            'description' => 'Gudang keempat',
-            'status' => '1',
-            'branch_id' => '1',
-            'user_id' => 5,                    
-            ]);
-            
-        DB::table('mst_warehouse')->insert([
-            'code' => 'WRH0005',
-            'name' => 'Warehouse 5',
-            'description' => 'Gudang kelima',
-            'status' => '1',
-            'branch_id' => '1',
-            'user_id' => 5,                    
-            ]);
-
-        DB::table('mst_warehouse')->insert([
-            'code' => 'WRH0006',
-            'name' => 'Warehouse 6',
-            'description' => 'Gudang keenam',
-            'status' => '1',
-            'branch_id' => '1',
-            'user_id' => 5,                    
-            ]);
-
     }
 }

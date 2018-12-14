@@ -13,7 +13,7 @@ class CompaniesTableSeeder extends Seeder
     {
         DB::table('mst_company')->insert([
             'code' => 'CP0001',
-            'name' => 'PT. ASTRA INTERNATIONAL',
+            'name' => 'DUMMY - PT. ASTRA INTERNATIONAL',
             'address' => 'Jakarta',
             'phone_number' => '0226655332',
             'fax' => '0226655331',
@@ -23,7 +23,7 @@ class CompaniesTableSeeder extends Seeder
 
         DB::table('mst_company')->insert([
             'code' => 'CP0002',
-            'name' => 'Pertamina',
+            'name' => 'DUMMY - PT. Pertamina (persero)',
             'address' => 'Jakarta',
             'phone_number' => '0212345122',
             'fax' => '0213424134',

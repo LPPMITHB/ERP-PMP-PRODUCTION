@@ -56,5 +56,6 @@ class UOMTableSeeder extends Seeder
             'branch_id' => 1,
             'user_id' => 4,
         ]);
+
     }
 }
