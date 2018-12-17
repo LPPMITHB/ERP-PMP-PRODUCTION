@@ -25,7 +25,7 @@ class PODetailsTableSeeder extends Seeder
             'wbs_id' => 2,
             'purchase_requisition_detail_id' => 2,
             'quantity' => 12,
-            'material_id' => 6,
+            'material_id' => 5,
         ]);
         
     }

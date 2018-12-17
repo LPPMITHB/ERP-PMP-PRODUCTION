@@ -13,7 +13,7 @@ class YardsTableSeeder extends Seeder
     {
         DB::table('mst_yard')->insert([
             'code' => 'YRD0001',
-            'name' => 'Yard A',
+            'name' => 'DUMMY - Yard A',
             'area' => '400',
             'description' => 'Ini adalah Yard 1',
             'status' => 1,
@@ -22,7 +22,7 @@ class YardsTableSeeder extends Seeder
             ]);
         DB::table('mst_yard')->insert([
             'code' => 'YRD0002',
-            'name' => 'Yard B',
+            'name' => 'DUMMY - Yard B',
             'area' => '200',
             'description' => 'Ini adalah Yard 2',
             'status' => 2,
