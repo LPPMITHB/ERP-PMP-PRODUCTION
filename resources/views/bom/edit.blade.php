@@ -34,7 +34,7 @@
                         <div class="col-xs-8 no-padding"><b>: {{$modelBOM->project->name}}</b></div>
 
                         <div class="col-xs-4 no-padding">Ship Name</div>
-                        <div class="col-xs-8 no-padding"><b>: {{$modelBOM->project->ship->name}}</b></div>
+                        <div class="col-xs-8 no-padding"><b>: {{$modelBOM->project->ship->type}}</b></div>
 
                         <div class="col-xs-4 no-padding">Ship Type</div>
                         <div class="col-xs-8 no-padding"><b>: {{$modelBOM->project->ship->type}}</b></div>
@@ -155,10 +155,9 @@
                                         <button @click.prevent="update" type="button" class="btn btn-primary" data-dismiss="modal">SAVE</button>
                                     </div>
                                 </div>
-                                <!-- /.modal-content -->
                             </div>
-                            <!-- /.modal-dialog -->
                         </div>
+                        
                     </div>
                     @endverbatim
                 </div>

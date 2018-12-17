@@ -390,6 +390,9 @@ class BOMController extends Controller
     private function generateBomCode(){
         $modelBOM = Bom::orderBy('code','desc')->where('branch_id',Auth::user()->branch_id)->first();
         $modelBranch = Branch::where('id', Auth::user()->branch_id)->first();
+        $modelProject = Project::where('id',$modelBOM->project_id)->first();
+
+        $seqProject = $modelProject->project_sequence;
 
         $branch_code = substr($modelBranch->code,4,2);
 		$number = 1;
@@ -399,7 +402,7 @@ class BOMController extends Controller
         $year = date('y0000');
         $year = intval($year);
 
-		$bom_code = $year+$number;
+		$bom_code = $seqProject+$year+$number;
         $bom_code = 'BOM'.$bom_code;
 		return $bom_code;
     }

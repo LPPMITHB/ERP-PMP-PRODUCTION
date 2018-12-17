@@ -20,10 +20,11 @@ class ActivityController extends Controller
         $wbss = $project->wbss;
         $dataWbs = Collection::make();
 
+        $totalWeightProject = $project->wbss->where('wbs_id',null)->sum('weight');
         $dataWbs->push([
-            "id" => $project->number , 
+            "id" => $project->number, 
             "parent" => "#",
-            "text" => $project->name,
+            "text" => $project->name. " | Weight : (".$totalWeightProject."% / 100%)",
             "icon" => "fa fa-ship"
         ]);
         
@@ -39,6 +40,9 @@ class ActivityController extends Controller
         }elseif($menu == "confirmAct"){
             $route = "/activity/confirmActivity/";
             $menuTitle = "Confirm Activity » Select WBS";
+        }elseif($menu == "viewWbs"){
+            $route = "/wbs/show/";
+            $menuTitle = "View WBS » Select WBS";
         }else{
             $route = "";
             $menuTitle = "Select WBS";
@@ -46,18 +50,31 @@ class ActivityController extends Controller
     
         foreach($wbss as $wbs){
             if($wbs->wbs){
-                $dataWbs->push([
-                    "id" => $wbs->code , 
-                    "parent" => $wbs->wbs->code,
-                    "text" => $wbs->name,
-                    "icon" => "fa fa-suitcase",
-                    "a_attr" =>  ["href" => $route.$wbs->id],
-                ]);
+                if(count($wbs->activities)>0){
+                    $totalWeight = $wbs->wbss->sum('weight') + $wbs->activities->sum('weight');
+                    $dataWbs->push([
+                        "id" => $wbs->code , 
+                        "parent" => $wbs->wbs->code,
+                        "text" => $wbs->name. " | Weight : (".$totalWeight."% / ".$wbs->weight."%)",
+                        "icon" => "fa fa-suitcase",
+                        "a_attr" =>  ["href" => $route.$wbs->id],
+                    ]);
+                }else{
+                    $dataWbs->push([
+                        "id" => $wbs->code , 
+                        "parent" => $wbs->wbs->code,
+                        "text" => $wbs->name. " | Weight : ".$wbs->weight."%",
+                        "icon" => "fa fa-suitcase",
+                        "a_attr" =>  ["href" => $route.$wbs->id],
+                    ]);
+                }
             }else{
+                $totalWeight = $wbs->wbss->sum('weight') + $wbs->activities->sum('weight');
+
                 $dataWbs->push([
                     "id" => $wbs->code , 
                     "parent" => $project->number,
-                    "text" => $wbs->name,
+                    "text" => $wbs->name. " | Weight : (".$totalWeight."% / ".$wbs->weight."%)",
                     "icon" => "fa fa-suitcase",
                     "a_attr" =>  ["href" => $route.$wbs->id],
                 ]);
@@ -83,19 +100,25 @@ class ActivityController extends Controller
         DB::beginTransaction();
         try {
             $activity = new Activity;
-            $activity->code = self::generateActivityCode();
+            $activity->code = self::generateActivityCode($data['wbs_id']);
             $activity->name = $data['name'];
             $activity->description = $data['description'];
             $activity->wbs_id = $data['wbs_id'];            
             $activity->planned_duration = $data['planned_duration'];
 
-            $planStartDate = DateTime::createFromFormat('m/j/Y', $data['planned_start_date']);
-            $planEndDate = DateTime::createFromFormat('m/j/Y', $data['planned_end_date']);
+            if($data['planned_start_date'] != ""){
+                $planStartDate = DateTime::createFromFormat('m/j/Y', $data['planned_start_date']);
+                $activity->planned_start_date = $planStartDate->format('Y-m-d');
+            }
 
-            $activity->planned_start_date = $planStartDate->format('Y-m-d');
-            $activity->planned_end_date = $planEndDate->format('Y-m-d');
+            if($data['planned_end_date'] != ""){
+                $planEndDate = DateTime::createFromFormat('m/j/Y', $data['planned_end_date']);
+                $activity->planned_end_date = $planEndDate->format('Y-m-d');
+            }
+
             if(count($data['predecessor']) >0){
                 $activity->predecessor = $stringPredecessor;
+                $refActivity = Activity::whereIn('id', json_decode($activity->predecessor))->orderBy('planned_end_date', 'desc')->first();
             }
             $activity->weight = $data['weight']; 
             $activity->user_id = Auth::user()->id;
@@ -248,12 +271,11 @@ class ActivityController extends Controller
 
             $project = $wbs->project;
             $oldestWorks= $project->wbss->where('wbs_id', null);
-            $wbsContribution = 1/(count($oldestWorks));
-            $totalWorkPercentage = 0;
+            $progress = 0;
             foreach($oldestWorks as $wbs){
-                $totalWorkPercentage = $totalWorkPercentage + ($wbs->progress*($wbsContribution));
+                $progress += $wbs->progress* ($wbs->weight /100); 
             }            
-            $project->progress = $totalWorkPercentage;
+            $project->progress = $progress;
             $project->save();
             
             DB::commit();
@@ -266,63 +288,60 @@ class ActivityController extends Controller
     }
     
     //Method
-    public function generateActivityCode(){
-        $code = 'PRA';
-        $modelActivity = Activity::orderBy('code', 'desc')->first();
+    public function generateActivityCode($id){
+        $code = 'ACT';
+        $project = WBS::find($id)->project;
+        $projectSequence = $project->project_sequence;
+        $year = $project->created_at->year % 100;
+        $businessUnit = $project->business_unit_id;
+
+        $modelActivity = Activity::orderBy('code', 'desc')->whereIn('wbs_id', $project->wbss->pluck('id')->toArray())->first();
         
         $number = 1;
 		if(isset($modelActivity)){
             $number += intval(substr($modelActivity->code, -4));
 		}
 
-        $activity_code = $code.''.sprintf('%04d', $number);
+        $activity_code = $code.sprintf('%02d', $year).sprintf('%01d', $businessUnit).sprintf('%02d', $projectSequence).sprintf('%04d', $number);
 		return $activity_code;
     }
 
     function changeWorkProgress($wbs){
         if($wbs){
             if($wbs->wbs){
-                $totalFinishedActivity = 0;
-                $totalActivity = count($wbs->activities);
+                $progress = 0;
                 if($wbs->activities){
                     foreach($wbs->activities as $activity){
                         if($activity->status == 0){
-                            $totalFinishedActivity++;
+                            $progress += $activity->progress * ($activity->weight/100);
                         }
                     }
                 }
 
-                $childWorkPercentage = 0;
                 if($wbs->wbss){
-                    $totalActivity = $totalActivity + count($wbs->wbss);
-                    $childWorkContribution = 1/$totalActivity;
                     foreach($wbs->wbss as $child_wbs){
-                        $childWorkPercentage = $childWorkPercentage + ($child_wbs->progress*($childWorkContribution));
+                        $progress += $child_wbs->progress * ($child_wbs->weight/100);
                     }
                 }
-                $wbs->progress = (($totalFinishedActivity/$totalActivity)*100) + $childWorkPercentage;
+                $wbs->progress = ($progress /$wbs->weight) *100;
                 $wbs->save();
                 self::changeWorkProgress($wbs->wbs);
             }else{
-                $totalFinishedActivity = 0;
-                $totalActivity = count($wbs->activities);
+                $progress = 0;
                 if($wbs->activities){
                     foreach($wbs->activities as $activity){
                         if($activity->status == 0){
-                            $totalFinishedActivity++;
+                            $progress += $activity->progress * ($activity->weight/100);
                         }
                     }
                 }
 
-                $childWorkPercentage = 0;
                 if($wbs->wbss){
-                    $totalActivity = $totalActivity + count($wbs->wbss);
-                    $childWorkContribution = 1/$totalActivity;
                     foreach($wbs->wbss as $child_wbs){
-                        $childWorkPercentage = $childWorkPercentage + ($child_wbs->progress*($childWorkContribution));
+                        $progress += $child_wbs->progress * ($child_wbs->weight/100);
                     }
                 }
-                $wbs->progress = (($totalFinishedActivity/$totalActivity)*100) + $childWorkPercentage;
+                $wbs->progress = ($progress /$wbs->weight) *100;
                 $wbs->save();
             }
         }
@@ -403,5 +422,14 @@ class ActivityController extends Controller
     public function getProjectAPI($id){
         $project = Project::find($id)->jsonSerialize();
         return response($project, Response::HTTP_OK);
+    }
+
+    public function getLatestPredecessorAPI($id)
+    {
+        $predecessor = json_decode($id);
+        $latestActivity = Activity::orderBy('planned_end_date', 'desc')->whereIn('id', $predecessor)->first()->jsonSerialize();
+
+        return response($latestActivity, Response::HTTP_OK);
+
     }
 }

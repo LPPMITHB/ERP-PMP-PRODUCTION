@@ -1,17 +1,31 @@
 @extends('layouts.main')
 
 @section('content-header')
-@breadcrumb(
-    [
-        'title' => 'Show Project » '.$project->ship->name,
-        'items' => [
-            'Dashboard' => route('index'),
-            'View All Projects' => route('project.index'),
-            'Project' => route('project.show', ['id' => $project->id]),
-        ]
-    ]
-)
-@endbreadcrumb
+    @if ($menu == "building")
+        @breadcrumb(
+            [
+                'title' => 'Show Project » '.$project->businessUnit->name.' » '.$project->name,
+                'items' => [
+                    'Dashboard' => route('index'),
+                    'View All Projects' => route('project.index'),
+                    'Project' => route('project.show', ['id' => $project->id]),
+                ]
+            ]
+        )
+        @endbreadcrumb
+    @else
+        @breadcrumb(
+            [
+                'title' => 'Show Project » '.$project->businessUnit->name.' » '.$project->name,
+                'items' => [
+                    'Dashboard' => route('index'),
+                    'View All Projects' => route('project_repair.index'),
+                    'Project' => route('project_repair.show', ['id' => $project->id]),
+                ]
+            ]
+        )
+        @endbreadcrumb
+    @endif
 @endsection
 
 @section('content')
@@ -19,7 +33,7 @@
     <div class="box-tools pull-left m-l-15">
         <a href="{{ route('project.showGanttChart',['id'=>$project->id]) }}" class="btn btn-primary btn-sm m-t-5 ">VIEW GANTT CHART</a>
         <a href="{{ route('wbs.createWBS',['id'=>$project->id]) }}" class="btn btn-primary btn-sm mobile_button_view m-t-5 ">ADD WBS</a>
-        <a href="{{ route('wbs.index',['id'=>$project->id]) }}" class="btn btn-primary btn-sm m-t-5 ">VIEW WBS</a>
+        <a href="{{ route('activity.listWBS',['id'=>$project->id,'menu'=>'viewWbs']) }}" class="btn btn-primary btn-sm m-t-5 mobile_button_view">VIEW WBS</a>
         <a href="{{ route('activity.listWBS',['id'=>$project->id,'menu'=>'addAct']) }}" class="btn btn-primary btn-sm mobile_button_view m-t-5 ">ADD ACTIVITIES</a>
         <a href="{{ route('activity.listWBS',['id'=>$project->id,'menu'=>'viewAct']) }}" class="btn btn-primary btn-sm m-t-5 ">VIEW ACTIVITIES</a>
         <a href="{{ route('activity.listWBS',['id'=>$project->id,'menu'=>'mngNet']) }}" class="btn btn-primary btn-sm m-t-5 mobile_button_view">MANAGE NETWORK</a>
@@ -36,11 +50,11 @@
                         <div class="col-md-4 col-xs-6 no-padding">Project Code</div>
                         <div class="col-md-8 col-xs-6 no-padding"><b>: {{$project->number}}</b></div>
                         
-                        <div class="col-md-4 col-xs-6 no-padding">Project Name</div>
+                        <div class="col-md-4 col-xs-6 no-padding">Ship Name</div>
                         <div class="col-md-8 col-xs-6 no-padding"><b>: {{$project->name}}</b></div>
 
-                        <div class="col-md-4 col-xs-6 no-padding">Ship Name</div>
-                        <div class="col-md-8 col-xs-6 no-padding"><b>: {{$project->ship->name}}</b></div>
+                        <div class="col-md-4 col-xs-6 no-padding">Ship Type</div>
+                        <div class="col-md-8 col-xs-6 no-padding"><b>: {{$project->ship->type}}</b></div>
 
                         <div class="col-md-4 col-xs-6 no-padding">Customer Name</div>
                         <div class="col-md-8 col-xs-6 no-padding tdEllipsis" data-container="body" data-toggle="tooltip" title="{{$project->customer->name}}"><b>: {{$project->customer->name}}</b></div>
@@ -204,7 +218,7 @@
                     </table>
                     <template v-if="havePredecessor == false"><br></template>
                     <template v-if="havePredecessor == true">
-                        <table class="table table-bordered" style="border-collapse:collapse; table-layout:fixed;">
+                        <table class="table table-bordered">
                             <thead>
                                 <tr>
                                     <th class="p-l-5" style="width: 5%">No</th>
@@ -235,7 +249,7 @@
                         </table>
                     </template>
                     <div class="row">
-                        <div class="form-group col-sm-4">
+                        <div class="form-group col-sm-6">
                             <label for="actual_start_date" class=" control-label">Actual Start Date</label>
                             <div class="input-group date">
                                 <div class="input-group-addon">
@@ -245,26 +259,32 @@
                             </div>
                         </div>
                                 
-                        <div class="form-group col-sm-4">
+                        <div class="form-group col-sm-6">
                             <label for="actual_end_date" class=" control-label">Actual End Date</label>
                             <div class="input-group date">
                                 <div class="input-group-addon">
                                     <i class="fa fa-calendar"></i>
                                 </div>
-                                <input :disabled="alreadyStart" v-model="confirmActivity.actual_end_date" type="text" class="form-control datepicker" id="actual_end_date" placeholder="End Date">                                                                                            
+                                <input v-model="confirmActivity.actual_end_date" type="text" class="form-control datepicker" id="actual_end_date" placeholder="End Date">                                                                                            
                             </div>
                         </div>
                         
-                        <div class="form-group col-sm-4">
-                            <label for="duration" class=" control-label">Actual Duration</label>
-                            <input :disabled="alreadyStart" @keyup="setEndDateEdit" @change="setEndDateEdit" v-model="confirmActivity.actual_duration"  type="number" class="form-control" id="actual_duration" placeholder="Duration" >                                        
-                        </div> 
                         
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-sm-6">
+                            <label for="duration" class=" control-label">Actual Duration (Days)</label>
+                            <input @keyup="setEndDateEdit" @change="setEndDateEdit" v-model="confirmActivity.actual_duration"  type="number" class="form-control" id="actual_duration" placeholder="Duration" >                                        
+                        </div> 
+                        <div class="form-group col-sm-6">
+                            <label for="duration" class=" control-label">Current Progress (%)</label>
+                            <input v-model="confirmActivity.current_progress"  type="number" class="form-control" id="current_progress" placeholder="Current Progress" >                                        
+                        </div> 
                     </div>
                     
                 </div>
                 <div class="modal-footer">
-                    <button :disabled="alreadyStart" type="button" class="btn btn-primary" data-dismiss="modal" @click.prevent="confirm">SAVE</button>
+                    <button id="btnSave" type="button" class="btn btn-primary" data-dismiss="modal" @click.prevent="confirm">SAVE</button>
                 </div>
             </div>
             <!-- /.modal-content -->
@@ -277,7 +297,7 @@
 <div class="row">
     <div class="col-sm-12" style="margin-top: -5px;">
         <div class="box box-solid">
-            <div class="box-header with-border"><h4><b>Gantt Chartt</b></h4></div>
+            <div class="box-header with-border"><h4><b>Gantt Chart</b></h4></div>
             <div class="box-body gantt_chart_mobile">
                 <label>View by :</label>
                 <label><input type="radio" name="scale" value="day" />Day scale</label>
@@ -302,12 +322,12 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="chart">
-                                <canvas id="salesChart" width="703" height="350"></canvas>
+                                <canvas id="cost" width="703" height="350"></canvas>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="chart">
-                                <canvas id="salesChart2" width="703" height="350"></canvas>
+                                <canvas id="progress" width="703" height="350"></canvas>
                             </div>
                         </div>
                     </div>
@@ -424,89 +444,114 @@
     });
     jQuery('.dataTable').wrap('<div class="dataTables_scroll" />');
 
-    var salesChartCanvas = $('#salesChart').get(0).getContext('2d');
-    var salesChartCanvas2 = $('#salesChart2').get(0).getContext('2d');
+    var costCanvas = $('#cost').get(0).getContext('2d');
+    var progressCanvas = $('#progress').get(0).getContext('2d');
 
-    var salesChart       = new Chart(salesChartCanvas, {
+    var costChart = new Chart(costCanvas, {
         type: 'line',
         data: {
-            labels: ["January", "February", "March", "April", "May", "June"],
             datasets: [
-            {
-                label: "Planned Cost", 
-                fill: true, 
-                backgroundColor: "rgba(247, 247, 32, 0.7)", // <-- supposed to be light blue
-                data: [567, 1232, 8987, 18722, 19882, 34000]
-            },
-            {
-                label: "Actual Cost",
-                fill: true,
-                backgroundColor: "rgba(242, 38, 2, 0.7)",
-                data: [499, 2980, 5667, 23455, 25678, 32000]
-            },
-            {
-                label: "Actual Cost",
-                fill: true,
-                backgroundColor: "rgba(0, 0, 255, 0.7)",
-                data: [1000, 2980, 5667, 10455, 20678, 45000]
-            }]
+                {
+                    label: "Estimated Cost", 
+                    backgroundColor: "rgba(247, 247, 32, 0.7)", // <-- supposed to be light blue
+                    data: [],
+                },
+                {
+                    label: "Planned Cost",
+                    backgroundColor: "rgba(242, 38, 2, 0.7)",
+                    data: @json($dataPlannedCost),
+                },
+                {
+                    label: "Actual Cost",
+                    backgroundColor: "rgba(0, 0, 255, 0.7)",
+                    data: @json($dataActualCost),
+                }
+            ]
         },
         options: {
+            tooltips: {
+                callbacks: {
+                    label: function(tooltipItem, data) {
+                        var value = tooltipItem.yLabel;
+                        if(parseInt(value) >= 1000){
+                            return 'Rp' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                        } else {
+                            return 'Rp' + value;
+                        }
+                    }
+                } // end callbacks:
+            }, //end tooltips
+            responsive: true,  
             scales: {
                 xAxes: [{
-                gridLines: {
-                    display:false
+                    type: 'time',
+                    time: {
+                        tooltipFormat: 'll',
+                        unit: 'month'
                     }
                 }],
                 yAxes: [{
                     gridLines: {
-                    display:false
+                        display:false
                     },
                     ticks: {
-                    beginAtZero:true
+                        beginAtZero:true,
+                        callback: function(value, index, values) {
+                            if(parseInt(value) >= 1000){
+                               return 'Rp' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                            } else {
+                               return 'Rp' + value;
+                            }
+                       }    
                     }
                 }]
             } 
         }
     });
 
-        var salesChart2      = new Chart(salesChartCanvas2, {
+    var progress = new Chart(progressCanvas, {
         type: 'line',
         data: {
-            labels: ["January", "February", "March", "April", "May", "June"],
             datasets: [
-            {
-                label: "Planned Cost", 
-                fill: true, 
-                backgroundColor: "rgba(247, 247, 32, 0.7)", // <-- supposed to be light blue
-                data: [567, 1232, 8987, 18722, 19882, 34000]
-            },
-            {
-                label: "Actual Cost",
-                fill: true,
-                backgroundColor: "rgba(242, 38, 2, 0.7)",
-                data: [499, 2980, 5667, 23455, 25678, 32000]
-            },
-            {
-                label: "Actual Cost",
-                fill: true,
-                backgroundColor: "rgba(0, 0, 255, 0.7)",
-                data: [1000, 2980, 5667, 10455, 20678, 45000]
-            }]
+                {
+                    label: "Planned Progress",
+                    backgroundColor: "rgba(242, 38, 2, 0.7)",
+                    data: @json($dataPlannedProgress),
+                },
+                {
+                    label: "Actual Progress", 
+                    backgroundColor: "rgba(0, 0, 255, 0.7)",
+                    data: @json($dataActualProgress),
+                }
+            ]
         },
         options: {
+            tooltips: {
+                callbacks: {
+                    label: function(tooltipItem, data) {
+                        var value = tooltipItem.yLabel;
+                            return value + "%";
+                    }
+                } // end callbacks:
+            }, //end tooltips
+            responsive: true,  
             scales: {
                 xAxes: [{
-                gridLines: {
-                    display:false
+                    type: 'time',
+                    time: {
+                        tooltipFormat: 'll',
+                        unit: 'month'
                     }
                 }],
                 yAxes: [{
                     gridLines: {
-                    display:false
+                        display:false
                     },
                     ticks: {
-                    beginAtZero:true
+                        beginAtZero:true,
+                        callback: function(value, index, values) {
+                            return value + "%";
+                       }    
                     }
                 }]
             } 
@@ -523,12 +568,29 @@
             // you get two params - event & data - check the core docs for a detailed description
             $(this).jstree("open_all");
         });
-        var project = @json($data);
+        var project = @json($ganttData);
         var links = @json($links);
+        
+       
         gantt.config.columns = [ 
             {name:"text", label:"Task name", width:"*", tree:true,
                 template:function(obj){
-                    var text = '<div class="tdEllipsis" data-placement="left" data-container="body" data-toggle="tooltip" title="'+obj.text+'"><b>'+obj.text+'</b></div>';
+                    var text = "";
+                    function myFunction(x) {
+                        if (x.matches) { // If media query matches
+                            text = '<b>'+obj.text+'</b>';
+                        }else{
+                            text = '<div class="tdEllipsis" data-placement="left" data-container="body" data-toggle="tooltip" title="'+obj.text+'"><b>'+obj.text+'</b></div>';
+                        }
+                    }
+
+                    var x = window.matchMedia("(max-width: 500px)")
+                    myFunction(x) // Call listener function at run time
+                    x.addListener(myFunction) // Attach listener function on state changes
+
+                    var x = window.matchMedia("(max-width: 1024px)")
+                    myFunction(x) // Call listener function at run time
+                    x.addListener(myFunction) // Attach listener function on state changes
                     return text ;
                 }
             },
@@ -549,8 +611,6 @@
         ]; 
 
         gantt.config.grid_width = 270;
-
-        
 
         gantt.templates.rightside_text = function(start, end, task){
             if(task.status != undefined){
@@ -580,7 +640,7 @@
             return "<div class='gantt_tree_icon textCenter'><i class='fa fa-suitcase'></i></div>"; 
         };
         gantt.templates.grid_file = function(item) { 
-            if(item.id.indexOf("PRW") != -1){
+            if(item.id.indexOf("WBS") != -1){
                 return "<div class='gantt_tree_icon textCenter'><i class='fa fa-suitcase'></i></div>"; 
             }else{
                 return "<div class='gantt_tree_icon textCenter'><i class='fa fa-clock-o'></i></div>"; 
@@ -665,6 +725,7 @@
                 actual_start_date : "",
                 actual_end_date : "",
                 actual_duration : "",
+                current_progress : 0,
             },
             havePredecessor : false,
         };
@@ -742,7 +803,6 @@
                 openConfirmModal(data){
                     window.axios.get('/api/getActivity/'+data).then(({ data }) => {
                         this.activity = data[0];
-                        this.predecessorTableView = [];
                         if(this.activity.predecessor != null){
                             this.havePredecessor = true;
                             window.axios.get('/api/getPredecessor/'+this.activity.id).then(({ data }) => {
@@ -752,11 +812,26 @@
                             this.havePredecessor = false;
                             this.predecessorActivities = [];
                         }
+
+                        this.confirmActivity.current_progress = this.activity.progress;
+                        if(this.confirmActivity.current_progress != 100){
+                            document.getElementById("actual_end_date").disabled = true;
+                            document.getElementById("actual_duration").disabled = true;
+                            this.confirmActivity.actual_end_date = "";
+                            this.confirmActivity.actual_duration = "";
+                        }else{
+                            document.getElementById("actual_end_date").disabled = false;
+                            document.getElementById("actual_duration").disabled = false;
+                            if(this.confirmActivity.actual_end_date == ""){
+                                document.getElementById("btnSave").disabled = true;
+                            }else{
+                                document.getElementById("btnSave").disabled = false;
+                            }
+                        }
                         document.getElementById("confirm_activity_code").innerHTML= this.activity.code;
                         document.getElementById("planned_start_date").innerHTML= this.activity.planned_start_date;
                         document.getElementById("planned_end_date").innerHTML= this.activity.planned_end_date;
                         document.getElementById("planned_duration").innerHTML= this.activity.planned_duration+" Days";
-    
     
                         this.confirmActivity.activity_id = this.activity.id;
                         $('#actual_start_date').datepicker('setDate', (this.activity.actual_start_date != null ? new Date(this.activity.actual_start_date):new Date(this.activity.planned_start_date)));
@@ -811,7 +886,7 @@
                             })
                         });
 
-                        window.axios.get('/api/getProject/'+this.project_id).then(({ data }) => {
+                        window.axios.get('/api/getProjectActivity/'+this.project_id).then(({ data }) => {
                             this.project = data;
                         });                        
                         
@@ -831,20 +906,41 @@
             watch: {
                 confirmActivity:{
                     handler: function(newValue) {
-                        this.confirmActivity.actual_duration = newValue.actual_duration+"".replace(/\D/g, "");
-                        if(parseInt(newValue.actual_duration) < 1 ){
-                            iziToast.show({
-                                timeout: 6000,
-                                color : 'red',
-                                displayMode: 'replace',
-                                icon: 'fa fa-warning',
-                                title: 'Warning !',
-                                message: 'End Date cannot be ahead Start Date',
-                                position: 'topRight',
-                                progressBarColor: 'rgb(0, 255, 184)',
-                            });
-                            this.confirmActivity.actual_duration = "";
+                        if(this.confirmActivity.actual_start_date == ""){
+                            document.getElementById("actual_end_date").disabled = true;
+                            document.getElementById("actual_duration").disabled = true;
+                            document.getElementById("btnSave").disabled = true;
+                            document.getElementById("current_progress").disabled = true;
+                        }else{
+                            document.getElementById("actual_end_date").disabled = false;
+                            document.getElementById("actual_duration").disabled = false;
+                            document.getElementById("btnSave").disabled = false;
+                            document.getElementById("current_progress").disabled = false;
+                        }         
+                        
+                        this.predecessorActivities.forEach(activity => {
+                            if(activity.status == 1){
+                                document.getElementById("actual_start_date").disabled = true;
+                                document.getElementById("actual_end_date").disabled = true;
+                                document.getElementById("actual_duration").disabled = true;
+                                document.getElementById("btnSave").disabled = true;
+                                document.getElementById("current_progress").disabled = true;
+                            }
+                        });
+
+                        if(this.confirmActivity.current_progress != 100){
+                            document.getElementById("actual_end_date").disabled = true;
+                            document.getElementById("actual_duration").disabled = true;
                             this.confirmActivity.actual_end_date = "";
+                            this.confirmActivity.actual_duration = "";
+                        }else{
+                            document.getElementById("actual_end_date").disabled = false;
+                            document.getElementById("actual_duration").disabled = false;
+                            if(this.confirmActivity.actual_end_date == ""){
+                                document.getElementById("btnSave").disabled = true;
+                            }else{
+                                document.getElementById("btnSave").disabled = false;
+                            }
                         }
                     },
                     deep: true
@@ -854,7 +950,19 @@
                         $('#actual_end_date').datepicker('setDate', null);
                         this.confirmActivity.actual_duration = "";
                     }
-                },       
+                },   
+                'confirmActivity.actual_duration' : function(newValue){
+                    this.confirmActivity.actual_duration = newValue+"".replace(/\D/g, "");
+                        if(parseInt(newValue) < 1 ){
+                            iziToast.warning({
+                                displayMode: 'replace',
+                                title: 'End Date cannot be ahead Start Date',
+                                position: 'topRight',
+                            });
+                            this.confirmActivity.actual_duration = "";
+                            this.confirmActivity.actual_end_date = "";
+                        }
+                },    
             },
         });
 
@@ -870,7 +978,7 @@
         }
 
         gantt.attachEvent("onTaskClick", function(id,e){
-            if(id.indexOf("PRA") !== -1){
+            if(id.indexOf("ACT") !== -1){
                 $("#confirm_activity_modal").modal('show');
                 vm.openConfirmModal(id);
                 return true;
