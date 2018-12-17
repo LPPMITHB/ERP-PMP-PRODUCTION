@@ -183,11 +183,60 @@ class BOMsTableSeeder extends Seeder
             'branch_id' => 1,
         ]);
 
+        //20
         DB::table('mst_bom')->insert([
             'code' => 'BOM0100020',
             'description' => 'BOM keduapuluh',
             'project_id' => 1,
             'wbs_id' => 20,
+            'user_id' => 5,
+            'branch_id' => 1,
+        ]);
+
+        //21
+
+        //22
+        DB::table('mst_bom')->insert([
+            'code' => 'BOM0200022',
+            'description' => 'test',
+            'project_id' => 2,
+            'wbs_id' => 75,
+            'user_id' => 5,
+            'branch_id' => 1,
+        ]);
+
+        DB::table('mst_bom')->insert([
+            'code' => 'BOM0200025',
+            'description' => 'test',
+            'project_id' => 2,
+            'wbs_id' => 76,
+            'user_id' => 5,
+            'branch_id' => 1,
+        ]);
+
+        DB::table('mst_bom')->insert([
+            'code' => 'BOM0200028',
+            'description' => 'test',
+            'project_id' => 2,
+            'wbs_id' => 77,
+            'user_id' => 5,
+            'branch_id' => 1,
+        ]);
+
+        DB::table('mst_bom')->insert([
+            'code' => 'BOM0200031',
+            'description' => 'test',
+            'project_id' => 2,
+            'wbs_id' => 78,
+            'user_id' => 5,
+            'branch_id' => 1,
+        ]);
+
+        DB::table('mst_bom')->insert([
+            'code' => 'BOM0200034',
+            'description' => 'test',
+            'project_id' => 2,
+            'wbs_id' => 78,
             'user_id' => 5,
             'branch_id' => 1,
         ]);
