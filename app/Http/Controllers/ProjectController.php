@@ -773,15 +773,14 @@ class ProjectController extends Controller
                             $activityPredecessor = Activity::find($activity_id);
                             $links->push([
                                 "id" => $index, 
-                                "source"=>$activityPredecessor->code,
-                                "target"=>$activity->code,
+                                "source"=> $activityPredecessor->code,
+                                "target"=> $activity->code,
                                 "type"=>"0"
                             ]);
                             $index++;
                         }
                     }
                 }
-
                 $start_date_wbs = date_create($earliest_date);
                 $earlier = new DateTime($earliest_date);
                 $later = new DateTime($wbs->planned_deadline);
