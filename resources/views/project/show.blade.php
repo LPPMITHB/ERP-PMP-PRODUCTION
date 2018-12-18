@@ -589,7 +589,6 @@
         });
         var project = @json($ganttData);
         var links = @json($links);
-        
        
         gantt.config.columns = [ 
             {name:"text", label:"Task name", width:"*", tree:true,
