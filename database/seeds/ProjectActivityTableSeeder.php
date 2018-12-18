@@ -2764,7 +2764,6 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_start_date' => '2019-1-15',
             'planned_end_date' => '2019-1-20',
             'weight' => 20,
-            'predecessor' => '[209]',
             'user_id' => 5,
             'branch_id' => 1,
         ]);
@@ -2779,7 +2778,6 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_start_date' => '2019-1-21',
             'planned_end_date' => '2019-1-23',
             'weight' => 5,
-            'predecessor' => '[210]',
             'user_id' => 5,
             'branch_id' => 1,
         ]);
