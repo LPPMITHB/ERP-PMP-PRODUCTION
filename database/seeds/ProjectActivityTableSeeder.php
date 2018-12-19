@@ -23,6 +23,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-1-24',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -36,6 +38,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-1-15',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -49,6 +53,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-1-31',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -62,6 +68,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-1-31',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -75,6 +83,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-1-31',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -88,6 +98,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-15',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -101,6 +113,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-1-27',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -114,6 +128,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-1-31',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //14
@@ -128,6 +144,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-1-19',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -141,6 +159,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-1-17',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -154,6 +174,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-5-28',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -167,6 +189,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-5-28',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //18
@@ -181,6 +205,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-28',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -194,6 +220,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-10',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -207,6 +235,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-10',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -220,6 +250,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-10',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -233,6 +265,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-10',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
 
@@ -247,6 +281,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-10',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -260,6 +296,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-10',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -273,6 +311,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-10',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -286,6 +326,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-10',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -299,6 +341,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-10',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -312,6 +356,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-10',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //29 Transom
@@ -326,6 +372,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-8',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -339,6 +387,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-16',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -352,6 +402,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-19',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -365,6 +417,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-22',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -378,6 +432,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-26',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //34 Blok 1
@@ -392,6 +448,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-14',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -405,6 +463,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-28',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -418,6 +478,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-13',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -431,6 +493,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-27',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -444,6 +508,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-2',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //39 Block 2
@@ -458,6 +524,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-14',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -471,6 +539,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-28',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -484,6 +554,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-13',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -497,6 +569,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-27',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -510,6 +584,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-2',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //44 Block 3
@@ -524,6 +600,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-14',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -537,6 +615,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-28',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -550,6 +630,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-13',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -563,6 +645,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-27',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -576,6 +660,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-2',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //49 Block 4
@@ -590,6 +676,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-14',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -603,6 +691,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-13',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -616,6 +706,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-27',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -629,6 +721,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-2',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //53 Block 5
@@ -643,6 +737,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-14',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -656,6 +752,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-28',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -669,6 +767,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-13',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -682,6 +782,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-27',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -695,6 +797,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-2',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //58 Block 6
@@ -709,6 +813,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-14',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -722,6 +828,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-28',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -735,6 +843,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-13',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -748,6 +858,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-27',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -761,6 +873,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-2',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //63 Block 1
@@ -775,6 +889,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-21',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -788,6 +904,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-6',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -801,6 +919,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-20',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -814,6 +934,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-3',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -827,6 +949,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-8',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //68 Block 2
@@ -841,6 +965,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-21',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -854,6 +980,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-6',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -867,6 +995,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-20',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -880,6 +1010,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-3',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -893,6 +1025,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-8',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //73 Block 3
@@ -907,6 +1041,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-21',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -920,6 +1056,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-6',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -933,6 +1071,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-20',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -946,6 +1086,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-3',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -959,6 +1101,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-8',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //78 Block 4
@@ -973,6 +1117,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-21',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -986,6 +1132,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-6',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -999,6 +1147,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-20',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1012,6 +1162,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-3',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1025,6 +1177,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-8',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //83 Block 5
@@ -1039,6 +1193,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-21',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1052,6 +1208,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-6',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1065,6 +1223,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-20',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1078,6 +1238,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-3',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1091,6 +1253,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-8',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //88 Block 6
@@ -1105,6 +1269,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-21',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1118,6 +1284,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-6',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1131,6 +1299,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-20',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1144,6 +1314,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-3',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1157,6 +1329,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-8',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //93 Block 1
@@ -1171,6 +1345,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-25',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1184,6 +1360,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-6',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1197,6 +1375,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-20',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1210,6 +1390,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-31',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1223,6 +1405,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-3',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //98 Block 2
@@ -1237,6 +1421,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-25',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1250,6 +1436,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-6',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1263,6 +1451,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-20',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1276,6 +1466,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-31',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1289,6 +1481,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-3',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //103 Block 3
@@ -1303,6 +1497,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-25',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1316,6 +1512,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-6',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1329,6 +1527,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-20',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1342,6 +1542,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-31',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1355,6 +1557,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-3',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //104 Block 4
@@ -1369,6 +1573,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-25',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1382,6 +1588,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-6',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1395,6 +1603,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-20',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1408,6 +1618,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-31',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1421,6 +1633,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-3',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //113 Block 6
@@ -1435,6 +1649,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-25',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1448,6 +1664,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-6',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1461,6 +1679,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-20',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1474,6 +1694,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-31',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1487,6 +1709,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-3',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //118 Block 2
@@ -1501,6 +1725,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-25',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1514,6 +1740,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-6',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1527,6 +1755,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-20',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1540,6 +1770,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-31',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1553,6 +1785,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-3',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //123 Block 3
@@ -1567,6 +1801,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-25',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1580,6 +1816,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-6',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1593,6 +1831,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-20',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1606,6 +1846,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-31',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1619,6 +1861,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-3',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //128 Block 4
@@ -1633,6 +1877,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-25',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1646,6 +1892,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-6',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1659,6 +1907,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-20',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1672,6 +1922,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-31',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1685,6 +1937,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-3',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //133 Block 5
@@ -1699,6 +1953,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-25',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1712,6 +1968,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-6',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1725,6 +1983,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-20',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1738,6 +1998,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-31',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1751,6 +2013,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-3',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //138 Block 6
@@ -1765,6 +2029,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-2-25',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1778,6 +2044,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-6',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1791,6 +2059,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-20',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1804,6 +2074,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-31',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1817,6 +2089,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-3',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //143 Block 1 Side Sheel
@@ -1831,6 +2105,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-2',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1844,6 +2120,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-13',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1857,6 +2135,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-27',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1870,6 +2150,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-7',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1883,6 +2165,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-9',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1896,6 +2180,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-17',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //149 Block 2 Side Sheel
@@ -1910,6 +2196,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-2',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1923,6 +2211,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-13',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1936,6 +2226,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-27',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1949,6 +2241,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-7',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1962,6 +2256,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-9',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -1975,6 +2271,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-17',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //155 Block 3 Side Sheel
@@ -1989,6 +2287,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-2',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2002,6 +2302,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-13',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2015,6 +2317,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-27',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2028,6 +2332,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-7',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2041,6 +2347,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-9',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2054,6 +2362,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-17',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //161 Block 4 Side Sheel
@@ -2068,6 +2378,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-2',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2081,6 +2393,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-13',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2094,6 +2408,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-27',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2107,6 +2423,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-7',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2120,6 +2438,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-9',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2133,6 +2453,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-17',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //167 block 5
@@ -2169,6 +2491,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-20',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //224
@@ -2183,6 +2507,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-10',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //225
@@ -2197,6 +2523,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-10',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //226
@@ -2211,6 +2539,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-10',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2224,6 +2554,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-10',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2237,6 +2569,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-10',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2250,6 +2584,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-10',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2263,6 +2599,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-10',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2276,6 +2614,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-24',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //235
@@ -2290,6 +2630,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-17',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2303,6 +2645,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-17',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2316,6 +2660,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-17',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2329,6 +2675,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-17',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2342,6 +2690,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-24',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //246 Cargo system
@@ -2356,6 +2706,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-6',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2369,6 +2721,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-20',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2382,6 +2736,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-20',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2395,6 +2751,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-10',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2408,6 +2766,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-14',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2421,6 +2781,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-17',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2434,6 +2796,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-24',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //253 General Service
@@ -2464,6 +2828,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-12',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2477,6 +2843,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-26',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2490,6 +2858,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-3-26',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //318
@@ -2504,6 +2874,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-6',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2517,6 +2889,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-6',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2530,6 +2904,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-6',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2543,6 +2919,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-6',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //322 Coating
@@ -2557,6 +2935,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-6',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2570,6 +2950,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-5-8',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2583,6 +2965,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-4-21',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //327 Interior
@@ -2597,6 +2981,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-5-8',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2610,6 +2996,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-5-15',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2623,6 +3011,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-5-21',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //330 Testing
@@ -2637,6 +3027,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-5-5',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2650,6 +3042,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-5-14',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         DB::table('pro_activity')->insert([
@@ -2663,6 +3057,8 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-5-11',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //338 Delivery
@@ -2677,123 +3073,125 @@ class ProjectActivityTableSeeder extends Seeder
             'planned_end_date' => '2019-5-28',
             'user_id' => 5,
             'branch_id' => 1,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
         ]);
 
         //200
-        DB::table('pro_activity')->insert([
-            'code' => 'ACT1810200001',
-            'name' => 'DUMMY - Mengelas 01',
-            'description' => 'DUMMY - Mengelas 01',
-            'status' => 1,
-            'wbs_id' => 75,
-            'planned_duration' => 6,
-            'planned_start_date' => '2018-12-29',
-            'planned_end_date' => '2019-1-3',
-            'weight' => 12.5,
-            'user_id' => 5,
-            'branch_id' => 1,
-        ]);
+        // DB::table('pro_activity')->insert([
+        //     'code' => 'ACT1810200001',
+        //     'name' => 'DUMMY - Mengelas 01',
+        //     'description' => 'DUMMY - Mengelas 01',
+        //     'status' => 1,
+        //     'wbs_id' => 75,
+        //     'planned_duration' => 6,
+        //     'planned_start_date' => '2018-12-29',
+        //     'planned_end_date' => '2019-1-3',
+        //     'weight' => 12.5,
+        //     'user_id' => 5,
+        //     'branch_id' => 1,
+        // ]);
 
-        DB::table('pro_activity')->insert([
-            'code' => 'ACT1810200002',
-            'name' => 'DUMMY - Bending 01',
-            'description' => 'DUMMY - Bending 01',
-            'status' => 1,
-            'wbs_id' => 75,
-            'planned_duration' => 5,
-            'planned_start_date' => '2019-1-4',
-            'planned_end_date' => '2019-1-8',
-            'weight' => 12.5,
-            'predecessor' => '[205]',
-            'user_id' => 5,
-            'branch_id' => 1,
-        ]);
+        // DB::table('pro_activity')->insert([
+        //     'code' => 'ACT1810200002',
+        //     'name' => 'DUMMY - Bending 01',
+        //     'description' => 'DUMMY - Bending 01',
+        //     'status' => 1,
+        //     'wbs_id' => 75,
+        //     'planned_duration' => 5,
+        //     'planned_start_date' => '2019-1-4',
+        //     'planned_end_date' => '2019-1-8',
+        //     'weight' => 12.5,
+        //     'predecessor' => '[205]',
+        //     'user_id' => 5,
+        //     'branch_id' => 1,
+        // ]);
 
         //207
-        DB::table('pro_activity')->insert([
-            'code' => 'ACT1810200003',
-            'name' => 'DUMMY - Mengelas 02',
-            'description' => 'DUMMY - Mengelas 02',
-            'status' => 1,
-            'wbs_id' => 76,
-            'planned_duration' => 8,
-            'planned_start_date' => '2019-1-1',
-            'planned_end_date' => '2019-1-8',
-            'weight' => 10,
-            'user_id' => 5,
-            'branch_id' => 1,
-        ]);
+        // DB::table('pro_activity')->insert([
+        //     'code' => 'ACT1810200003',
+        //     'name' => 'DUMMY - Mengelas 02',
+        //     'description' => 'DUMMY - Mengelas 02',
+        //     'status' => 1,
+        //     'wbs_id' => 76,
+        //     'planned_duration' => 8,
+        //     'planned_start_date' => '2019-1-1',
+        //     'planned_end_date' => '2019-1-8',
+        //     'weight' => 10,
+        //     'user_id' => 5,
+        //     'branch_id' => 1,
+        // ]);
 
-        DB::table('pro_activity')->insert([
-            'code' => 'ACT1810200004',
-            'name' => 'DUMMY - Bending 02',
-            'description' => 'DUMMY - Bending 02',
-            'status' => 1,
-            'wbs_id' => 76,
-            'planned_duration' => 3,
-            'planned_start_date' => '2019-1-7',
-            'planned_end_date' => '2019-1-9',
-            'weight' => 5,
-            'user_id' => 5,
-            'branch_id' => 1,
-        ]);
+        // DB::table('pro_activity')->insert([
+        //     'code' => 'ACT1810200004',
+        //     'name' => 'DUMMY - Bending 02',
+        //     'description' => 'DUMMY - Bending 02',
+        //     'status' => 1,
+        //     'wbs_id' => 76,
+        //     'planned_duration' => 3,
+        //     'planned_start_date' => '2019-1-7',
+        //     'planned_end_date' => '2019-1-9',
+        //     'weight' => 5,
+        //     'user_id' => 5,
+        //     'branch_id' => 1,
+        // ]);
 
         //209
-        DB::table('pro_activity')->insert([
-            'code' => 'ACT1810200005',
-            'name' => 'DUMMY - Mengelas 03',
-            'description' => 'DUMMY - Mengelas 03',
-            'status' => 1,
-            'wbs_id' => 77,
-            'planned_duration' => 20,
-            'planned_start_date' => '2018-12-25',
-            'planned_end_date' => '2019-1-13',
-            'weight' => 9,
-            'user_id' => 5,
-            'branch_id' => 1,
-        ]);
+        // DB::table('pro_activity')->insert([
+        //     'code' => 'ACT1810200005',
+        //     'name' => 'DUMMY - Mengelas 03',
+        //     'description' => 'DUMMY - Mengelas 03',
+        //     'status' => 1,
+        //     'wbs_id' => 77,
+        //     'planned_duration' => 20,
+        //     'planned_start_date' => '2018-12-25',
+        //     'planned_end_date' => '2019-1-13',
+        //     'weight' => 9,
+        //     'user_id' => 5,
+        //     'branch_id' => 1,
+        // ]);
 
         //210
-        DB::table('pro_activity')->insert([
-            'code' => 'ACT1810200006',
-            'name' => 'DUMMY - 01',
-            'description' => 'DUMMY - 01',
-            'status' => 1,
-            'wbs_id' => 78,
-            'planned_duration' => 6,
-            'planned_start_date' => '2019-1-15',
-            'planned_end_date' => '2019-1-20',
-            'weight' => 20,
-            'user_id' => 5,
-            'branch_id' => 1,
-        ]);
+        // DB::table('pro_activity')->insert([
+        //     'code' => 'ACT1810200006',
+        //     'name' => 'DUMMY - 01',
+        //     'description' => 'DUMMY - 01',
+        //     'status' => 1,
+        //     'wbs_id' => 78,
+        //     'planned_duration' => 6,
+        //     'planned_start_date' => '2019-1-15',
+        //     'planned_end_date' => '2019-1-20',
+        //     'weight' => 20,
+        //     'user_id' => 5,
+        //     'branch_id' => 1,
+        // ]);
 
-        DB::table('pro_activity')->insert([
-            'code' => 'ACT1810200007',
-            'name' => 'DUMMY - 02',
-            'description' => 'DUMMY - 02',
-            'status' => 1,
-            'wbs_id' => 78,
-            'planned_duration' => 3,
-            'planned_start_date' => '2019-1-21',
-            'planned_end_date' => '2019-1-23',
-            'weight' => 5,
-            'user_id' => 5,
-            'branch_id' => 1,
-        ]);
+        // DB::table('pro_activity')->insert([
+        //     'code' => 'ACT1810200007',
+        //     'name' => 'DUMMY - 02',
+        //     'description' => 'DUMMY - 02',
+        //     'status' => 1,
+        //     'wbs_id' => 78,
+        //     'planned_duration' => 3,
+        //     'planned_start_date' => '2019-1-21',
+        //     'planned_end_date' => '2019-1-23',
+        //     'weight' => 5,
+        //     'user_id' => 5,
+        //     'branch_id' => 1,
+        // ]);
 
-        DB::table('pro_activity')->insert([
-            'code' => 'ACT1810200008',
-            'name' => 'DUMMY - 03',
-            'description' => 'DUMMY - 03',
-            'status' => 1,
-            'wbs_id' => 79,
-            'planned_duration' => 5,
-            'planned_start_date' => '2019-1-24',
-            'planned_end_date' => '2019-1-28',
-            'weight' => 25,
-            'user_id' => 5,
-            'branch_id' => 1,
-        ]);
+        // DB::table('pro_activity')->insert([
+        //     'code' => 'ACT1810200008',
+        //     'name' => 'DUMMY - 03',
+        //     'description' => 'DUMMY - 03',
+        //     'status' => 1,
+        //     'wbs_id' => 79,
+        //     'planned_duration' => 5,
+        //     'planned_start_date' => '2019-1-24',
+        //     'planned_end_date' => '2019-1-28',
+        //     'weight' => 25,
+        //     'user_id' => 5,
+        //     'branch_id' => 1,
+        // ]);
     }
 }
