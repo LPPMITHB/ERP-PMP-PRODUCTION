@@ -18,9 +18,9 @@ class ActivityController extends Controller
 
     public function create($id, Request $request)
     {
-        $menu = $request->route()->getPrefix() == "/project" ? "building" : "repair";
         $wbs = WBS::find($id);
         $project = $wbs->project;
+        $menu = $project->business_unit_id == "1" ? "building" : "repair";
 
         return view('activity.create', compact('project', 'wbs','menu'));
     }
@@ -107,17 +107,18 @@ class ActivityController extends Controller
     
     public function index($id, Request $request)
     {
-        $menu = $request->route()->getPrefix() == "/project" ? "building" : "repair";
         $wbs = WBS::find($id);
         $project = $wbs->project;
+        $menu = $project->business_unit_id == "1" ? "building" : "repair";
 
         return view('activity.index', compact('project','wbs','menu'));
     }
 
     public function show($id,Request $request)
     {
-        $menu = $request->route()->getPrefix() == "/project" ? "building" : "repair";
         $activity = Activity::find($id);
+        $project = $activity->wbs->project;
+        $menu = $project->business_unit_id == "1" ? "building" : "repair";
         $activityPredecessor = Collection::make();
         
         if($activity->predecessor != null){
@@ -132,8 +133,8 @@ class ActivityController extends Controller
     
     public function manageNetwork($id,Request $request)
     {
-        $menu = $request->route()->getPrefix() == "/project" ? "building" : "repair";
         $project = Project::find($id);
+        $menu = $project->business_unit_id == "1" ? "building" : "repair";
 
         return view('activity.indexNetwork', compact('project','menu'));
     }
@@ -176,10 +177,10 @@ class ActivityController extends Controller
 
     public function confirmActivity($id, Request $request)
     {
-        $menu = $request->route()->getPrefix() == "/activity" ? "building" : "repair";
         $wbs = WBS::find($id);
         $project = $wbs->project;
-
+        $menu = $project->business_unit_id == "1" ? "building" : "repair";
+        dd($menu);
         return view('activity.confirmActivity', compact('project','wbs','menu'));
     }
 
@@ -204,6 +205,14 @@ class ActivityController extends Controller
             }
             $actualStartDate = DateTime::createFromFormat('m/j/Y', $data['actual_start_date']);
             $activity->actual_start_date = $actualStartDate->format('Y-m-d');
+            $project = $activity->wbs->project;
+            if($project->actual_start_date != null){
+                if($project->actual_start_date > $activity->actual_start_date){
+                    $project->actual_start_date = $activity->actual_start_date;                    
+                }
+            }else{
+                $project->actual_start_date = $activity->actual_start_date;
+            }
             $activity->save();
 
             $wbs = $activity->wbs;

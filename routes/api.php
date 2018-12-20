@@ -28,6 +28,7 @@ Route::get('/getBom/{id}', 'BOMController@getBomAPI')->name('api.bom.getBomAPI')
 Route::get('/getNewBom/{id}', 'BOMController@getNewBomAPI')->name('api.bom.getNewBomAPI');
 Route::get('/getBomDetail/{id}', 'BOMController@getBomDetailAPI')->name('api.bom.getBomDetailAPI');
 Route::get('/getMaterialsBOM/{id}', 'BOMController@getMaterialsAPI')->name('api.bom.getMaterialsAPI');
+Route::get('/getServicesBOM/{id}', 'BOMController@getServicesAPI')->name('api.bom.getServicesAPI');
 
 // bos
 Route::get('/getServiceBOS/{id}', 'BOSController@getServiceAPI')->name('api.bos.getServiceAPI');
@@ -105,6 +106,7 @@ Route::get('/getActivity/{id}', 'ProjectController@getActivityAPI')->name('api.p
 Route::get('/getDataGantt/{id}', 'ProjectController@getDataGanttAPI')->name('api.project.getDataGanttAPI');
 Route::get('/getDataChart/{id}', 'ProjectController@getDataChartAPI')->name('api.project.getDataChartAPI');
 Route::get('/getDataJstree/{id}', 'ProjectController@getDataJstreeAPI')->name('api.project.getDataJstreeAPI');
+Route::get('/getActualStartDate/{id}', 'ProjectController@getActualStartDateAPI')->name('api.project.getActualStartDateAPI');
 
 
 // wbs
