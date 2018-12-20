@@ -490,27 +490,33 @@ class RAPController extends Controller
         }
     }
 
-    public function show($id)
+    public function show(Request $request,$id)
     {
+        $route = $request->route()->getPrefix();
         $modelRap = Rap::findOrFail($id);
 
-        return view('rap.show', compact('modelRap'));
+        return view('rap.show', compact('modelRap','route'));
     }
 
-    public function edit($id)
+    public function edit(Request $request,$id)
     {
         $modelRap = Rap::findOrFail($id);
-        $modelRAPD = RapDetail::where('rap_id',$modelRap->id)->with('bom','material')->get();
+        $modelRAPD = RapDetail::where('rap_id',$modelRap->id)->with('bom','material','service')->get();
         $modelBOM = Bom::where('id',$modelRap->bom_id)->first();
         $project = Project::where('id',$modelRap->project_id)->first();
+        $route = $request->route()->getPrefix();
         
-        return view('rap.edit', compact('modelRap','project','modelRAPD','modelBOM'));
+        if($route == "/rap"){
+            return view('rap.edit', compact('modelRap','project','modelRAPD','modelBOM'));
+        }elseif($route == "/rap_repair"){
+            return view('rap.editRepair', compact('modelRap','project','modelRAPD','modelBOM'));
+        }     
     }
 
     public function update(Request $request, $id)
     {
         $datas = json_decode($request->datas);
-        
+        $route = $request->route()->getPrefix();
 
         DB::beginTransaction();
         try {
@@ -526,10 +532,18 @@ class RAPController extends Controller
             $modelRap->update();
 
             DB::commit();
-            return redirect()->route('rap.show', ['id' => $datas[0]->rap_id])->with('success', 'RAP Updated !');
+            if($route == "/rap"){
+                return redirect()->route('rap.show', ['id' => $datas[0]->rap_id])->with('success', 'RAP Updated !');
+            }elseif($route == "/rap_repair"){
+                return redirect()->route('rap_repair.show', ['id' => $datas[0]->rap_id])->with('success', 'RAP Updated !');
+            }   
         } catch (\Exception $e) {
             DB::rollback();
-            return redirect()->route('rap.indexSelectProject')->with('error', $e->getMessage());
+            if($route == "/rap"){
+                return redirect()->route('rap.indexSelectProject')->with('error', $e->getMessage());
+            }elseif($route == "/rap_repair"){
+                return redirect()->route('rap_repair.indexSelectProject')->with('error', $e->getMessage());
+            }   
         }
     }
 
@@ -643,7 +657,6 @@ class RAPController extends Controller
         foreach($modelRap->RapDetails as $RapDetail){
             $total_price += $RapDetail->price;
         }
-        print_r($total_price);exit();
         return $total_price;
     }
 
@@ -657,17 +670,16 @@ class RAPController extends Controller
 
     private function generateRapNumber(){
         $modelRap = Rap::orderBy('created_at','desc')->where('branch_id',Auth::user()->branch_id)->first();
-        $modelBranch = Branch::where('id', Auth::user()->branch_id)->first();
 
-        $branch_code = substr($modelBranch->code,4,2);
 		$number = 1;
 		if(isset($modelRap)){
             $number += intval(substr($modelRap->number, -6));
 		}
-        $year = date('y'.$branch_code.'000000');
+        $year = date('y00000');
         $year = intval($year);
 
-		$rap_number = $year+$number;
+        $rap_number = $year+$number;
+        print_r($rap_number);exit();
         $rap_number = 'RAP-'.$rap_number;
 		return $rap_number;
     }

@@ -127,9 +127,10 @@ class WBSController extends Controller
 
     public function updateWithForm(Request $request, $id)
     {
-        $menu = $request->route()->getPrefix() == "/project" ? "building" : "repair";
         $data = json_decode($request->datas);
         $wbs_ref = WBS::find($id);
+        $project = $wbs_ref->project;
+        $menu = $project->business_unit_id == "1" ? "building" : "repair";
         $wbss = WBS::where('project_id',$data->project_id)->get();
         foreach ($wbss as $wbs) {
             if($wbs->name == $data->name && $wbs_ref->name != $data->name ){
@@ -190,11 +191,11 @@ class WBSController extends Controller
         $year = $project->created_at->year % 100;
 
         $modelWbs = WBS::orderBy('code', 'desc')->where('project_id', $id)->first();
+        
         $number = 1;
 		if(isset($modelWbs)){
             $number += intval(substr($modelWbs->code, -4));
-        }
-        
+		}
 
         $wbs_code = $code.sprintf('%02d', $year).sprintf('%01d', $businessUnit).sprintf('%02d', $projectSequence).sprintf('%04d', $number);
 		return $wbs_code;
