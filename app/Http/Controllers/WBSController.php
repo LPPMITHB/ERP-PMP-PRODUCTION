@@ -190,11 +190,11 @@ class WBSController extends Controller
         $year = $project->created_at->year % 100;
 
         $modelWbs = WBS::orderBy('code', 'desc')->where('project_id', $id)->first();
-        
         $number = 1;
 		if(isset($modelWbs)){
             $number += intval(substr($modelWbs->code, -4));
-		}
+        }
+        
 
         $wbs_code = $code.sprintf('%02d', $year).sprintf('%01d', $businessUnit).sprintf('%02d', $projectSequence).sprintf('%04d', $number);
 		return $wbs_code;
