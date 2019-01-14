@@ -17,7 +17,7 @@ class VendorsTableSeeder extends Seeder
                     'email' => 'akorfmannr@technorati.com',
                     'address' => 'DUMMY - 0148 Commercial Point',
                     'phone_number' => '1328561818',
-                    'status' => 0,
+                    'status' => 1,
                     'branch_id' => 1,
                     'user_id' =>5,                    
                     ]);
@@ -28,7 +28,7 @@ class VendorsTableSeeder extends Seeder
                     'email' => 'acobleyu@symantec.com',
                     'address' => 'DUMMY - 205 Lunder Parkway',
                     'phone_number' => '5695925032',
-                    'status' => 0,
+                    'status' => 1,
                     'branch_id' => 1,
                     'user_id' =>5,
                     ]);
