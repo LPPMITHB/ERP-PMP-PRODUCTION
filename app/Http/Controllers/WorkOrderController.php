@@ -80,7 +80,7 @@ class WorkOrderController extends Controller
 
     public function selectWRD($id, Request $request)
     {
-        $menu = $request->route()->getPrefix() == "/work_request" ? "building" : "repair";    
+        $menu = $request->route()->getPrefix() == "/work_order" ? "building" : "repair"; 
         $modelWR = WorkRequest::findOrFail($id);
         $modelWRD = WorkRequestDetail::where('work_request_id',$modelWR->id)->with('material','wbs')->get();
         foreach($modelWRD as $key=>$WRD){
