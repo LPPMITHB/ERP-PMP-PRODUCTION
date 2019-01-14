@@ -302,6 +302,7 @@ class BOMController extends Controller
 
     public function store(Request $request)
     {
+        $route = $request->route()->getPrefix();
         $datas = json_decode($request->datas);
         $bom_code = self::generateBomCode($datas->project_id);
         $modelBom = Bom::where('wbs_id',$datas->wbs_id)->first();
@@ -319,7 +320,6 @@ class BOMController extends Controller
                 if(!$bom->save()){
                     return redirect()->route('bom.create',$bom->id)->with('error', 'Failed Save Bom !');
                 }else{
-                    $route = $request->route()->getPrefix();
                     if($route == "/bom"){
                         self::saveBomDetail($bom,$datas->materials);
                         self::createRap($datas,$bom);
@@ -336,7 +336,11 @@ class BOMController extends Controller
                 }
             } catch (\Exception $e) {
                 DB::rollback();
-                return redirect()->route('bom.indexProject')->with('error', $e->getMessage());
+                if($route == "/bom"){
+                    return redirect()->route('bom.indexProject')->with('error', $e->getMessage());
+                }else{
+                    return redirect()->route('bom_repair.indexProject')->with('error', $e->getMessage());
+                }
             }
         }else{
             if($route == "/bom"){
