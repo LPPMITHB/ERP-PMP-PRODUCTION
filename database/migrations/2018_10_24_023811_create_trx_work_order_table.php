@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTrxPurchaseOrderTable extends Migration
+class CreateTrxWorkOrderTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreateTrxPurchaseOrderTable extends Migration
      */
     public function up()
     {
-        Schema::create('trx_purchase_order', function (Blueprint $table) {
+        Schema::create('trx_work_order', function (Blueprint $table) {
             $table->increments('id');
             $table->string('number')->unique();
-            $table->unsignedInteger('purchase_requisition_id')->nullable();
+            $table->unsignedInteger('work_request_id')->nullable();
             $table->unsignedInteger('vendor_id');
             $table->unsignedInteger('project_id')->nullable();
             $table->string('description')->nullable();
@@ -26,12 +26,11 @@ class CreateTrxPurchaseOrderTable extends Migration
             $table->unsignedInteger('user_id');
             $table->timestamps();
 
-            $table->foreign('purchase_requisition_id')->references('id')->on('trx_purchase_requisition');
+            $table->foreign('work_request_id')->references('id')->on('trx_work_request');
             $table->foreign('vendor_id')->references('id')->on('mst_vendor');
             $table->foreign('project_id')->references('id')->on('pro_project');
             $table->foreign('branch_id')->references('id')->on('mst_branch');
             $table->foreign('user_id')->references('id')->on('users');
-
         });
     }
 
@@ -42,6 +41,6 @@ class CreateTrxPurchaseOrderTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('trx_purchase_order');
+        Schema::dropIfExists('trx_work_order');
     }
 }

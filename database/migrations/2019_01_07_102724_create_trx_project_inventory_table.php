@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateMstStorageLocationDetailTable extends Migration
+class CreateTrxProjectInventoryTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,14 @@ class CreateMstStorageLocationDetailTable extends Migration
      */
     public function up()
     {
-        Schema::create('mst_storage_location_detail', function (Blueprint $table) {
+        Schema::create('trx_project_inventory', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('material_id');
+            $table->unsignedInteger('project_id');
+            $table->unsignedInteger('material_id')->unique();
             $table->integer('quantity');
-            $table->unsignedInteger('storage_location_id')->nullable();
             $table->timestamps();
-            
-            $table->foreign('storage_location_id')->references('id')->on('mst_storage_location'); 
+
+            $table->foreign('project_id')->references('id')->on('pro_project');
             $table->foreign('material_id')->references('id')->on('mst_material');
         });
     }
@@ -32,6 +32,6 @@ class CreateMstStorageLocationDetailTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('mst_storage_location_detail');
+        Schema::dropIfExists('trx_project_inventory');
     }
 }

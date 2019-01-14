@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTrxPurchaseRequisitionDetailTable extends Migration
+class CreateTrxWorkOrderDetailTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,21 +13,22 @@ class CreateTrxPurchaseRequisitionDetailTable extends Migration
      */
     public function up()
     {
-        Schema::create('trx_purchase_requisition_detail', function (Blueprint $table) {
+        Schema::create('trx_work_order_detail', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('purchase_requisition_id');
+            $table->unsignedInteger('work_order_id');
+            $table->unsignedInteger('work_request_detail_id')->nullable();
             $table->integer('quantity');
-            $table->integer('reserved')->default(0);
+            $table->float('discount')->default(0);
             $table->unsignedInteger('material_id')->nullable();
             $table->unsignedInteger('resource_id')->nullable();
             $table->unsignedInteger('wbs_id')->nullable();
-            $table->string('alocation')->nullable();
+            $table->double('total_price')->nullable();
             $table->timestamps();
 
             $table->foreign('material_id')->references('id')->on('mst_material');
-            $table->foreign('resource_id')->references('id')->on('mst_resource');
+            $table->foreign('work_order_id')->references('id')->on('trx_work_order');
+            $table->foreign('work_request_detail_id')->references('id')->on('trx_work_request_detail');
             $table->foreign('wbs_id')->references('id')->on('pro_wbs');
-            $table->foreign('purchase_requisition_id')->references('id')->on('trx_purchase_requisition');
         });
     }
 
@@ -38,6 +39,6 @@ class CreateTrxPurchaseRequisitionDetailTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('trx_purchase_requisition_detail');
+        Schema::dropIfExists('trx_work_order_detail');
     }
 }

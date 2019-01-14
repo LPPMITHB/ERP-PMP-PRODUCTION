@@ -18,6 +18,7 @@ class UsersTableSeeder extends Seeder
             'role_id' => 1,
             'branch_id' => 1,
             'password' => bcrypt('patria'),
+            'business_unit_id' => '[1,2,3]',
         ]);
 
         DB::table('users')->insert([
@@ -27,6 +28,7 @@ class UsersTableSeeder extends Seeder
             'role_id' => 4,
             'branch_id' => 2,
             'password' => bcrypt('patria'),
+            'business_unit_id' => '[1]',
         ]);
 
         DB::table('users')->insert([
@@ -36,6 +38,7 @@ class UsersTableSeeder extends Seeder
             'role_id' => 5,
             'branch_id' => 1,
             'password' => bcrypt('patria'),
+            'business_unit_id' => '[2]',
         ]);
 
         DB::table('users')->insert([
@@ -45,6 +48,7 @@ class UsersTableSeeder extends Seeder
             'role_id' => 3,
             'branch_id' => 1,
             'password' => bcrypt('patria'),
+            'business_unit_id' => '[1]',
         ]);
     
         DB::table('users')->insert([
@@ -54,6 +58,7 @@ class UsersTableSeeder extends Seeder
             'role_id' => 3,
             'branch_id' => 1,
             'password' => bcrypt('patria'),
+            'business_unit_id' => '[2]',
         ]);
     }
 }

@@ -15,61 +15,41 @@ class ResourcesTableSeeder extends Seeder
         DB::table('mst_resource')->insert([
             'code' => 'RSC0001',
             'name' => 'Crane',
-            'description' => '',
-            'uom_id' => 5,
-            'status' => 1,
+            'cost_standard_price' => 1000000,
             'branch_id' => 1,
-            'category_id' => 1,
-            'type' => 1,
-            'user_id' => 4,
+            'user_id' => 1,
         ]);
 
         DB::table('mst_resource')->insert([
             'code' => 'RSC0002',
             'name' => 'Forklift',
-            'description' => '',
-            'uom_id' => 5,
-            'status' => 1,
             'branch_id' => 1,
-            'category_id' => 2,
-            'type' => 0,
-            'user_id' => 4,
+            'user_id' => 1,
+            'cost_standard_price' => 1500000,
         ]);
 
         DB::table('mst_resource')->insert([
             'code' => 'RSC0003',
             'name' => 'Wheel Loader',
-            'description' => '',
-            'uom_id' => 5,
-            'status' => 1,
             'branch_id' => 1,
-            'category_id' => 2,
-            'type' => 0,
-            'user_id' => 4,
+            'user_id' => 1,
+            'cost_standard_price' => 2500000,
         ]);
 
         DB::table('mst_resource')->insert([
             'code' => 'RSC0004',
             'name' => 'Marine Rubber Airbag',
-            'description' => '',
-            'uom_id' => 5,
-            'status' => 1,
             'branch_id' => 1,
-            'category_id' => 2,
-            'type' => 0,
-            'user_id' => 4,
+            'user_id' => 1,
+            'cost_standard_price' => 2250000,
         ]);
 
         DB::table('mst_resource')->insert([
             'code' => 'RSC0005',
             'name' => 'Excavator',
-            'description' => '',
-            'uom_id' => 5,
-            'status' => 1,
             'branch_id' => 1,
-            'category_id' => 1,
-            'type' => 1,
-            'user_id' => 4,
+            'user_id' => 1,
+            'cost_standard_price' => 3250000,
         ]);
     }
 }

@@ -22,6 +22,7 @@ class PRTableSeeder extends Seeder
             'description' => 'purchase requisition pertama',
             'status' => 0,
             'branch_id' => 1,
+            'type' => 1,
             'user_id' => 4,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
@@ -31,6 +32,7 @@ class PRTableSeeder extends Seeder
             'number' => 'PR00002',
             'valid_date' => $valid_to,
             'project_id' => 1,
+            'type' => 1,
             'description' => 'purchase requisition kedua',
             'status' => 1,
             'branch_id' => 1,
