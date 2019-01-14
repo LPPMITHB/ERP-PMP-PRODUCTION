@@ -3,7 +3,7 @@
 @section('content-header')
 @breadcrumb(
     [
-        'title' => 'Create Work Order',
+        'title' => 'Create Production Order',
         'items' => [
             'Dashboard' => route('index'),
             'Select Project' => route('production_order.selectProject'),
@@ -27,7 +27,7 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td>Code</td>
+                                <td>Number</td>
                                 <td>:</td>
                                 <td>&ensp;<b>{{$project->number}}</b></td>
                             </tr>
@@ -70,7 +70,7 @@
                 <div class="col-sm-6">
                     <table class="tableFixed width100">
                         <thead>
-                            <th style="width: 25%">Work Information</th>
+                            <th style="width: 25%">WBS Information</th>
                             <th style="width: 3%"></th>
                             <th></th>
                         </thead>
@@ -78,23 +78,23 @@
                             <tr>
                                 <td style="">Name</td>
                                 <td>:</td>
-                                <td><b>{{$work->name}}</b></td>
+                                <td><b>{{$wbs->name}}</b></td>
                             </tr>
                             <tr>
                                 <td class="valignTop">Description</td>
                                 <td class="valignTop">:</td>
-                                <td class="valignTop" style="overflow-wrap: break-word;"><b >{{$work->description}}</b></td>
+                                <td class="valignTop" style="overflow-wrap: break-word;"><b >{{$wbs->description}}</b></td>
                             </tr>
                             <tr>
                                 <td class="valignTop">Deliverables</td>
                                 <td class="valignTop">:</td>
-                                <td class="valignTop" style="overflow-wrap: break-word;"><b >{{$work->deliverables}}</b></td>
+                                <td class="valignTop" style="overflow-wrap: break-word;"><b >{{$wbs->deliverables}}</b></td>
                             </tr>
                             <tr>
                                 <td>Deadline</td>
                                 <td>:</td>
                                 <td><b>@php
-                                            $date = DateTime::createFromFormat('Y-m-d', $work->planned_deadline);
+                                            $date = DateTime::createFromFormat('Y-m-d', $wbs->planned_deadline);
                                             $date = $date->format('d-m-Y');
                                             echo $date;
                                         @endphp
@@ -104,7 +104,7 @@
                             <tr>
                                 <td>Progress</td>
                                 <td>:</td>
-                                <td><b>{{$work->progress}} %</b></td>
+                                <td><b>{{$wbs->progress}} %</b></td>
                             </tr>
                         </tbody>
                     </table>
@@ -122,14 +122,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($modelBOM as $BOM)
-                        @foreach($BOM->bomDetails as $BOMD)
+                        @foreach($modelBOM->bomDetails as $BOMD)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $BOMD->material->name }}</td>
                                 <td>{{ number_format($BOMD->quantity) }}</td>
                             </tr>
-                        @endforeach
                         @endforeach
                     </tbody>
                 </table>
@@ -273,9 +271,11 @@
         },
         datas : [],
         project_id :@json($project->id),
-        wbs_id :@json($work->id),
+        wbs_id :@json($wbs->id),
         materials : @json($materials),
         resources : @json($resources),
+        bom : @json($modelBOM->bomDetails),
+        assignedResource : @json($modelRD),
         newIndex : "",
         submittedForm : {},
     };
@@ -299,7 +299,7 @@
             createOk: function(){
                 let isOk = false;
 
-                if(this.datas.length < 1){
+                if(this.materials.length < 1 && this.resources.length < 1){
                     isOk = true;
                 }
                 return isOk;
@@ -333,6 +333,8 @@
                 });
 
                 this.submittedForm.datas = datas;
+                this.submittedForm.materials = this.bom;
+                this.submittedForm.resources = this.assignedResource;
                 this.submittedForm.project_id = this.project_id;
                 this.submittedForm.wbs_id = this.wbs_id;
 
@@ -348,7 +350,7 @@
             'dataInput.id': function(newValue){
                 if(newValue != ""){
                     if(this.dataInput.type == "Resource"){
-                        window.axios.get('/api/getResourceWO/'+newValue).then(({ data }) => {
+                        window.axios.get('/api/getResourcePrO/'+newValue).then(({ data }) => {
                             if(data.description == "" || data.description == null){
                                 this.dataInput.description = '-';
                             }else{
@@ -358,7 +360,7 @@
                             this.dataInput.code = data.code;
                         });
                     }else if(this.dataInput.type == "Material"){
-                        window.axios.get('/api/getMaterialWO/'+newValue).then(({ data }) => {
+                        window.axios.get('/api/getMaterialPrO/'+newValue).then(({ data }) => {
                             if(data.description == "" || data.description == null){
                                 this.dataInput.description = '-';
                             }else{

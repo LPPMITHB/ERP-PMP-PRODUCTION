@@ -18,19 +18,16 @@
 <div class="row">
     <div class="col-xs-12">
         <div class="box">
-            <div class="box-header p-b-20">
-                {{-- <div class="box-tools pull-right p-t-5">
-                    <a href="{{ route('goods_issue.create') }}" class="btn btn-primary btn-sm">CREATE</a>
-                </div> --}}
-            </div> <!-- /.box-header -->
             <div class="box-body">
-                <table class="table table-bordered table-hover" id="gi-table">
+                <table class="table table-bordered tableFixed tablePaging" id="gi-table">
                     <thead>
                         <tr>
                             <th width="5%">No</th>
                             <th width="20%">Number</th>
-                            <th width="45%">Description</th>
+                            <th width="25%">Description</th>
                             <th width="20%">Project Name</th>
+                            <th width="12%">Type</th>
+                            <th width="8%">Status MR</th>
                             <th width="10%"></th>
                         </tr>
                     </thead>
@@ -40,9 +37,42 @@
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $modelGI->number }}</td>
                                 <td>{{ $modelGI->description }}</td>
-                                <td>{{ $modelGI->materialRequisition->project->name }}</td>
+                                <td>{{ isset ($modelGI->materialRequisition) ? $modelGI->materialRequisition->project->name : '-'}}</td>
+                                <td>
+                                    @if($modelGI->materialRequisition)
+                                        {{ $modelGI->materialRequisition->type == 0 ? 'Manual' : 'Automatic' }}
+                                    @else
+                                        Material Write Off
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($modelGI->status == 0)
+                                        Issued
+                                    @elseif($modelGI->status == 1)
+                                        Open
+                                    @elseif($modelGI->status == 2)
+                                        Approved
+                                    @elseif($modelGI->status == 3)
+                                        Need Revision
+                                    @elseif($modelGI->status == 4)
+                                        Rejected
+                                    @else
+                                    @endif
+                                </td>
                                 <td align="center">
-                                    <a href="{{ route('goods_issue.show', ['id'=>$modelGI->id]) }}" class="btn btn-primary btn-xs">VIEW</a>
+                                @if($modelGI->type == 2 && $modelGI->status == 1 || $modelGI->status == 3)
+                                    @if($menu == "building")
+                                        <a href="{{ route('goods_issue.showApprove', ['id'=>$modelGI->id]) }}" class="btn btn-primary btn-xs">VIEW</a>
+                                    @else
+                                        <a href="{{ route('goods_issue_repair.showApprove', ['id'=>$modelGI->id]) }}" class="btn btn-primary btn-xs">VIEW</a>
+                                    @endif
+                                @else
+                                    @if($menu == "building")
+                                        <a href="{{ route('goods_issue.show', ['id'=>$modelGI->id]) }}" class="btn btn-primary btn-xs">VIEW</a>
+                                    @else
+                                        <a href="{{ route('goods_issue_repair.show', ['id'=>$modelGI->id]) }}" class="btn btn-primary btn-xs">VIEW</a>
+                                    @endif
+                                @endif
                                 </td>
                             </tr>
                         @endforeach
@@ -60,17 +90,7 @@
 @push('script')
 <script>
     $(document).ready(function(){
-        $('#gi-table').DataTable({
-            'paging'      : true,
-            'lengthChange': false,
-            'searching'   : false,
-            'ordering'    : true,
-            'info'        : true,
-            'autoWidth'   : false,
-            'initComplete': function(){
-                $('div.overlay').remove();
-            }
-        });
+        $('div.overlay').hide();        
     });
 </script>
 @endpush

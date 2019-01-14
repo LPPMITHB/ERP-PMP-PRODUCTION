@@ -31,12 +31,13 @@ class MaterialWriteOffController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
+        $menu = $request->route()->getPrefix() == "/material_write_off" ? "building" : "repair";    
         $materials = Material::all();
         $storageLocations = StorageLocation::where('status',1)->get();
 
-        return view('material_write_off.create', compact('materials','storageLocations'));
+        return view('material_write_off.create', compact('materials','storageLocations','menu'));
     }
 
     /**
@@ -48,6 +49,7 @@ class MaterialWriteOffController extends Controller
     public function store(Request $request)
     {
         $datas = json_decode($request->datas);
+        $menu = $request->route()->getPrefix() == "/material_write_off" ? "building" : "repair";    
         
         $number = $this->generateGINumber();
 
@@ -57,6 +59,8 @@ class MaterialWriteOffController extends Controller
             $MWO = new GoodsIssue;
             $MWO->number = $number;
             $MWO->description = $datas->description;
+            $MWO->status = 1;
+            $MWO->type = 2;
             $MWO->user_id = Auth::user()->id;
             $MWO->branch_id = Auth::user()->branch->id;
             $MWO->save();
@@ -69,14 +73,22 @@ class MaterialWriteOffController extends Controller
                 $MWOD->storage_location_id = $data->sloc_id;
                 $MWOD->save();
 
-                $this->updateSlocDetail($data);
-                $this->updateStock($data);
+                // $this->updateSlocDetail($data);
+                // $this->updateStock($data);
             }
             DB::commit();
-            return redirect()->route('goods_issue.show',$MWO->id)->with('success', 'Material Write Off Created');
+            if($menu == "building"){
+                return redirect()->route('goods_issue.show',$MWO->id)->with('success', 'Material Write Off Created');
+            }else{
+                return redirect()->route('goods_issue_repair.show',$MWO->id)->with('success', 'Material Write Off Created');
+            }
         }catch (\Exception $e) {
             DB::rollback();
-            return redirect()->route('material_write_off.create')->with('error', $e->getMessage());
+            if($menu == "building"){
+                return redirect()->route('material_write_off.create')->with('error', $e->getMessage());
+            }else{
+                return redirect()->route('material_write_off_repair.create')->with('error', $e->getMessage());
+            }
         }
 
     }
@@ -115,28 +127,46 @@ class MaterialWriteOffController extends Controller
        
             
     }
-
+    
+    public function approval($mwo_id,$status){
+        $modelMWO = MaterialRequisition::findOrFail($mw_id);
+        if($status == "approve"){
+            $modelMR->status = 2;
+            $modelMR->update();
+        }elseif($status == "not-approve"){
+            $modelMR->status = 3;
+            $modelMR->update();
+        }elseif($status == "reject"){
+            $modelMR->status = 4;
+            $modelMR->update();
+        }
+        return redirect()->route('material_requisition.show',$mr_id);
+    }
     public function destroy($id)
     {
         
     }
 
     public function generateGINumber(){
-        $modelGI = GoodsIssue::orderBy('created_at','desc')->where('branch_id',Auth::user()->branch_id)->first();
-        $modelBranch = Branch::where('id', Auth::user()->branch_id)->first();
-
-        $branch_code = substr($modelBranch->code,4,2);
-        $number = 1;
+        $modelGI = GoodsIssue::orderBy('created_at','desc')->first();
+        $yearNow = date('y');
+        
+		$number = 1;
         if(isset($modelGI)){
-            $number += intval(substr($modelGI->number, -6));
+            $yearDoc = substr($modelGI->number, 3,2);
+            if($yearNow == $yearDoc){
+                $number += intval(substr($modelGI->number, -5));
+            }
         }
-        $year = date('y'.$branch_code.'000000');
+
+        $year = date($yearNow.'000000');
         $year = intval($year);
 
-        $gi_number = $year+$number;
+		$gi_number = $year+$number;
         $gi_number = 'GI-'.$gi_number;
+
         return $gi_number;
-	}
+    }
 
     public function updateStock($data){
         $modelStock = Stock::where('material_id',$data->material_id)->first();

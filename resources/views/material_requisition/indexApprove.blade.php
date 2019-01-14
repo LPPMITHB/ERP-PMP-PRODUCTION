@@ -17,11 +17,6 @@
 <div class="row">
     <div class="col-xs-12">
         <div class="box">
-            <div class="box-header p-b-20">
-                <div class="box-tools pull-right p-t-5">
-                    <a href="{{ route('material_requisition.create') }}" class="btn btn-primary btn-sm">CREATE MANUALLY</a>
-                </div>
-            </div> <!-- /.box-header -->
             <div class="box-body">
                 <table class="table table-bordered table-hover" id="mr-table">
                     <thead>
@@ -41,7 +36,11 @@
                                 <td>{{ $modelMR->description }}</td>
                                 <td>{{ $modelMR->project->name }}</td>
                                 <td class="textCenter">
-                                    <a href="{{ route('material_requisition.showApprove', ['id'=>$modelMR->id]) }}" class="btn btn-primary btn-xs">SELECT</a>
+                                    @if($menu == "building")
+                                        <a href="{{ route('material_requisition.showApprove', ['id'=>$modelMR->id]) }}" class="btn btn-primary btn-xs">SELECT</a>
+                                    @else
+                                        <a href="{{ route('material_requisition_repair.showApprove', ['id'=>$modelMR->id]) }}" class="btn btn-primary btn-xs">SELECT</a>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach

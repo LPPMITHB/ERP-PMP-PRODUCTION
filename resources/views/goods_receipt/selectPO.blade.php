@@ -3,14 +3,14 @@
 @section('content-header')
 @breadcrumb(
     [
-        'title' => 'Create Goods Receipt » Create Details',
+        'title' => 'Create Goods Receipt » Select Purchase Order',
+        'subtitle' => '',
         'items' => [
             'Dashboard' => route('index'),
-            'Select Purchase Order' => route('goods_receipt.createGrWithRef'),
-            'Details' => route('goods_receipt.selectPO',$modelPO->id),
+            'Select Purchase Order' => '',
         ]
     ]
-)
+) 
 @endbreadcrumb
 @endsection
 
@@ -19,76 +19,42 @@
     <div class="col-xs-12">
         <div class="box">
             <div class="box-body">
-                <form id="create-gr" class="form-horizontal" method="POST" action="{{ route('goods_receipt.store') }}">
-                @csrf
-                    @verbatim
-                    <div id="pod">
-                        <div class="box_header">
-                            <div class="col-sm-12 p-r-0">
-                                <div class="col-sm-8 p-l-0">
-                                    <div class="row">
-                                        <div class="col-sm-3 p-l-0 p-r-0">
-                                            PO Number
-                                        </div>
-                                        <div class="col-sm-3 p-l-0">
-                                            : <b> {{ modelPO.number }}</b>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-3 p-l-0 p-r-0">
-                                            Vendor
-                                        </div>
-                                        <div class="col-sm-3 p-l-0 p-r-0">
-                                            : <b> {{ modelPO.vendor.name }} </b>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-4 p-l-0 p-r-0">
-                                    GR Description  : <textarea class="form-control" rows="3" v-model="description" style="width:100%"></textarea>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-sm-12">
-                            <div class="row">
-                                <table class="table table-bordered table-hover" id="pod-table">
-                                    <thead>
-                                        <tr>
-                                            <th width="5%">No</th>
-                                            <th width="35%">Material</th>
-                                            <th width="15%">Quantity</th>
-                                            <th width="15%">Received</th>
-                                            <th width="30%">Storage Location</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="(POD,index) in modelPOD" v-if="POD.quantity > 0">
-                                            <td>{{ index+1 }}</td>
-                                            <td>{{ POD.material.code }} - {{ POD.material.name }}</td>
-                                            <td>{{ POD.quantity }}</td>
-                                            <td class="tdEllipsis no-padding">
-                                                <input class="form-control width100" v-model="POD.received" placeholder="Please Input Received Quantity">
-                                            </td>
-                                            <td class="no-padding">
-                                                <selectize v-model="POD.sloc_id" :settings="slocSettings">
-                                                    <option v-for="(storageLocation, index) in modelSloc" :value="storageLocation.id">{{storageLocation.code}} - {{storageLocation.name}}</option>
-                                                </selectize>  
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12 p-t-10">
-                                <button @click.prevent="submitForm" class="btn btn-primary pull-right" :disabled="createOk">CREATE</button>
-                            </div>
-                        </div>
-
-                    </div>
-                    @endverbatim
-                </form>
-        </div><!-- /.box-body -->
+                <table class="table table-bordered tableFixed tablePaging">
+                    <thead>
+                        <tr>
+                            <th width="5%">No</th>
+                            <th width="20%">Number</th>
+                            <th width="45%">Description</th>
+                            <th width="20%">Project Name</th>
+                            <th width="10%"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($modelPOs as $modelPO)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $modelPO->number }}</td>
+                                <td>{{ $modelPO->description }}</td>
+                                <td>{{ isset($modelPO->project) ? $modelPO->project->name : '-'}}</td>
+                                <td class="p-l-0 p-r-0 textCenter">
+                                    <a href="{{ route('goods_receipt.createGrWithRef', ['id'=>$modelPO->id]) }}" class="btn btn-primary btn-xs">SELECT</a>
+                                </td>
+                            </tr>
+                        @endforeach
+                        @foreach($modelWOs as $modelWO)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $modelWO->number }}</td>
+                                <td>{{ $modelWO->description }}</td>
+                                <td>{{ isset($modelWO->project) ? $modelWO->project->name : '-' }}</td>
+                                <td class="p-l-0 p-r-0 textCenter">
+                                    <a href="{{ route('goods_receipt.createGrFromWo', ['id'=>$modelWO->id]) }}" class="btn btn-primary btn-xs">SELECT</a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div> <!-- /.box-body -->
             <div class="overlay">
                 <i class="fa fa-refresh fa-spin"></i>
             </div>
@@ -99,96 +65,8 @@
 
 @push('script')
 <script>
-    const form = document.querySelector('form#create-gr');
-
     $(document).ready(function(){
-        $('#pod-table').DataTable({
-            'paging'      : true,
-            'lengthChange': false,
-            'searching'   : false,
-            'ordering'    : true,
-            'info'        : true,
-            'autoWidth'   : false,
-            'initComplete': function(){
-                $('div.overlay').remove();
-            }
-        });
-    });
-
-    var data = {
-        modelPOD : @json($modelPODs),
-        modelPO :   @json($modelPO),
-        modelSloc : @json($modelSloc),
-
-        slocSettings: {
-            placeholder: 'Please Select Storage Location'
-        },
-        description:"",
-        submittedForm :{},
-    }
-
-    var vm = new Vue({
-        el : '#pod',
-        data : data,
-        computed : {
-            createOk: function(){
-                let isOk = false;
-                
-                return isOk;
-            },
-        },
-        methods : {
-            submitForm(){
-                var data = this.modelPOD;
-                data = JSON.stringify(data)
-                data = JSON.parse(data)
-
-                data.forEach(POD => {
-                    POD.quantity = POD.quantity.replace(/,/g , ''); 
-                    POD.received = parseInt(POD.received);     
-                });
-
-                this.submittedForm.POD = data;
-                this.submittedForm.po_id = this.modelPO.id;
-                this.submittedForm.description = this.description;
-
-                let struturesElem = document.createElement('input');
-                struturesElem.setAttribute('type', 'hidden');
-                struturesElem.setAttribute('name', 'datas');
-                struturesElem.setAttribute('value', JSON.stringify(this.submittedForm));
-                form.appendChild(struturesElem);
-                form.submit();
-            }
-        },
-        watch : {
-            modelPOD:{
-                handler: function(newValue) {
-                    var data = newValue;
-                    data.forEach(POD => {
-                        if(parseInt(POD.quantity.replace(/,/g , '')) < parseInt(POD.received.replace(/,/g , ''))){
-                            POD.received = POD.quantity;
-                            iziToast.warning({
-                                title: 'Cannot input more than avaiable quantity..',
-                                position: 'topRight',
-                                displayMode: 'replace'
-                            });
-                        }
-                        POD.received = (POD.received+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");            
-                    });
-                },
-                deep: true
-            },
-        },
-        created: function(){
-            var data = this.modelPOD;
-            data.forEach(POD => {
-                POD['sloc_id'] = null;
-                POD.received = parseInt(POD.quantity) - parseInt(POD.received);
-                POD.quantity = POD.received;
-                POD.quantity = (POD.quantity+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");            
-                POD.received = (POD.received+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");            
-            });
-        }
+        $('div.overlay').hide();
     });
 </script>
 @endpush

@@ -19,12 +19,13 @@ class GoodsMovementController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $modelWarehouse = Warehouse::where('status',1)->get();
-        $modelSloc = StorageLocation::where('status',1)->with('storageLocationDetails')->get();
+        $route = $request->route()->getPrefix();
+        $modelGMs = GoodsMovement::all();
 
-        return view ('goods_movement.index', compact('modelWarehouse','modelSloc'));
+        return view('goods_movement.index', compact('modelGMs','route'));
+
     }
 
     /**
@@ -32,9 +33,13 @@ class GoodsMovementController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $route = $request->route()->getPrefix();
+        $modelWarehouse = Warehouse::where('status',1)->get();
+        $modelSloc = StorageLocation::where('status',1)->with('storageLocationDetails')->get();
+        
+        return view ('goods_movement.create', compact('modelWarehouse','modelSloc','route'));
     }
 
     /**
@@ -45,6 +50,7 @@ class GoodsMovementController extends Controller
      */
     public function store(Request $request)
     {
+        $route = $request->route()->getPrefix();
         $datas = json_decode($request->datas);
         $gm_number = $this->generateGMNumber();
         DB::beginTransaction();
@@ -69,10 +75,18 @@ class GoodsMovementController extends Controller
             }
             $this->updateSloc($datas->dataSLD,$datas->dataHeader->sloc_to_id);
             DB::commit();
-            return redirect()->route('goods_movement.show',$GM->id)->with('success', 'Goods Movement Success');
+            if($route == "/goods_movement"){
+                return redirect()->route('goods_movement.show',$GM->id)->with('success', 'Goods Movement Success');
+            }elseif($route == "/goods_movement_repair"){
+                return redirect()->route('goods_movement_repair.show',$GM->id)->with('success', 'Goods Movement Success');
+            }
         } catch (\Exception $e) {
             DB::rollback();
-            return redirect()->route('goods_movement.index')->with('error', $e->getMessage());
+            if($route == "/goods_movement"){
+                return redirect()->route('goods_movement.index')->with('error', $e->getMessage());
+            }elseif($route == "/goods_movement_repair"){
+                return redirect()->route('goods_movement_repair.index')->with('error', $e->getMessage());
+            }
         }
     }
 
@@ -139,7 +153,6 @@ class GoodsMovementController extends Controller
                     $modelSLDTo = new StorageLocationDetail;
                     $modelSLDTo->material_id = $data->material_id;
                     $modelSLDTo->quantity = $data->quantity;
-                    $modelSLDTo->reserved = 0;
                     $modelSLDTo->storage_location_id = $sloc_to_id;
                     $modelSLDTo->save();
                 }
@@ -162,25 +175,34 @@ class GoodsMovementController extends Controller
     }
 
     public function getSlocDetailAPI($id){
-        $sld = StorageLocationDetail::where('storage_location_id',$id)->with('material')->get()->jsonSerialize();
+        $sld = StorageLocationDetail::where('storage_location_id',$id)->with('material')->get();
+        foreach($sld as $key => $data){
+            if($data->quantity < 1){
+                unset($data[$key]);
+            }
+        }
 
         return response($sld, Response::HTTP_OK);
     }
 
     public function generateGMNumber(){
-        $modelGM = GoodsMovement::orderBy('created_at','desc')->where('branch_id',Auth::user()->branch_id)->first();
-        $modelBranch = Branch::where('id', Auth::user()->branch_id)->first();
+        $modelGM = GoodsMovement::orderBy('created_at','desc')->first();
+        $yearNow = date('y');
 
-        $branch_code = substr($modelBranch->code,4,2);
         $number = 1;
         if(isset($modelGM)){
-            $number += intval(substr($modelGM->number, -6));
+            $yearDoc = substr($modelGM->number, 3,2);
+            if($yearNow == $yearDoc){
+                $number += intval(substr($modelGM->number, -6));
+            }
         }
-        $year = date('y'.$branch_code.'000000');
+
+        $year = date($yearNow.'000000');
         $year = intval($year);
 
         $gm_number = $year+$number;
         $gm_number = 'GM-'.$gm_number;
+
         return $gm_number;
     }
 }

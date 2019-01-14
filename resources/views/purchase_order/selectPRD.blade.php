@@ -1,17 +1,36 @@
 @extends('layouts.main')
-
+@if($modelPR->type == 1)
+    @php($type = 'Material')
+@else  
+    @php($type = 'Resource')
+@endif
 @section('content-header')
-@breadcrumb(
-    [
-        'title' => 'Create Purchase Order » Select Material',
-        'items' => [
-            'Dashboard' => route('index'),
-            'Select Purchase Requisition' => route('purchase_order.selectPR'),
-            'Select Material' => route('purchase_order.selectPRD',$modelPR->id),
+@if($route == "/purchase_order")
+    @breadcrumb(
+        [
+            'title' => 'Create Purchase Order » Select '.$type,
+            'items' => [
+                'Dashboard' => route('index'),
+                'Select Purchase Requisition' => route('purchase_order.selectPR'),
+                'Select Material' => ''
+            ]
         ]
-    ]
-)
-@endbreadcrumb
+    )
+    @endbreadcrumb
+@elseif($route == "/purchase_order_repair")
+    @breadcrumb(
+        [
+            'title' => 'Create Purchase Order » Select '.$type,
+            'items' => [
+                'Dashboard' => route('index'),
+                'Select Purchase Requisition' => route('purchase_order_repair.selectPR'),
+                'Select Material' => ''
+            ]
+        ]
+    )
+    @endbreadcrumb
+@endif
+
 @endsection
 
 @section('content')
@@ -19,30 +38,40 @@
     <div class="col-xs-12">
         <div class="box">
             <div class="box-body">
-                <form id="select-material" class="form-horizontal" action="{{ route('purchase_order.create') }}">
+                @if($route == "/purchase_order")
+                    <form id="select-material" class="form-horizontal" action="{{ route('purchase_order.create') }}">
+                @elseif($route == "/purchase_order_repair")
+                    <form id="select-material" class="form-horizontal" action="{{ route('purchase_order_repair.create') }}">
+                @endif
                 @csrf
                     @verbatim
                     <div id="prd">
-                        <table class="table table-bordered table-hover" id="prd-table">
+                        <table class="table table-bordered tableFixed tablePagingVue">
                             <thead>
                                 <tr>
                                     <th width="5%">No</th>
-                                    <th width="35%">Material</th>
+                                    <th v-if="modelPR.type == 1" width="30%">Material</th>
+                                    <th v-else width="30%">Resource</th>
                                     <th width="10%">Quantity</th>
                                     <th width="10%">Ordered</th>
                                     <th width="10%">Remaining</th>
-                                    <th width="25%">Work Name</th>
+                                    <th width="20%">WBS Name</th>
+                                    <th width="10%">Alocation</th>
                                     <th width="5%"></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="(PRD,index) in modelPRD">
                                     <td>{{ index+1 }}</td>
-                                    <td>{{ PRD.material.name }}</td>
+                                    <td v-if="PRD.material != null">{{ PRD.material.code }} - {{ PRD.material.name }}</td>
+                                    <td v-else>{{ PRD.resource.code }} - {{ PRD.resource.name }}</td>
                                     <td>{{ PRD.quantity }}</td>
                                     <td>{{ PRD.reserved }}</td>
                                     <td>{{ PRD.remaining }}</td>
-                                    <td>{{ PRD.work.name }}</td>
+                                    <td v-if="PRD.wbs != null">{{ PRD.wbs.name }}</td>
+                                    <td v-else>-</td>
+                                    <td v-if="PRD.alocation != null">{{ PRD.alocation }}</td>
+                                    <td v-else>-</td>
                                     <td class="no-padding p-t-2 p-b-2" align="center">
                                         <input type="checkbox" v-icheck="" v-model="checkedPRD" :value="PRD.id">
                                     </td>
@@ -71,17 +100,34 @@
     const form = document.querySelector('form#select-material');
 
     $(document).ready(function(){
-        $('#prd-table').DataTable({
-            'paging'      : true,
-            'lengthChange': false,
-            'searching'   : true,
-            'ordering'    : true,
-            'info'        : true,
-            'autoWidth'   : false,
-            'initComplete': function(){
-                $('div.overlay').remove();
+        $('.tablePagingVue thead tr').clone(true).appendTo( '.tablePagingVue thead' );
+        $('.tablePagingVue thead tr:eq(1) th').addClass('indexTable').each( function (i) {
+            var title = $(this).text();
+            if(title == '' || title == 'No' || title == "Quantity" || title == "Ordered" || title == "Remaining"){
+                $(this).html( '<input disabled class="form-control width100" type="text"/>' );
+            }else{
+                $(this).html( '<input class="form-control width100" type="text" placeholder="Search '+title+'"/>' );
             }
+
+            $( 'input', this ).on( 'keyup change', function () {
+                if ( tablePagingVue.column(i).search() !== this.value ) {
+                    tablePagingVue
+                        .column(i)
+                        .search( this.value )
+                        .draw();
+                }
+            });
         });
+
+        var tablePagingVue = $('.tablePagingVue').DataTable( {
+            orderCellsTop   : true,
+            fixedHeader     : true,
+            paging          : true,
+            autoWidth       : false,
+            lengthChange    : false,
+        });
+
+        $('div.overlay').hide();
     });
 
     var data = {
@@ -108,6 +154,8 @@
                 var prd = this.checkedPRD;
                 var jsonPrd = JSON.stringify(prd);
                 jsonPrd = JSON.parse(jsonPrd);
+
+                this.submittedForm.type = this.modelPR.type;
                 this.submittedForm.checkedPRD = jsonPrd;            
                 this.submittedForm.id = this.modelPR.id;            
 

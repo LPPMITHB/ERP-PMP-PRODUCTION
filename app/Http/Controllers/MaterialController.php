@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Material;
+use App\Models\Uom;
 use Auth;
 use DB;
 
@@ -29,8 +30,9 @@ class MaterialController extends Controller
     public function create()
     {
         $material = new Material;
-        $material_code = self::generateMaterialCode();
-        return view('material.create', compact('material', 'material_code'));
+        $uoms = Uom::all();
+
+        return view('material.create', compact('material','uoms'));
     }
 
     /**
@@ -73,11 +75,17 @@ class MaterialController extends Controller
             $material->name = $data->name;
             $material->description = $data->description;
             $material->cost_standard_price = $data->cost_standard_price;
+            $material->cost_standard_price_service = $data->cost_standard_service;
+            $material->min = $data->min;
+            $material->max = $data->max;
             $material->weight = $data->weight;
+            $material->weight_uom_id = $data->weight_uom_id == "" ? null : $data->weight_uom_id;
             $material->height = $data->height;
+            $material->height_uom_id = $data->height_uom_id == "" ? null : $data->height_uom_id;
             $material->length = $data->lengths;
+            $material->length_uom_id = $data->length_uom_id == "" ? null : $data->length_uom_id;
             $material->width = $data->width;
-            $material->volume = $data->volume;
+            $material->width_uom_id = $data->width_uom_id == "" ? null : $data->width_uom_id;
             $material->type = $data->type;
             $material->status = $data->status;
             $material->user_id = Auth::user()->id;
@@ -101,8 +109,9 @@ class MaterialController extends Controller
     public function show($id)
     {
         $material = Material::findOrFail($id);
-        
-        return view('material.show', compact('material'));
+        $uoms = Uom::all();
+
+        return view('material.show', compact('material','uoms'));
     }
 
     /**
@@ -114,8 +123,9 @@ class MaterialController extends Controller
     public function edit($id)
     {
         $material = Material::findOrFail($id);
+        $uoms = Uom::all();
         
-        return view('material.edit', compact('material'));
+        return view('material.edit', compact('material','uoms'));
     }
 
     /**
@@ -153,6 +163,7 @@ class MaterialController extends Controller
             'volume' => 'nullable|numeric'
 
         ]);
+
         DB::beginTransaction();
         try {
         $material = Material::find($id);
@@ -160,11 +171,17 @@ class MaterialController extends Controller
         $material->name = $data->name;
         $material->description = $data->description;
         $material->cost_standard_price = $data->cost_standard_price;
+        $material->cost_standard_price_service = $data->cost_standard_service;
+        $material->min = $data->min;
+        $material->max = $data->max;
         $material->weight = $data->weight;
+        $material->weight_uom_id = $data->weight_uom_id == "" ? null : $data->weight_uom_id;
         $material->height = $data->height;
+        $material->height_uom_id = $data->height_uom_id == "" ? null : $data->height_uom_id;
         $material->length = $data->lengths;
+        $material->length_uom_id = $data->length_uom_id == "" ? null : $data->length_uom_id;
         $material->width = $data->width;
-        $material->volume = $data->volume;
+        $material->width_uom_id = $data->width_uom_id == "" ? null : $data->width_uom_id;
         $material->type = $data->type;
         $material->status = $data->status;
         $material->update();

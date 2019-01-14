@@ -20,7 +20,7 @@
     <div class="col-sm-12">
         <div class="box">
             <div class="box-header">
-                <div class="col-sm-6">
+                <div class="col-sm-4">
                     <table>
                         <thead>
                             <th colspan="2">Resource Information</th>
@@ -29,52 +29,17 @@
                             <tr>
                                 <td>Code</td>
                                 <td>:</td>
-                                <td>&ensp;<b>{{$resource->code}}</b></td>
+                                <td><b>{{$resource->code}}</b></td>
                             </tr>
                             <tr>
                                 <td>Name</td>
                                 <td>:</td>
-                                <td>&ensp;<b>{{$resource->name}}</b></td>
+                                <td><b>{{$resource->name}}</b></td>
                             </tr>
                             <tr>
                                 <td>Description</td>
                                 <td>:</td>
-                                <td class="tdEllipsis" data-toggle="tooltip" title="{{ $resource->description }}">&ensp;<b>{{ $resource->description }}</b></td>
-                            </tr>
-                            <tr>
-                                <td>Unit Of Measurement</td>
-                                <td>:</td>
-                                <td>&ensp;<b>{{$resource->uom->name}}</b></td>
-                            </tr>
-                            <tr>
-                                <td>Type</td>
-                                <td>:</td>
-                                @if($resource->type == 0)
-                                    <td>&ensp;<b>{{ 'EXTERNAL' }}</b></td>
-                                @else
-                                    <td>&ensp;<b>{{ 'INTERNAL' }}</b></td>
-                                @endif
-                            </tr>
-                            @if($resource->type == 1)
-                            <tr>
-                                <td>Quantity</td>
-                                <td>:</td>
-                                <td>&ensp;<b>{{$resource->quantity}}</b></td>
-                            </tr>
-                            @endif
-                            <tr>
-                                <td>Category</td>
-                                <td>:</td>
-                                <td>&ensp;<b>{{$resource->category->name}}</b></td>
-                            </tr>
-                            <tr>
-                                <td>Status</td>
-                                <td>:</td>
-                                @if ($resource->status == 1)
-                                    <td>&ensp;<b>{{'AVAILABLE'}}</b></td>
-                                @elseif ($resource->status == 0)
-                                    <td>&ensp;<b>{{'NOT AVAILABLE'}}</b></td>
-                                @endif
+                                <td class="tdEllipsis" data-toggle="tooltip" title="{{ $resource->description }}"><b>{{ isset($resource->description) ? $resource->description : '-' }}</b></td>
                             </tr>
                         </tbody>
                     </table>

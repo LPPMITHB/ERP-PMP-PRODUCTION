@@ -1,16 +1,31 @@
 @extends('layouts.main')
 
 @section('content-header')
-@breadcrumb(
-    [
-        'title' => 'View Purchase Order » '.$modelPO->project->name,
-        'items' => [
-            'Dashboard' => route('index'),
-            'View Purchase Order' => route('purchase_order.show',$modelPO->id),
+@if($route == "/purchase_order")
+    @breadcrumb(
+        [
+            'title' => isset($modelPO->project) ? 'View Purchase Order » '.$modelPO->project->number : 'View Purchase Order',
+            'items' => [
+                'Dashboard' => route('index'),
+                'View All Purchase Order' => route('purchase_order.index'),
+                'View Purchase Order' => '',
+            ]
         ]
-    ]
-)
-@endbreadcrumb
+    )
+    @endbreadcrumb
+@elseif($route == "/purchase_order_repair")
+    @breadcrumb(
+        [
+            'title' => isset($modelPO->project) ? 'View Purchase Order » '.$modelPO->project->number : 'View Purchase Order',
+            'items' => [
+                'Dashboard' => route('index'),
+                'View All Purchase Order' => route('purchase_order_repair.index'),
+                'View Purchase Order' => '',
+            ]
+        ]
+    )
+    @endbreadcrumb
+@endif
 @endsection
 
 @section('content')
@@ -32,18 +47,10 @@
                 <div class="col-sm-4 col-md-4 m-t-10">
                     <div class="row">
                         <div class="col-md-4">
-                            Project Code
+                            Project Number
                         </div>
                         <div class="col-md-8">
-                            : <b> {{ $modelPO->project->number }} </b>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            Project Name
-                        </div>
-                        <div class="col-md-8">
-                            : <b> {{ $modelPO->project->name }} </b>
+                            : <b> {{ isset($modelPO->project) ? $modelPO->project->number : '-' }} </b>
                         </div>
                     </div>
                     <div class="row">
@@ -51,7 +58,7 @@
                             Ship Name
                         </div>
                         <div class="col-md-8">
-                            : <b> {{ $modelPO->project->ship->type }} </b>
+                            : <b> {{ isset($modelPO->project) ? $modelPO->project->name : '-' }} </b>
                         </div>
                     </div>
                     <div class="row">
@@ -59,7 +66,7 @@
                             Ship Type
                         </div>
                         <div class="col-md-8">
-                            : <b> {{ $modelPO->project->ship->type }} </b>
+                            : <b> {{ isset($modelPO->project) ? $modelPO->project->ship->type : '-' }} </b>
                         </div>
                     </div>
                     <div class="row">
@@ -84,8 +91,8 @@
                         <div class="col-md-5">
                             Customer Name
                         </div>
-                        <div class="col-md-7 tdEllipsis" data-container="body" data-toggle="tooltip" title="{{ $modelPO->project->customer->name}}">
-                            : <b> {{ $modelPO->project->customer->name }} </b>
+                        <div class="col-md-7 tdEllipsis" data-container="body" data-toggle="tooltip" title="{{ isset($modelPO->project) ? $modelPO->project->customer->name : '-'}}">
+                            : <b> {{ isset($modelPO->project) ? $modelPO->project->customer->name : '-' }} </b>
                         </div>
                         <div class="col-md-5">
                             Vendor Name
@@ -102,11 +109,23 @@
                             </div>
                         @elseif($modelPO->status == 2)
                             <div class="col-md-7">
-                                : <b>CANCELED</b>
+                                : <b>APPROVED</b>
                             </div>
-                        @else
+                        @elseif($modelPO->status == 3)
                             <div class="col-md-7">
-                                : <b>ORDERED</b>
+                                : <b>NEED REVISION</b>
+                            </div>
+                        @elseif($modelPO->status == 4)
+                            <div class="col-md-7">
+                                : <b>REVISED</b>
+                            </div>
+                        @elseif($modelPO->status == 5)
+                            <div class="col-md-7">
+                                : <b>REJECTED</b>
+                            </div>
+                        @elseif($modelPO->status == 0)
+                            <div class="col-md-7">
+                                : <b>RECEIVED</b>
                             </div>
                         @endif
                         <div class="col-md-5">
@@ -129,21 +148,29 @@
                     <thead>
                         <tr>
                             <th width="5%">No</th>
-                            <th width="35%">Material Name</th>
+                            @if($modelPO->purchaseRequisition->type == 1)
+                                <th width="35%">Material Name</th>
+                            @elseif($modelPO->purchaseRequisition->type == 2)
+                                <th width="35%">Resource Name</th>
+                            @endif
                             <th width="20%">Quantity</th>
                             <th width="20%">Price / pcs</th>
                             <th width="20%">Sub Total Price</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($modelPO->purchaseOrderDetails as $POD)
-                            @if($POD->quantity > 0)
+                        @foreach($datas as $POD)
+                            @if($POD['quantity'] > 0)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $POD->material->code }} - {{ $POD->material->name }}</td>
-                                    <td>{{ number_format($POD->quantity) }}</td>
-                                    <td>{{ number_format($POD->total_price / $POD->quantity) }}</td>
-                                    <td>{{ number_format($POD->total_price) }}</td>
+                                    @if($modelPO->purchaseRequisition->type == 1)
+                                        <td>{{ $POD['material_code'] }} - {{ $POD['material_name'] }}</td>
+                                    @elseif($modelPO->purchaseRequisition->type == 2)
+                                        <td>{{ $POD['resource_code'] }} - {{ $POD['resource_name'] }}</td>
+                                    @endif
+                                    <td>{{ number_format($POD['quantity']) }}</td>
+                                    <td>{{ number_format($POD['price']) }}</td>
+                                    <td>{{ number_format($POD['sub_total']) }}</td>
                                 </tr>
                             @endif
                         @endforeach

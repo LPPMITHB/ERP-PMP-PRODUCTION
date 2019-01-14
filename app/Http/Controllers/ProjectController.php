@@ -206,7 +206,7 @@ class ProjectController extends Controller
                     "a_attr" =>  ["href" => $route.$wbs->id],
                 ]);
             } 
-        } 
+        }
         
         return view('project.listWBS', compact('dataWbs','project','menu','menuTitle','mainMenu'));
     }
@@ -236,7 +236,7 @@ class ProjectController extends Controller
         $project = new Project;
         $menu = $request->route()->getPrefix() == "/project" ? "building" : "repair";
 
-        return view('project.create', compact('customers','ships','project','businessUnit','menu'));
+        return view('project.create', compact('customers','ships','project','menu'));
     }
   
 
@@ -317,6 +317,21 @@ class ProjectController extends Controller
             $project->business_unit_id = $request->business_unit_id;
             $project->user_id = Auth::user()->id;
             $project->branch_id = Auth::user()->branch->id;
+            if($request->hasFile('drawing')){
+                // Get filename with the extension
+                $fileNameWithExt = $request->file('drawing')->getClientOriginalName();
+                // Get just file name
+                $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+                // Get just ext
+                $extension = $request->file('drawing')->getClientOriginalExtension();
+                // File name to store
+                $fileNameToStore = $fileName.'_'.time().'.'.$extension;
+                // Upload image
+                $path = $request->file('drawing')->storeAs('documents/project',$fileNameToStore);
+            }else{
+                $fileNameToStore =  null;
+            }
+            $project->drawing = $fileNameToStore;
             $project->save();
 
             
@@ -1028,7 +1043,7 @@ class ProjectController extends Controller
                         $plannedCost += $wbs->bom->rap->total_price;
                         $dataPlannedCost->push([
                             "t" => $date, 
-                            "y" => $plannedCost."",
+                            "y" => ($plannedCost/1000000)."",
                         ]);
                     }
                 }
@@ -1052,7 +1067,7 @@ class ProjectController extends Controller
                 }
                 $dataActualCost->push([
                     "t" => $date, 
-                    "y" => $actualCost."",
+                    "y" => ($actualCost/1000000)."",
                 ]);
             }
         }

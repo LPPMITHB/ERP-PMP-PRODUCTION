@@ -21,34 +21,6 @@
                     @verbatim
                     <div id="assignRsc">
                         <div class="row">
-                            <template v-if="selectedResource.length > 0">
-                                <div class="col-sm-12">
-                                    <div class="col-sm-2">
-                                        Resource Code
-                                    </div>
-                                    <div class="col-sm-10">
-                                        : <b>{{ selectedResource[0].code }}</b>
-                                    </div>
-                                    <div class="col-sm-2">
-                                        Name
-                                    </div>
-                                    <div class="col-sm-10">
-                                        : <b>{{ selectedResource[0].name }}</b>
-                                    </div>
-                                    <div class="col-sm-2">
-                                        Description
-                                    </div>
-                                    <div class="col-sm-10">
-                                        : <b>{{ selectedResource[0].description }}</b>
-                                    </div>
-                                    <div class="col-sm-2">
-                                        Unit Of Measurement
-                                    </div>
-                                    <div class="col-sm-10">
-                                        : <b>{{ selectedResource[0].uom.name }}</b>
-                                    </div>
-                                </div>
-                            </template>
                         </div>
                         <div class="row">
                             <div class="col sm-12 p-l-15 p-r-10 p-t-10 p-r-15">
@@ -59,7 +31,7 @@
                                             <th style="width: 25%">Resource</th>
                                             <th style="width: 25%">Project Name</th>
                                             <th style="width: 15%">Status</th>
-                                            <th style="width: 18%">Work Name</th>
+                                            <th style="width: 18%">WBS Name</th>
                                             <th style="width: 12%"></th>
                                         </tr>
                                     </thead>
@@ -79,7 +51,7 @@
                                             
                                             </template>     
                                             <td>
-                                                {{ datas.work.name }}
+                                                {{ datas.wbs.name }}
                                             </td>
                                             <td class="p-l-3 textCenter">
                                                 <a class="btn btn-primary btn-xs" data-toggle="modal" href="#edit_item" @click="openEditModal(datas,index)">
@@ -93,7 +65,7 @@
                                        
                                     </tbody>
                                     <tfoot>
-                                        <td class="p-l-10"></td>
+                                        <td class="p-l-10">{{newIndex}}</td>
                                         <td class="p-l-0 textLeft">
                                             <selectize v-model="dataInput.resource_id" :settings="resourceSettings">
                                                 <option v-for="(resource,index) in modelResources" :value="resource.id">{{ resource.name }}</option>
@@ -108,8 +80,8 @@
                                             {{ "Not Assign" }}
                                         </td>
                                         <td class="p-l-0 textLeft">
-                                            <selectize v-model="dataInput.wbs_id" :settings="workSettings">
-                                                <option v-for="(work, index) in workDetail" :value="work.id">{{ work.name }}</option>
+                                            <selectize v-model="dataInput.wbs_id" :settings="wbsSettings">
+                                                <option v-for="(wbs, index) in wbsDetail" :value="wbs.id">{{ wbs.name }}</option>
                                             </selectize>
                                         </td>
                                         <td class="p-l-0 textCenter">
@@ -143,9 +115,9 @@
                                                 </selectize>
                                             </div>
                                             <div class="col-sm-12">
-                                                <label for="work_name" class="control-label">Work Name</label>
-                                                <selectize v-model="editInput.wbs_id" :settings="workSettings">
-                                                    <option v-for="(work, index) in workDetail" :value="work.id">{{ work.name }}</option>
+                                                <label for="wbs_name" class="control-label">WBS Name</label>
+                                                <selectize v-model="editInput.wbs_id" :settings="wbsSettings">
+                                                    <option v-for="(wbs, index) in wbsDetail" :value="wbs.id">{{ wbs.name }}</option>
                                                 </selectize>
                                             </div>
                                         </div>
@@ -181,9 +153,9 @@
 
         modelResources : @json($resources),
         modelProjects : @json($projects),
-        modelAssignResource : "",
+        modelAssignResource : [],
         newIndex : "",
-        dataWork : "",
+        dataWBS : "",
 
 
         dataInput : {
@@ -211,12 +183,12 @@
             placeholder: 'Please Select Project'
         },
 
-        workSettings: {
-            placeholder: 'Please Select Work'
+        wbsSettings: {
+            placeholder: 'Please Select WBS'
         },
 
         selectedResource : [],
-        workDetail : [],
+        wbsDetail : [],
 
     }
 
@@ -251,46 +223,34 @@
             add(){
                 var dataInput = this.dataInput;
                 var resource_id = this.dataInput.resource_id;
-                window.axios.get('/api/getCategoryAR/'+resource_id).then(({ data }) => {
-                    this.dataInput.category_id = data.category_id;
-                    this.dataInput.quantity = data.quantity;
-                    dataInput = JSON.stringify(dataInput);
-                    var url = "{{ route('resource.storeAssignResource') }}";
-                    $('div.overlay').show();            
-                    window.axios.post(url,dataInput).then((response) => {
-                        if(response.data.error != undefined){
-                            iziToast.warning({
-                                displayMode: 'replace',
-                                title: response.data.error,
-                                position: 'topRight',
-                            });
-                            $('div.overlay').hide();            
-                        }else{
-                            iziToast.success({
-                                displayMode: 'replace',
-                                title: response.data.response,
-                                position: 'topRight',
-                            });
-                            $('div.overlay').hide();            
-                        }
-                        
-                        this.getResource();
-                        this.dataInput.resource_id = "";
-                        this.dataInput.project_id = "";
-                        this.dataInput.wbs_id = "";             
-                    })
-                    .catch((error) => {
-                        console.log(error);
+                dataInput = JSON.stringify(dataInput);
+                var url = "{{ route('resource.storeAssignResource') }}";
+                $('div.overlay').show();            
+                window.axios.post(url,dataInput).then((response) => {
+                    if(response.data.error != undefined){
+                        iziToast.warning({
+                            displayMode: 'replace',
+                            title: response.data.error,
+                            position: 'topRight',
+                        });
                         $('div.overlay').hide();            
-                    })
+                    }else{
+                        iziToast.success({
+                            displayMode: 'replace',
+                            title: response.data.response,
+                            position: 'topRight',
+                        });
+                        $('div.overlay').hide();            
+                    }
+                    
+                    this.getResource();
+                    this.dataInput.resource_id = "";
+                    this.dataInput.project_id = "";
+                    this.dataInput.wbs_id = "";             
                 })
                 .catch((error) => {
-                    iziToast.warning({
-                        title: 'Please Try Again..',
-                        position: 'topRight',
-                        displayMode: 'replace'
-                    });
-                    $('div.overlay').hide();
+                    console.log(error);
+                    $('div.overlay').hide();            
                 })
                 
             },
@@ -298,7 +258,6 @@
             getResource(){
                 window.axios.get('/api/getResourceDetail').then(({ data }) => {
                     this.modelAssignResource = data;
-                    this.newIndex = Object.keys(this.modelAssignResource).length+1;
 
                     $('#assign-rsc').DataTable().destroy();
                     this.$nextTick(function() {
@@ -327,7 +286,7 @@
                     var url = "/resource/updateAssignResource/"+editInput.resourcedetail_id;
                     editInput = JSON.stringify(editInput);
                     $('div.overlay').show();            
-                    window.axios.patch(url,editInput)
+                    window.axios.put(url,editInput)
                     .then((response) => {
                         if(response.data.error != undefined){
                             iziToast.warning({
@@ -369,7 +328,7 @@
                 this.editInput.resource_id = data.resource_id;
                 this.editInput.resource_name = data.resource_name;
                 this.editInput.wbs_id = data.wbs_id;
-                this.editInput.work_name = data.work_name;
+                this.editInput.wbs_name = data.wbs_name;
                 this.editInput.index = index;
             },
 
@@ -393,12 +352,25 @@
                     window.axios.get('/api/getResourceAssign/'+newValue).then(({ data }) => {
                         this.selectedResource = [];
                         this.selectedResource.push(data);
-                        
+
                         $('div.overlay').hide();
                     })
                     .catch((error) => {
                         iziToast.warning({
                             title: 'Please Try Again..',
+                            position: 'topRight',
+                            displayMode: 'replace'
+                        });
+                        $('div.overlay').hide();
+                    })
+                    window.axios.get('/api/getCategoryAR/'+newValue).then(({ data }) => {
+                        this.dataInput.category_id = data.category_id;
+                        this.dataInput.quantity = data.quantity;
+                        console.log(data);
+                    })
+                    .catch((error) => {
+                        iziToast.warning({
+                            title: 'Please Try Again..'+error,
                             position: 'topRight',
                             displayMode: 'replace'
                         });
@@ -412,10 +384,8 @@
             'dataInput.project_id' : function(newValue){
                 if(newValue != ""){
                     $('div.overlay').show();
-                    window.axios.get('/api/getWorkAssignResource/'+newValue).then(({ data }) => {
-                        this.workDetail = data;
-
-                        
+                    window.axios.get('/api/getWbsAssignResource/'+newValue).then(({ data }) => {
+                        this.wbsDetail = data;
                         $('div.overlay').hide();
                     })
                     .catch((error) => {
@@ -435,8 +405,8 @@
             'editInput.project_id' : function(newValue){
                 if(newValue != ""){
                     $('div.overlay').show();
-                    window.axios.get('/api/getWorkAssignResource/'+newValue).then(({ data }) => {
-                        this.workDetail = data;
+                    window.axios.get('/api/getWbsAssignResource/'+newValue).then(({ data }) => {
+                        this.wbsDetail = data;
 
                         
                         $('div.overlay').hide();
@@ -459,6 +429,7 @@
 
         created: function() {
             this.getResource();
+            this.newIndex = Object.keys(this.modelAssignResource).length+1;
         },
 
     });

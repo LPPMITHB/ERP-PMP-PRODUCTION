@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\GoodsIssue;
+use App\Models\Project;
 use App\Models\GoodsIssueDetail;
 use App\Models\MaterialRequisition;
 use App\Models\MaterialRequisitionDetail;
@@ -18,33 +19,72 @@ use Auth;
 class GoodsIssueController extends Controller
 {
 
-    public function index(){
-        $modelGIs = GoodsIssue::all();
+    public function index(Request $request){
+        $menu = $request->route()->getPrefix() == "/goods_issue" ? "building" : "repair";    
+        if($menu == "repair"){
+            $modelProject = Project::where('status',1)->where('business_unit_id',2)->pluck('id')->toArray();
+        }else{
+            $modelProject = Project::where('status',1)->where('business_unit_id',1)->pluck('id')->toArray();
+        }
 
-        return view ('goods_issue.index', compact('modelGIs'));
+        $modelMRs = MaterialRequisition::whereIn('project_id',$modelProject)->pluck('id')->toArray();
+        $modelGIs = GoodsIssue::whereIn('material_requisition_id',$modelMRs)->get();
+
+        return view ('goods_issue.index', compact('modelGIs','menu'));
     }
-
-    public function selectMR($id)
+    
+    public function createGiWithRef($id,Request $request)
     {
+        $menu = $request->route()->getPrefix() == "/goods_issue" ? "building" : "repair";    
         $modelMR = MaterialRequisition::findOrFail($id);
+        $modelProject = $modelMR->project->with('ship', 'customer')->first();
         $modelSloc = StorageLocation::all();
         $modelMRDs = MaterialRequisitionDetail::where('material_requisition_id',$modelMR->id)->whereColumn('issued','!=','quantity')->with('material')->get();
         foreach($modelMRDs as $MRD){
+            $MRD['already_issued'] = $MRD->issued;
             $MRD['sloc_id'] = "";
             $MRD['modelGI'] = "";
         }
-        return view('goods_issue.selectMR', compact('modelMR','modelMRDs','modelSloc'));
+
+        return view('goods_issue.createGiWithRef', compact('modelMR','modelMRDs','modelSloc','modelProject','menu'));
     }
 
-    public function createGiWithRef()
+    public function selectMR(Request $request)
     {
-        $modelMRs = MaterialRequisition::where('status',1)->get();
+        $modelMRs = MaterialRequisition::where('status',2)->get();
+        $menu = $request->route()->getPrefix() == "/goods_issue" ? "building" : "repair";    
+        if($menu == "repair"){
+            $modelProject = Project::where('status',1)->where('business_unit_id',2)->pluck('id')->toArray();
+        }else{
+            $modelProject = Project::where('status',1)->where('business_unit_id',1)->pluck('id')->toArray();
+        }
+
+        return view('goods_issue.selectMR', compact('modelMRs','menu'));
+    }
+
+    public function approval($gi_id,$status){
+        $modelGI = GoodsIssue::findOrFail($gi_id);
         
-        return view('goods_issue.createGiWithRef', compact('modelMRs'));
+        if($status == "approve"){
+            $modelGI->status = 2;
+            foreach($modelGI->goodsIssueDetails as $data){
+                $this->updateSlocDetailApproved($data);
+                $this->updateStockApproved($data);
+            }
+            $modelGI->update();
+        }elseif($status == "need-revision"){
+            $modelGI->status = 3;
+            $modelGI->update();
+        }elseif($status == "reject"){
+            $modelGI->status = 4;
+            $modelGI->update();
+        }
+        return redirect()->route('goods_issue.show',$gi_id);
     }
 
     public function store(Request $request)
     {
+        $menu = $request->route()->getPrefix() == "/material_requisition" ? "building" : "repair";    
         $datas = json_decode($request->datas);
         $gi_number = $this->generateGINumber();
 
@@ -59,7 +99,7 @@ class GoodsIssueController extends Controller
             $GI->save();
             foreach($datas->MRD as $MRD){
                 foreach($MRD->modelGI as $data){
-                    if($data->issued >0){
+                    if($data->issued > 0){
                         $GID = new GoodsIssueDetail;
                         $GID->goods_issue_id = $GI->id;
                         $GID->quantity = $data->issued;
@@ -75,29 +115,45 @@ class GoodsIssueController extends Controller
             }
             $this->checkStatusMR($datas->mr_id);
             DB::commit();
-            return redirect()->route('goods_issue.show',$GI->id)->with('success', 'Goods Issue Created');
+            if($menu == "building"){
+                return redirect()->route('goods_issue.show',$GI->id)->with('success', 'Goods Issue Created');
+            }else{
+                return redirect()->route('goods_issue_repair.show',$GI->id)->with('success', 'Goods Issue Created');
+            }
         } catch (\Exception $e) {
             DB::rollback();
-            return redirect()->route('goods_issue.selectMR',$datas->mr_id)->with('error', $e->getMessage());
+            if($menu == "building"){
+                return redirect()->route('goods_issue.selectMR',$datas->mr_id)->with('error', $e->getMessage());
+            }else{
+                return redirect()->route('goods_issue_repair.selectMR',$datas->mr_id)->with('error', $e->getMessage());
+            }
         }
     }
     
     public function show($id)
     {
         $modelGI = GoodsIssue::findOrFail($id);
-        $modelGID = $modelGI->GoodsIssueDetails ;
-        
-        return view('goods_issue.show', compact('modelGI','modelGID'));
+        $modelGID = $modelGI->GoodsIssueDetails;
+        $approve = FALSE;
+
+        return view('goods_issue.show', compact('modelGI','modelGID','approve'));
+    }
+
+    public function showApprove($id)
+    {
+        $modelGI = GoodsIssue::where('id', $id)->first();
+        $modelGID = $modelGI->GoodsIssueDetails;
+        $approve = TRUE;
+
+        return view('goods_issue.show', compact('modelGI','modelGID','approve'));
     }
     
     // function
     public function updateMR($mr_id,$issued){
         $modelMRD = MaterialRequisitionDetail::findOrFail($mr_id);
-        
         if($modelMRD){
-            $modelMRD->quantity = $modelMRD->quantity - $issued;
             $modelMRD->issued = $modelMRD->issued + $issued;
-            $modelMRD->save();
+            $modelMRD->update();
         }else{
 
         }
@@ -126,6 +182,18 @@ class GoodsIssueController extends Controller
         }
     }
 
+    public function updateStockApproved($data){
+        $modelStock = Stock::where('material_id',$data->material_id)->first();
+        $modelStock->quantity -= $data->quantity;
+        $modelStock->save();
+    }
+
+    public function updateSlocDetailApproved($data){
+        $modelSlocDetail = StorageLocationDetail::where('material_id',$data->material_id)->where('storage_location_id',$data->storage_location_id)->first();
+        $modelSlocDetail->quantity -= $data->quantity;
+        $modelSlocDetail->save();
+    }
+
     public function checkStatusMR($mr_id){
         $modelMR = MaterialRequisition::findOrFail($mr_id);
         $status = 0;
@@ -141,19 +209,23 @@ class GoodsIssueController extends Controller
     }
 
     public function generateGINumber(){
-        $modelGI = GoodsIssue::orderBy('created_at','desc')->where('branch_id',Auth::user()->branch_id)->first();
-        $modelBranch = Branch::where('id', Auth::user()->branch_id)->first();
-
-        $branch_code = substr($modelBranch->code,4,2);
-        $number = 1;
+        $modelGI = GoodsIssue::orderBy('created_at','desc')->first();
+        $yearNow = date('y');
+        
+		$number = 1;
         if(isset($modelGI)){
-            $number += intval(substr($modelGI->number, -6));
+            $yearDoc = substr($modelGI->number, 3,2);
+            if($yearNow == $yearDoc){
+                $number += intval(substr($modelGI->number, -5));
+            }
         }
-        $year = date('y'.$branch_code.'000000');
+
+        $year = date($yearNow.'000000');
         $year = intval($year);
 
-        $gi_number = $year+$number;
+		$gi_number = $year+$number;
         $gi_number = 'GI-'.$gi_number;
+
         return $gi_number;
     }
     
