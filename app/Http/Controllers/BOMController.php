@@ -306,7 +306,6 @@ class BOMController extends Controller
         $datas = json_decode($request->datas);
         $bom_code = self::generateBomCode($datas->project_id);
         $modelBom = Bom::where('wbs_id',$datas->wbs_id)->first();
-
         if(!$modelBom){
             DB::beginTransaction();
             try {
@@ -317,6 +316,7 @@ class BOMController extends Controller
                 $bom->wbs_id = $datas->wbs_id;
                 $bom->branch_id = Auth::user()->branch->id;
                 $bom->user_id = Auth::user()->id;
+
                 if(!$bom->save()){
                     return redirect()->route('bom.create',$bom->id)->with('error', 'Failed Save Bom !');
                 }else{
@@ -559,11 +559,11 @@ class BOMController extends Controller
     private function generateRapNumber(){
         $modelRap = Rap::orderBy('created_at','desc')->first();
         $yearNow = date('y');
-        $yearDoc = substr($modelRap->number, 4,2);
-
+        
         $number = 1;
-        if($yearNow == $yearDoc){
-            if(isset($modelRap)){
+        if(isset($modelRap)){
+            $yearDoc = substr($modelRap->number, 4,2);
+            if($yearNow == $yearDoc){
                 $number += intval(substr($modelRap->number, -5));
             }
         }
