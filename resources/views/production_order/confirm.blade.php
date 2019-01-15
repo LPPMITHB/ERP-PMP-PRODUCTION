@@ -311,6 +311,37 @@
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
+                            <h4 class="box-title m-t-0">Service</h4>
+                            <table id="service-table" class="table table-bordered tableFixed" style="border-collapse:collapse;">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 5%">No</th>
+                                        <th style="width: 25%">Code</th>
+                                        <th style="width: 25%">Name</th>
+                                        <th style="width: 15%">Quantity</th>
+                                        <th style="width: 15%">Actual</th>
+                                        <th style="width: 15%">Remaining</th>
+                                        <th style="width: 15%">Used</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(data,index) in services">
+                                        <td>{{ index + 1 }}</td>
+                                        <td class="tdEllipsis">{{ data.service.code }}</td>
+                                        <td class="tdEllipsis">{{ data.service.name }}</td>
+                                        <td class="tdEllipsis">{{ data.quantity }}</td>
+                                        <td class="tdEllipsis">{{ data.actual }}</td>
+                                        <td class="tdEllipsis">{{ data.sugQuantity }}</td>
+                                        <td class="tdEllipsis no-padding ">
+                                            <input class="form-control width100" v-model="data.used" placeholder="Please Input Quantity">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
                             <h4 class="box-title m-t-0">Resource</h4>
                             <table id="resource-table" class="table table-bordered tableFixed" style="border-collapse:collapse;">
                                 <thead>
@@ -394,10 +425,12 @@
     })
 
     var data = {
+        menu : @json($route),
         modelPrOD : @json($modelPrOD),
         activities : @json($modelPrO->wbs->activities),
         materials : [],
         resources : [],
+        services : [],
         wbs_id: @json($modelPrO->wbs->id),
         predecessorActivities : [],
         activities : [],
@@ -455,16 +488,9 @@
                 return text
             },
             submitForm() {
-                // var data = this.PRDetail;
-                // data = JSON.stringify(data);
-                // data = JSON.parse(data);
-
-                // data.forEach(PRD => {
-                //     PRD.quantity = PRD.quantity.replace(/,/g , '');      
-                // });
-
                 this.submittedForm.modelPrOD = this.modelPrOD;
                 this.submittedForm.materials = this.materials;
+                this.submittedForm.services = this.services;
 
                 let struturesElem = document.createElement('input');
                 struturesElem.setAttribute('type', 'hidden');
@@ -564,7 +590,7 @@
             confirm(){            
                 var confirmActivity = this.confirmActivity;
                 var url = "";
-                if(this.menu == "building"){
+                if(this.menu =="/production_order"){
                     var url = "/activity/updateActualActivity/"+confirmActivity.activity_id;
                 }else{
                     var url = "/activity_repair/updateActualActivity/"+confirmActivity.activity_id;
@@ -660,6 +686,13 @@
                     POD.sugQuantity = POD.quantity-POD.actual;
                     POD.used = POD.quantity-POD.actual;
                     this.materials.push(POD);
+                }else if(POD.service_id != null){
+                    if(POD.actual == null){
+                        POD.actual = 0;
+                    }
+                    POD.sugQuantity = POD.quantity-POD.actual;
+                    POD.used = POD.quantity-POD.actual;
+                    this.services.push(POD);
                 }else if(POD.resource_id != null){
                     this.resources.push(POD);
                 }

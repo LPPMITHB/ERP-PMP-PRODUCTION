@@ -70,6 +70,7 @@ class WorkOrderController extends Controller
                 $modelWRD->forget($key);
             }else{
                 $WRD['cost'] =0;
+                $WRD['discount'] = 0;
             }
         }
 
@@ -80,7 +81,7 @@ class WorkOrderController extends Controller
 
     public function selectWRD($id, Request $request)
     {
-        $menu = $request->route()->getPrefix() == "/work_order" ? "building" : "repair"; 
+        $menu = $request->route()->getPrefix() == "/work_order" ? "building" : "repair";    
         $modelWR = WorkRequest::findOrFail($id);
         $modelWRD = WorkRequestDetail::where('work_request_id',$modelWR->id)->with('material','wbs')->get();
         foreach($modelWRD as $key=>$WRD){
@@ -122,16 +123,15 @@ class WorkOrderController extends Controller
                 $WOD->material_id = $data->material_id;
                 $WOD->work_request_detail_id = $data->id;
                 $WOD->wbs_id = $data->wbs_id;
-
+                $WOD->discount = $data->discount;
                 $WOD->total_price = $data->cost * $data->quantity;
-                
                 $WOD->save();
 
                 $statusWR = $this->updateWR($data->id,$data->quantity);
                 if($statusWR === true){
                     $status = 1;
                 }
-                $total_price += $WOD->total_price;
+                $total_price += $WOD->total_price -($WOD->total_price * ($WOD->discount/100));
             }
 
             $WO->total_price = $total_price;
@@ -193,6 +193,7 @@ class WorkOrderController extends Controller
                 $WOD = WorkOrderDetail::findOrFail($data->id);
                 $diff = $data->quantity - $WOD->quantity;
                 $WOD->quantity = $data->quantity;
+                $WOD->discount = $data->discount;
                 $WOD->total_price = $data->quantity * $data->total_price;
                 $WOD->save();
 
@@ -200,7 +201,7 @@ class WorkOrderController extends Controller
                 if($statusWR === true){
                     $status = 1;
                 }
-                $total_price += $WOD->total_price;
+                $total_price += $WOD->total_price -($WOD->total_price * ($WOD->discount/100));
             }
             $WO->vendor_id = $datas->modelWO->vendor_id;
             $WO->description = $datas->modelWO->description;
