@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Collection;
 use App\Models\GoodsReceipt;
 use App\Models\GoodsReceiptDetail;
 use App\Models\PurchaseOrder;
@@ -18,9 +19,9 @@ use App\Models\ResourceDetail;
 use App\Models\Branch;
 use App\Models\Stock;
 use App\Models\Uom;
+use App\Models\Project;
 use App\Models\StorageLocationDetail;
 use App\Models\Configuration;
-use Illuminate\Support\Collection;
 use DB;
 use Auth;
 
@@ -33,28 +34,48 @@ class GoodsReceiptController extends Controller
         if($modelPO->purchaseRequisition->type == 1){
             $modelPODs = PurchaseOrderDetail::where('purchase_order_id',$modelPO->id)->whereColumn('received','!=','quantity')->with('material')->get();
             $modelSloc = StorageLocation::all();
-
-            return view('goods_receipt.createGrWithRef', compact('modelPO','modelPODs','modelSloc','route'));
-        }elseif($modelPO->purchaseRequisition->type == 2){
-            $modelPODs = PurchaseOrderDetail::where('purchase_order_id',$modelPO->id)->whereColumn('received','!=','quantity')->get();
-            $resource_categories = Configuration::get('resource_category');
-            $depreciation_methods = Configuration::get('depreciation_methods');
-            $uom = Uom::all();
             $datas = Collection::make();
 
+            
             foreach($modelPODs as $POD){
-                $quantity = $POD->quantity - $POD->received;
-                for ($i=0; $i < $quantity; $i++) { 
-                    $datas->push([
-                        "resource_id" => $POD->resource->id, 
-                        "resource_code" => $POD->resource->code,
-                        "resource_name" => $POD->resource->name,
-                        "quantity" => 1,
-                        "status" => "Detail Not Complete",
+                $datas->push([
+                    "purchase_order_id" => $modelPO->id,
+                    "purchase_requisition_detail_id" => $POD->purchase_requisition_detail_id,
+                    "quantity" => $POD->quantity,
+                    "received" => $POD->received,
+                    "material_id" => $POD->material_id,
+                    "material_code" => $POD->material->code,
+                    "material_name" => $POD->material->name,
+                    "resource_id" => $POD->resource_id,
+                    "wbs_id" => $POD->wbs_id,
+                    "total_price" => $POD->total_price,
+                    "sloc_id" => "",
                     ]);
                 }
-            }
-            return view('goods_receipt.createGrWithRefResource', compact('modelPO','datas','resource_categories','uom','depreciation_methods','route'));
+                // print_r($datas);exit();
+            
+
+            return view('goods_receipt.createGrWithRef', compact('modelPO','modelPODs','modelSloc','route','datas'));
+        }elseif($modelPO->purchaseRequisition->type == 2){
+            // $modelPODs = PurchaseOrderDetail::where('purchase_order_id',$modelPO->id)->whereColumn('received','!=','quantity')->get();
+            // $resource_categories = Configuration::get('resource_category');
+            // $depreciation_methods = Configuration::get('depreciation_methods');
+            // $uom = Uom::all();
+            // $datas = Collection::make();
+
+            // foreach($modelPODs as $POD){
+            //     $quantity = $POD->quantity - $POD->received;
+            //     for ($i=0; $i < $quantity; $i++) { 
+            //         $datas->push([
+            //             "resource_id" => $POD->resource->id, 
+            //             "resource_code" => $POD->resource->code,
+            //             "resource_name" => $POD->resource->name,
+            //             "quantity" => 1,
+            //             "status" => "Detail Not Complete",
+            //         ]);
+            //     }
+            // }
+            // return view('goods_receipt.createGrWithRefResource', compact('modelPO','datas','resource_categories','uom','depreciation_methods','route'));
         }
     }
 
@@ -63,17 +84,31 @@ class GoodsReceiptController extends Controller
         $route = $request->route()->getPrefix();
         $modelWO = WorkOrder::where('id',$id)->with('vendor')->first();
         $modelWODs = WorkOrderDetail::where('work_order_id',$modelWO->id)->with('material')->get();
+        $modelSloc = StorageLocation::all();
         
-        return view('goods_receipt.createGrFromWo', compact('modelWO','modelWODs','route'));
+        
+        return view('goods_receipt.createGrFromWo', compact('modelWO','modelWODs','route','modelSloc'));
     }
 
     public function selectPO(Request $request)
     {
         $route = $request->route()->getPrefix();
-        $modelPOs = PurchaseOrder::where('status',2)->get();
-        $modelWOs = WorkOrder::where('status',2)->get();
+        if($route == "/goods_receipt"){
+            $modelProject = Project::where('status',1)->where('business_unit_id',1)->pluck('id')->toArray();
+        }elseif($route == "/goods_receipt_repair"){
+            $modelProject = Project::where('status',1)->where('business_unit_id',2)->pluck('id')->toArray();
+        }
+
+        $modelWOs = WorkOrder::where('status',2)->whereIn('project_id',$modelProject)->get();
+        $modelPOs = PurchaseOrder::where('status',2)->whereIn('project_id',$modelProject)->get();
+
+        foreach($modelPOs as $key => $PO){
+            if($PO->purchaseRequisition->type != 1){
+                $modelPOs->forget($key);
+            }
+        }
         
-        return view('goods_receipt.selectPO', compact('modelPOs','modelWOs','route'));
+        return view('goods_receipt.selectPO', compact('modelPOs','modelWOs','route','modelProject'));
     }
 
     public function show(Request $request, $id)
@@ -81,16 +116,11 @@ class GoodsReceiptController extends Controller
         $route = $request->route()->getPrefix();
         $modelGR = GoodsReceipt::findOrFail($id);
         $modelGRD = $modelGR->GoodsReceiptDetails ;
-        if($modelGRD[0]->resource_detail_id != ''){
-            $type = "Resource";
-        }elseif($modelGRD[0]->material_id != ''){
-            $type = "Material";
-        }
-        
-        if($type == "Material"){
+
+        if($modelGRD[0]->material_id != ''){
             return view('goods_receipt.show', compact('modelGR','modelGRD','route'));
-        }elseif($type == "Resource"){
-            return view('goods_receipt.showResource', compact('modelGR','modelGRD','route'));
+        }elseif($modelGRD[0]->resource_detail_id != ''){
+            // return view('goods_receipt.showResource', compact('modelGR','modelGRD','route'));
         }
     }
     
@@ -110,73 +140,6 @@ class GoodsReceiptController extends Controller
         return view ('goods_receipt.index', compact('modelGRs','route'));
     }
 
-    public function storeResource(Request $request){
-        $route = $request->route()->getPrefix();
-        $datas = json_decode($request->datas);
-        $gr_number = $this->generateGRNumber();
-
-        DB::beginTransaction();
-        try {
-            $GR = new GoodsReceipt;
-            $GR->number = $gr_number;
-            $GR->purchase_order_id = $datas->po_id;
-            $GR->description = $datas->description;
-            $GR->branch_id = Auth::user()->branch->id;
-            $GR->user_id = Auth::user()->id;
-            $GR->save();
-
-            foreach($datas->resources as $data){
-                $RD = new ResourceDetail;
-                $RD->code = $data->code;
-                $RD->resource_id = $data->resource_id;
-                $RD->category_id = $data->category_id;
-                $RD->description = $data->description;
-                if($data->category_id == 0){
-                    $RD->sub_con_address = $data->sub_con_address;
-                    $RD->sub_con_phone = $data->sub_con_phone;
-                    $RD->sub_con_competency = $data->sub_con_competency;
-                }elseif($data->category_id == 1){
-                    $RD->others_name = $data->name;
-                }elseif($data->category_id == 2){
-                    $RD->brand = $data->brand;
-                    $RD->performance = ($data->performance != '') ? $data->performance : null;
-                    $RD->performance_uom_id = ($data->performance_uom_id != '') ? $data->performance_uom_id : null;
-                }elseif($data->category_id == 3){
-                    $RD->brand = $data->brand;
-                    $RD->depreciation_method = $data->depreciation_method;
-                    $RD->manufactured_date = ($data->manufactured_date != '') ? $data->manufactured_date : null;
-                    $RD->purchasing_date = ($data->purchasing_date != '') ? $data->purchasing_date : null;
-                    $RD->purchasing_price = ($data->purchasing_price != '') ? $data->purchasing_price : null;
-                    $RD->lifetime = ($data->lifetime != '') ? $data->lifetime : null;
-                    $RD->lifetime_uom_id = ($data->lifetime_uom_id != '') ? $data->lifetime_uom_id : null;
-                    $RD->cost_per_hour = ($data->cost_per_hour != '') ? $data->cost_per_hour : null;
-                    $RD->performance = ($data->performance != '') ? $data->performance : null;
-                    $RD->performance_uom_id = ($data->performance_uom_id != '') ? $data->performance_uom_id : null;
-                }
-                $RD->save();
-
-                $GRD = new GoodsReceiptDetail;
-                $GRD->goods_receipt_id = $GR->id;
-                $GRD->quantity = 1;
-                $GRD->resource_detail_id = $RD->id;
-                $GRD->save();
-            }
-            DB::commit();
-            if($route == "/goods_receipt"){
-                return redirect()->route('goods_receipt.show',$GR->id)->with('success', 'Goods Receipt Created');
-            }elseif($route == "/goods_receipt_repair"){
-                return redirect()->route('goods_receipt_repair.show',$GR->id)->with('success', 'Goods Receipt Created');
-            }
-        } catch (\Exception $e) {
-            DB::rollback();
-            if($route == "/goods_receipt"){
-                return redirect()->route('goods_receipt.selectPO',$datas->po_id)->with('error', $e->getMessage());
-            }elseif($route == "/goods_receipt_repair"){
-                return redirect()->route('goods_receipt_repair.selectPO',$datas->po_id)->with('error', $e->getMessage());
-            }
-        }
-    }
-
     public function store(Request $request)
     {
         $route = $request->route()->getPrefix();
@@ -187,7 +150,7 @@ class GoodsReceiptController extends Controller
         try {
             $GR = new GoodsReceipt;
             $GR->number = $gr_number;
-            $GR->purchase_order_id = $datas->po_id;
+            $GR->purchase_order_id = $datas->purchase_order_id;
             $GR->description = $datas->description;
             $GR->branch_id = Auth::user()->branch->id;
             $GR->user_id = Auth::user()->id;
@@ -201,12 +164,12 @@ class GoodsReceiptController extends Controller
                     $GRD->storage_location_id = $data->sloc_id;
                     $GRD->save();
                 
-                    $this->updatePOD($data->id,$data->received);
+                    $this->updatePOD($data->purchase_order_id,$data->received);
                     $this->updateStock($data->material_id, $data->quantity);
                     $this->updateSlocDetail($data->material_id, $data->sloc_id,$data->quantity);
                 }
             }
-            $this->checkStatusPO($datas->po_id);
+            $this->checkStatusPO($datas->purchase_order_id);
             DB::commit();
             if($route == "/goods_receipt"){
                 return redirect()->route('goods_receipt.show',$GR->id)->with('success', 'Goods Receipt Created');
@@ -216,9 +179,9 @@ class GoodsReceiptController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             if($route == "/goods_receipt"){
-                return redirect()->route('goods_receipt.selectPO',$datas->po_id)->with('error', $e->getMessage());
+                return redirect()->route('goods_receipt.selectPO')->with('error', $e->getMessage());
             }elseif($route == "/goods_receipt_repair"){
-                return redirect()->route('goods_receipt_repair.selectPO',$datas->po_id)->with('error', $e->getMessage());
+                return redirect()->route('goods_receipt_repair.selectPO')->with('error', $e->getMessage());
             }
         }
     }
@@ -308,8 +271,8 @@ class GoodsReceiptController extends Controller
             }
         }
     }
-    public function updatePOD($pod_id,$received){
-        $modelPOD = PurchaseOrderDetail::findOrFail($pod_id);
+    public function updatePOD($purchase_order_id,$received){
+        $modelPOD = PurchaseOrderDetail::findOrFail($purchase_order_id);
         
         if($modelPOD){
             $modelPOD->received = $modelPOD->received + $received;
@@ -347,8 +310,8 @@ class GoodsReceiptController extends Controller
             $modelSlocDetail->save();
         }
     }
-    public function checkStatusPO($po_id){
-        $modelPO = PurchaseOrder::findOrFail($po_id);
+    public function checkStatusPO($purchase_order_id){
+        $modelPO = PurchaseOrder::findOrFail($purchase_order_id);
         $status = 0;
         foreach($modelPO->purchaseOrderDetails as $POD){
             if($POD->received < $POD->quantity){
@@ -398,20 +361,6 @@ class GoodsReceiptController extends Controller
     public function getGRDAPI($id){
 
         return response(GoodsReceiptDetail::where('goods_recipt_id',$id), Response::HTTP_OK);
-    }
-
-    public function generateCodeAPI($data){
-        $data = json_decode($data);
-        $number = 1;
-        $code = $data[0].'-'.$data[1].'-';
-
-        $modelRD = ResourceDetail::orderBy('code','desc')->where('code','like',$code.'%')->first();
-        if($modelRD){
-            $number += intval(substr($modelRD->code,19));
-        }
-        $code = $data[0].'-'.$data[1].'-'.$number;
-
-        return response($code, Response::HTTP_OK);
     }
 }
 

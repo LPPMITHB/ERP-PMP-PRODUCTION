@@ -17,13 +17,20 @@ class CreateMstCustomerTable extends Migration
             $table->increments('id');
             $table->string('code')->unique();
             $table->string('name');
-            $table->longText('address')->nullable();
-            $table->string('contact_person_name');
-            $table->string('contact_person_email')->unique();
-            $table->string('contact_person_phone');
+            $table->string('phone_number_1')->nullable();
+            $table->string('phone_number_2')->nullable();
+            $table->string('contact_name')->nullable();
+            $table->longText('address_1')->nullable();
+            $table->longText('address_2')->nullable();
+            $table->string('tax_number')->nullable();
+            $table->string('pkp_number')->nullable();
+            $table->string('email')->nullable();
+            $table->string('province')->nullable();
+            $table->string('zip_code')->nullable();
+            $table->string('country')->nullable();
             $table->string('status')->default(1);
             $table->unsignedInteger('branch_id');
-            $table->unsignedInteger('user_id');
+            $table->unsignedInteger('user_id')->nullable();
             $table->timestamps();
             
             $table->foreign('branch_id')->references('id')->on('mst_branch'); 

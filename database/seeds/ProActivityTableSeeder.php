@@ -2,22 +2,25 @@
 
 use Illuminate\Database\Seeder;
 
-class ProjectActivityTableSeeder extends Seeder
+class ProActivityTableSeeder extends Seeder
 {
+
     /**
-     * Run the database seeds.
+     * Auto generated seed file
      *
      * @return void
      */
     public function run()
     {
+        
+
         \DB::table('pro_activity')->delete();
         
         \DB::table('pro_activity')->insert(array (
-            0 => //200
+            0 => 
             array (
                 'id' => 1,
-                'code' => 'ACT181020001',
+                'code' => 'ACT181010001',
                 'name' => 'DUMMY - Activity 1',
                 'description' => 'DUMMY - Activity 1',
                 'status' => 1,
@@ -39,7 +42,7 @@ class ProjectActivityTableSeeder extends Seeder
             1 => 
             array (
                 'id' => 2,
-                'code' => 'ACT181020002',
+                'code' => 'ACT181010002',
                 'name' => 'DUMMY - Activity 2',
                 'description' => 'DUMMY - Activity 2',
                 'status' => 1,
@@ -61,7 +64,7 @@ class ProjectActivityTableSeeder extends Seeder
             2 => 
             array (
                 'id' => 3,
-                'code' => 'ACT181020003',
+                'code' => 'ACT181010003',
                 'name' => 'DUMMY - Activity 3',
                 'description' => 'DUMMY - Activity 3',
                 'status' => 1,
@@ -83,7 +86,7 @@ class ProjectActivityTableSeeder extends Seeder
             3 => 
             array (
                 'id' => 4,
-                'code' => 'ACT181020004',
+                'code' => 'ACT181010004',
                 'name' => 'DUMMY - Activity 4',
                 'description' => 'DUMMY - Activity 4',
                 'status' => 1,
@@ -105,7 +108,7 @@ class ProjectActivityTableSeeder extends Seeder
             4 => 
             array (
                 'id' => 5,
-                'code' => 'ACT181020005',
+                'code' => 'ACT181010005',
                 'name' => 'DUMMY - Activity 5',
                 'description' => 'DUMMY - Activity 5',
                 'status' => 1,
@@ -127,7 +130,7 @@ class ProjectActivityTableSeeder extends Seeder
             5 => 
             array (
                 'id' => 6,
-                'code' => 'ACT181020006',
+                'code' => 'ACT181010006',
                 'name' => 'DUMMY - Activity 6',
                 'description' => 'DUMMY - Activity 6',
                 'status' => 1,
@@ -149,7 +152,7 @@ class ProjectActivityTableSeeder extends Seeder
             6 => 
             array (
                 'id' => 7,
-                'code' => 'ACT181020007',
+                'code' => 'ACT181010007',
                 'name' => 'DUMMY - Activity 7',
                 'description' => 'DUMMY - Activity 7',
                 'status' => 1,
@@ -171,7 +174,7 @@ class ProjectActivityTableSeeder extends Seeder
             7 => 
             array (
                 'id' => 8,
-                'code' => 'ACT181020008',
+                'code' => 'ACT181010008',
                 'name' => 'DUMMY - Activity 8',
                 'description' => 'DUMMY - Activity 8',
                 'status' => 1,
@@ -193,7 +196,7 @@ class ProjectActivityTableSeeder extends Seeder
             8 => 
             array (
                 'id' => 9,
-                'code' => 'ACT181020009',
+                'code' => 'ACT181010009',
                 'name' => 'DUMMY - Activity 9',
                 'description' => 'DUMMY - Activity 9',
                 'status' => 1,
@@ -215,7 +218,7 @@ class ProjectActivityTableSeeder extends Seeder
             9 => 
             array (
                 'id' => 10,
-                'code' => 'ACT181020010',
+                'code' => 'ACT181010010',
                 'name' => 'DUMMY - Activity 10',
                 'description' => 'DUMMY - Activity 1',
                 'status' => 1,
@@ -237,7 +240,7 @@ class ProjectActivityTableSeeder extends Seeder
             10 => 
             array (
                 'id' => 11,
-                'code' => 'ACT181020011',
+                'code' => 'ACT181010011',
                 'name' => 'DUMMY - Activity 11',
                 'description' => 'DUMMY - Activity 11',
                 'status' => 1,
@@ -259,7 +262,7 @@ class ProjectActivityTableSeeder extends Seeder
             11 => 
             array (
                 'id' => 12,
-                'code' => 'ACT181020012',
+                'code' => 'ACT181010012',
                 'name' => 'DUMMY - Activity 12',
                 'description' => 'DUMMY - Activity 12',
                 'status' => 1,
@@ -281,7 +284,7 @@ class ProjectActivityTableSeeder extends Seeder
             12 => 
             array (
                 'id' => 13,
-                'code' => 'ACT182030001',
+                'code' => 'ACT182020001',
                 'name' => 'Repair Dummy - ACT 1.1',
                 'description' => 'Repair Dummy - ACT 1.1',
                 'status' => 1,
@@ -303,7 +306,7 @@ class ProjectActivityTableSeeder extends Seeder
             13 => 
             array (
                 'id' => 14,
-                'code' => 'ACT182030002',
+                'code' => 'ACT182020002',
                 'name' => 'Repair Dummy - ACT 1.2',
                 'description' => 'Repair Dummy - ACT 1.2',
                 'status' => 1,
@@ -325,7 +328,7 @@ class ProjectActivityTableSeeder extends Seeder
             14 => 
             array (
                 'id' => 15,
-                'code' => 'ACT182030003',
+                'code' => 'ACT182020003',
                 'name' => 'Repair Dummy - ACT 1.3',
                 'description' => 'Repair Dummy - ACT 1.3',
                 'status' => 1,
@@ -347,7 +350,7 @@ class ProjectActivityTableSeeder extends Seeder
             15 => 
             array (
                 'id' => 16,
-                'code' => 'ACT182030004',
+                'code' => 'ACT182020004',
                 'name' => 'Repair Dummy - ACT 1.4',
                 'description' => 'Repair Dummy - ACT 1.4',
                 'status' => 1,
@@ -369,7 +372,7 @@ class ProjectActivityTableSeeder extends Seeder
             16 => 
             array (
                 'id' => 17,
-                'code' => 'ACT182030005',
+                'code' => 'ACT182020005',
                 'name' => 'Repair Dummy - ACT 2.1',
                 'description' => 'Repair Dummy - ACT 2.1',
                 'status' => 1,
@@ -391,7 +394,7 @@ class ProjectActivityTableSeeder extends Seeder
             17 => 
             array (
                 'id' => 18,
-                'code' => 'ACT182030006',
+                'code' => 'ACT182020006',
                 'name' => 'Repair Dummy - ACT 2.2',
                 'description' => 'Repair Dummy - ACT 2.2',
                 'status' => 1,
@@ -413,7 +416,7 @@ class ProjectActivityTableSeeder extends Seeder
             18 => 
             array (
                 'id' => 19,
-                'code' => 'ACT182030007',
+                'code' => 'ACT182020007',
                 'name' => 'Repair Dummy - ACT 2.3',
                 'description' => 'Repair Dummy - ACT 2.3',
                 'status' => 1,
@@ -435,7 +438,7 @@ class ProjectActivityTableSeeder extends Seeder
             19 => 
             array (
                 'id' => 20,
-                'code' => 'ACT182030008',
+                'code' => 'ACT182020008',
                 'name' => 'Repair Dummy - ACT 2.4',
                 'description' => 'Repair Dummy - ACT 2.4',
                 'status' => 1,
@@ -455,5 +458,7 @@ class ProjectActivityTableSeeder extends Seeder
                 'updated_at' => '2018-12-19 10:45:11',
             ),
         ));
+        
+        
     }
 }

@@ -93,6 +93,16 @@
                         </div>
 
                         <div class="form-group">
+                            <label for="uom" class="col-sm-2 control-label">Unit Of Measurement</label>
+                            
+                            <div class="col-sm-10">
+                                <selectize id="uom" v-model="submittedForm.uom_id" :settings="uom_settings">
+                                    <option v-for="(uom, index) in uoms" :value="uom.id">{{ uom.unit }}</option>
+                                </selectize> 
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label for="min" class="col-sm-2 control-label">Min</label>
                             
                             <div class="col-sm-10">
@@ -221,6 +231,7 @@
             description : "",
             cost_standard_price : "",
             cost_standard_service : "",
+            uom_id : "",
             min : 0,
             max : 0,
             weight : 0,
@@ -233,6 +244,9 @@
             width_uom_id : "",
             status : 1,
             type : 1,
+        },
+        uom_settings: {
+            placeholder: 'Select UOM!'
         },
         weight_uom_settings: {
             placeholder: 'Select weight UOM!'
@@ -255,7 +269,7 @@
             createOk :function(){
                 let isOk = false;
 
-                if(this.submittedForm.code == "" || this.submittedForm.name == "" || this.submittedForm.cost_standard_price == ""){
+                if(this.submittedForm.code == "" || this.submittedForm.name == "" || this.submittedForm.uom_id == ""){
                     isOk = true;
                 }
                 return isOk;
@@ -300,18 +314,6 @@
                 this.submittedForm.cost_standard_service = this.submittedForm.cost_standard_service.replace(/,/g , '');
                 this.submittedForm.min = (this.submittedForm.min+"").replace(/,/g , '');
                 this.submittedForm.max = (this.submittedForm.max+"").replace(/,/g , '');
-
-                if(this.submittedForm.min == ""){
-                    this.submittedForm.min = 0;
-                }else if(this.submittedForm.min != ""){
-                    this.submittedForm.min = this.submittedForm.min;
-                }
-
-                if(this.submittedForm.max == ""){
-                    this.submittedForm.max = 0;
-                }else if(this.submittedForm.max != ""){
-                    this.submittedForm.max = this.submittedForm.max;
-                }
 
                 
                 this.submittedForm.weight = (this.submittedForm.weight+"").replace(/,/g , '');

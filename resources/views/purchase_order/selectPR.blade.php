@@ -19,7 +19,7 @@
     <div class="col-xs-12">
         <div class="box">
             <div class="box-body">
-                <table class="table table-bordered table-hover" id="po-table">
+                <table class="table tableFixed table-bordered table-hover" id="po-table">
                     <thead>
                         <tr>
                             <th width="5%">No</th>
@@ -41,16 +41,16 @@
                                     <td>Resource</td>
                                 @endif
                                 <td>{{ $modelPR->number }}</td>
-                                <td>{{ isset($modelPR->description) ? $modelPR->description : '-'}}</td>
+                                <td class="tdEllipsis" data-container="body" data-toggle="tooltip" title="{{$modelPR->description}}">{{ isset($modelPR->description) ? $modelPR->description : '-'}}</td>
                                 <td>{{ isset($modelPR->project) ? $modelPR->project->name : '-' }}</td>
                                 @if($modelPR->status == 1)
                                     <td>OPEN</td>
                                 @elseif($modelPR->status == 2)
                                     <td>APPROVED</td>
                                 @elseif($modelPR->status == 0 || $modelPR->status == 7)
-                                    <td>ORDERED PARTIALLY</td>
+                                    <td class="tdEllipsis" data-container="body" data-toggle="tooltip" title="ORDERED PARTIALLY">ORDERED PARTIALLY</td>
                                 @elseif($modelPR->status == 3)
-                                    <td>NEEDS REVISION</td>
+                                    <td class="tdEllipsis" data-container="body" data-toggle="tooltip" title="NEEDS REVISION">NEEDS REVISION</td>
                                 @elseif($modelPR->status == 4)
                                     <td>REVISED</td>
                                 @elseif($modelPR->status == 5)

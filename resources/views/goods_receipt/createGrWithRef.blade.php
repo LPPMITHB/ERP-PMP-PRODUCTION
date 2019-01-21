@@ -80,7 +80,7 @@
                                         <tbody>
                                             <tr v-for="(POD,index) in modelPOD" v-if="POD.quantity > 0">
                                                 <td>{{ index+1 }}</td>
-                                                <td>{{ POD.material.code }} - {{ POD.material.name }}</td>
+                                                <td>{{ POD.material_code }} - {{ POD.material_name }}</td>
                                                 <td>{{ POD.quantity }}</td>
                                                 <td class="tdEllipsis no-padding">
                                                     <input class="form-control width100" v-model="POD.received" placeholder="Please Input Received Quantity">
@@ -100,7 +100,6 @@
                                     <button @click.prevent="submitForm" class="btn btn-primary pull-right" :disabled="createOk">CREATE</button>
                                 </div>
                             </div>
-
                         </div>
                     @endverbatim
                 </form>
@@ -149,7 +148,7 @@
     });
 
     var data = {
-        modelPOD : @json($modelPODs),
+        modelPOD : @json($datas),
         modelPO :   @json($modelPO),
         modelSloc : @json($modelSloc),
 
@@ -166,14 +165,13 @@
         computed : {
             createOk: function(){
                 let isOk = false;
-
-                var data = this.modelPOD;
-
-                if(this.sloc_id == ""){
+                this.modelPOD.forEach(POD => {
+                    if(POD.sloc_id == null){
                         isOk = true;
                     }
+                });
                 return isOk;
-            },
+            }
         },
         methods : {
             changeText(){
@@ -195,7 +193,7 @@
                 });
 
                 this.submittedForm.POD = data;
-                this.submittedForm.po_id = this.modelPO.id;
+                this.submittedForm.purchase_order_id = this.modelPO.id;
                 this.submittedForm.description = this.description;
 
                 let struturesElem = document.createElement('input');
@@ -203,12 +201,13 @@
                 struturesElem.setAttribute('name', 'datas');
                 struturesElem.setAttribute('value', JSON.stringify(this.submittedForm));
                 form.appendChild(struturesElem);
-                // form.submit();
+                form.submit();
             }
         },
         watch : {
             modelPOD:{
                 handler: function(newValue) {
+                    console.log(newValue)
                     var data = newValue;
                     data.forEach(POD => {
                         if(parseInt(POD.quantity.replace(/,/g , '')) < parseInt(POD.received.replace(/,/g , ''))){
@@ -228,12 +227,17 @@
         created: function(){
             var data = this.modelPOD;
             data.forEach(POD => {
-                POD['sloc_id'] = null;
+                POD.sloc_id = null;
                 POD.received = parseInt(POD.quantity) - parseInt(POD.received);
                 POD.quantity = POD.received;
                 POD.quantity = (POD.quantity+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");            
                 POD.received = (POD.received+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");            
             });
+        },
+        updated: function () {
+            this.$nextTick(function () {
+                console.log('a')
+            })
         }
     });
 </script>

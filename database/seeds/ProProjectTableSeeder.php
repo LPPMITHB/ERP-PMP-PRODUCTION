@@ -2,10 +2,11 @@
 
 use Illuminate\Database\Seeder;
 
-class ProjectsTableSeeder extends Seeder
+class ProProjectTableSeeder extends Seeder
 {
+
     /**
-     * Run the database seeds.
+     * Auto generated seed file
      *
      * @return void
      */
@@ -75,5 +76,7 @@ class ProjectsTableSeeder extends Seeder
                 'updated_at' => '2018-12-19 10:13:50',
             ),
         ));
+        
+        
     }
 }

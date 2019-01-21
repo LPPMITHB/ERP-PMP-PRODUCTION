@@ -14,42 +14,34 @@ class ResourcesTableSeeder extends Seeder
         //
         DB::table('mst_resource')->insert([
             'code' => 'RSC0001',
-            'name' => 'Crane',
-            'cost_standard_price' => 1000000,
+            'name' => 'Tower Crane 100 ton',
             'branch_id' => 1,
             'user_id' => 1,
+            'cost_standard_price' => 1000000
         ]);
 
         DB::table('mst_resource')->insert([
             'code' => 'RSC0002',
-            'name' => 'Forklift',
+            'name' => 'Mobile Crane 50 ton',
             'branch_id' => 1,
             'user_id' => 1,
-            'cost_standard_price' => 1500000,
+            'cost_standard_price' => 1500000
         ]);
 
         DB::table('mst_resource')->insert([
             'code' => 'RSC0003',
-            'name' => 'Wheel Loader',
+            'name' => 'Forklift Electric',
             'branch_id' => 1,
             'user_id' => 1,
-            'cost_standard_price' => 2500000,
+            'cost_standard_price' => 2500000
         ]);
-
+        
         DB::table('mst_resource')->insert([
             'code' => 'RSC0004',
-            'name' => 'Marine Rubber Airbag',
+            'name' => 'Forklift Reach Truck',
             'branch_id' => 1,
             'user_id' => 1,
-            'cost_standard_price' => 2250000,
-        ]);
-
-        DB::table('mst_resource')->insert([
-            'code' => 'RSC0005',
-            'name' => 'Excavator',
-            'branch_id' => 1,
-            'user_id' => 1,
-            'cost_standard_price' => 3250000,
+            'cost_standard_price' => 3500000
         ]);
     }
 }

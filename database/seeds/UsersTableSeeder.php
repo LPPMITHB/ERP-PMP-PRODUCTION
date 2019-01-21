@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use App\Models\Customer;
+use App\Models\User;
 
 class UsersTableSeeder extends Seeder
 {
@@ -40,25 +42,21 @@ class UsersTableSeeder extends Seeder
             'password' => bcrypt('patria'),
             'business_unit_id' => '[2]',
         ]);
-
-        DB::table('users')->insert([
-            'username' => 'CUST0001',
-            'name' => 'DUMMY - PT. MEGA SURYA ERATAMA',
-            'email' => 'mesakh.tama@gmail.com',
-            'role_id' => 3,
-            'branch_id' => 1,
-            'password' => bcrypt('patria'),
-            'business_unit_id' => '[1]',
-        ]);
-    
-        DB::table('users')->insert([
-            'username' => 'CUST0002',
-            'name' => 'DUMMY - PT. PELAYARAN NASIONAL TANJUNG RIAU SERVIS',
-            'email' => 'kparlindungan@gmail.com',
-            'role_id' => 3,
-            'branch_id' => 1,
-            'password' => bcrypt('patria'),
-            'business_unit_id' => '[2]',
-        ]);
+        
+        $modelCustomer = Customer::all();
+        foreach($modelCustomer as $customer){
+            DB::table('users')->insert([
+                'username' => $customer->code,
+                'name' => $customer->name,
+                'email' => $customer->email,
+                'role_id' => 3,
+                'branch_id' => $customer->branch_id,
+                'password' => bcrypt('patria'),
+                'business_unit_id' => '[2]',
+            ]);
+            $user = User::where('username',$customer->code)->first();
+            $customer->user_id = $user->id;
+            $customer->update();
+        }
     }
 }
