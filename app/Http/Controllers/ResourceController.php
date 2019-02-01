@@ -387,7 +387,7 @@ class ResourceController extends Controller
     }
 
     public function show(Request $request,$id)
-    {   
+    {
         $route = $request->route()->getPrefix();
         $resource = Resource::findOrFail($id);
         $modelRD = ResourceDetail::where('resource_id',$id)->with('goodsReceiptDetail.goodsReceipt.purchaseOrder','performanceUom','productionOrderDetails.productionOrder.wbs','productionOrderDetails.performanceUom','productionOrderDetails.resourceDetail')->get()->jsonSerialize();
