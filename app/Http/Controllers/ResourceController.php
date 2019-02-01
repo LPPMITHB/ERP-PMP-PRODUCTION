@@ -394,7 +394,6 @@ class ResourceController extends Controller
         $depreciation_methods = Configuration::get('depreciation_methods');
         $resource_categories = Configuration::get('resource_category');
         $uom = Uom::all();
-        print_r($uom);exit();
         
         return view('resource.show', compact('resource','modelRD','route','depreciation_methods','resource_categories','uom'));
     }
