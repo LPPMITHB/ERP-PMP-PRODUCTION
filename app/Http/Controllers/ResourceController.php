@@ -387,13 +387,14 @@ class ResourceController extends Controller
     }
 
     public function show(Request $request,$id)
-    {
+    {   
         $route = $request->route()->getPrefix();
         $resource = Resource::findOrFail($id);
         $modelRD = ResourceDetail::where('resource_id',$id)->with('goodsReceiptDetail.goodsReceipt.purchaseOrder','performanceUom','productionOrderDetails.productionOrder.wbs','productionOrderDetails.performanceUom','productionOrderDetails.resourceDetail')->get()->jsonSerialize();
         $depreciation_methods = Configuration::get('depreciation_methods');
         $resource_categories = Configuration::get('resource_category');
         $uom = Uom::all();
+        print_r($uom);exit();
         
         return view('resource.show', compact('resource','modelRD','route','depreciation_methods','resource_categories','uom'));
     }
