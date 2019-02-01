@@ -387,6 +387,54 @@ class MenusTableSeeder extends Seeder
 
         DB::table('menus')->insert([
             'level' => 3,
+            'name' => 'Goods Return',
+            'icon' => 'fa-file-text-o',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP',
+            'menu_id'=>$materialManagement,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+        
+        $goodsReturn =  Menu::where('name','Goods Return')->select('id')->first()->id;
+        DB::table('menus')->insert([
+            'level' => 3,
+            'name' => 'Based On Goods Receipt',
+            'icon' => 'fa-file-text-o',
+            'route_name'=> 'goods_return.selectGR',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP',
+            'menu_id'=>$goodsReturn,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 3,
+            'name' => 'Based On Purchase Order',
+            'icon' => 'fa-file-text-o',
+            'route_name'=> 'goods_return.selectPO',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP',
+            'menu_id'=>$goodsReturn,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 3,
+            'name' => 'View Goods Return',
+            'icon' => 'fa-file-text-o',
+            'route_name'=> 'goods_return.index',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP',
+            'menu_id'=>$goodsReturn,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 3,
             'name' => 'Material Requisition',
             'icon' => 'fa-file-text-o',
             'is_active' => true,
@@ -612,7 +660,6 @@ class MenusTableSeeder extends Seeder
             'level' => 3,
             'name' => 'Work Request',
             'icon' => 'fa-file-text-o',
-            'route_name'=> 'work_request.index',
             'is_active' => true,
             'roles' => 'ADMIN,PMP',
             'menu_id'=>$wip,
@@ -710,7 +757,7 @@ class MenusTableSeeder extends Seeder
             'name' => 'Resource Management',
             'icon' => 'fa-database',
             'is_active' => true,
-            'roles' => 'ADMIN',
+            'roles' => 'ADMIN,PMP',
             'menu_id'=> $building,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
@@ -723,7 +770,7 @@ class MenusTableSeeder extends Seeder
             'icon' => 'fa-wrench',
             'route_name'=> 'resource.index',
             'is_active' => true,
-            'roles' => 'ADMIN',
+            'roles' => 'ADMIN,PMP',
             'menu_id'=> $resourcemanagement,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
@@ -735,7 +782,55 @@ class MenusTableSeeder extends Seeder
             'icon' => 'fa-wrench',
             'route_name'=> 'resource.assignResource',
             'is_active' => true,
-            'roles' => 'ADMIN',
+            'roles' => 'ADMIN,PMP',
+            'menu_id'=> $resourcemanagement,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 3,
+            'name' => 'Receive Resource',
+            'icon' => 'fa-wrench',
+            'route_name'=> 'resource.selectPO',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP',
+            'menu_id'=> $resourcemanagement,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 3,
+            'name' => 'View Received Resource',
+            'icon' => 'fa-wrench',
+            'route_name'=> 'resource.indexReceived',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP',
+            'menu_id'=> $resourcemanagement,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 3,
+            'name' => 'Issue Resource',
+            'icon' => 'fa-wrench',
+            'route_name'=> 'resource.issueResource',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP',
+            'menu_id'=> $resourcemanagement,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 3,
+            'name' => 'View Issued Resource',
+            'icon' => 'fa-wrench',
+            'route_name'=> 'resource.indexIssued',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP',
             'menu_id'=> $resourcemanagement,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
@@ -805,7 +900,7 @@ class MenusTableSeeder extends Seeder
             'level' => 3,
             'name' => 'View Production Order',
             'icon' => 'fa-wrench',
-            'route_name'=> 'production_order.index',
+            'route_name'=> 'production_order.selectProjectIndex',
             'is_active' => true,
             'roles' => 'ADMIN,PMP',
             'menu_id'=>$PPE,
@@ -1372,7 +1467,6 @@ class MenusTableSeeder extends Seeder
             'level' => 3,
             'name' => 'Work Request',
             'icon' => 'fa-file-text-o',
-            'route_name'=> 'work_request.index',
             'is_active' => true,
             'roles' => 'ADMIN,PAMI',
             'menu_id'=>$wipRepair,
@@ -1467,6 +1561,90 @@ class MenusTableSeeder extends Seeder
 
         DB::table('menus')->insert([
             'level' => 2,
+            'name' => 'Resource Management',
+            'icon' => 'fa-database',
+            'is_active' => true,
+            'roles' => 'ADMIN,PAMI',
+            'menu_id'=> $repair,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+        
+        $resourcemanagementRepair = Menu::where('name','Resource Management')->where('menu_id',$repair)->select('id')->first()->id;
+        DB::table('menus')->insert([
+            'level' => 3,
+            'name' => 'Manage Resource',
+            'icon' => 'fa-wrench',
+            'route_name'=> 'resource_repair.index',
+            'is_active' => true,
+            'roles' => 'ADMIN,PAMI',
+            'menu_id'=> $resourcemanagementRepair,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 3,
+            'name' => 'Assign Resource',
+            'icon' => 'fa-wrench',
+            'route_name'=> 'resource_repair.assignResource',
+            'is_active' => true,
+            'roles' => 'ADMIN,PAMI',
+            'menu_id'=> $resourcemanagementRepair,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 3,
+            'name' => 'Receive Resource',
+            'icon' => 'fa-wrench',
+            'route_name'=> 'resource_repair.selectPO',
+            'is_active' => true,
+            'roles' => 'ADMIN,PAMI',
+            'menu_id'=> $resourcemanagementRepair,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 3,
+            'name' => 'View Received Resource',
+            'icon' => 'fa-wrench',
+            'route_name'=> 'resource_repair.indexReceived',
+            'is_active' => true,
+            'roles' => 'ADMIN,PAMI',
+            'menu_id'=> $resourcemanagementRepair,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 3,
+            'name' => 'Issue Resource',
+            'icon' => 'fa-wrench',
+            'route_name'=> 'resource_repair.issueResource',
+            'is_active' => true,
+            'menu_id'=> $resourcemanagementRepair,
+            'roles' => 'ADMIN,PAMI',
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 3,
+            'name' => 'View Issued Resource',
+            'icon' => 'fa-wrench',
+            'route_name'=> 'resource_repair.indexIssued',
+            'is_active' => true,
+            'roles' => 'ADMIN,PAMI',
+            'menu_id'=> $resourcemanagementRepair,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 2,
             'name' => 'Production Planning & Execution',
             'icon' => 'fa-database',
             'is_active' => true,
@@ -1517,7 +1695,7 @@ class MenusTableSeeder extends Seeder
             'level' => 3,
             'name' => 'View Production Order',
             'icon' => 'fa-wrench',
-            'route_name'=> 'production_order_repair.index',
+            'route_name'=> 'production_order_repair.selectProjectIndex',
             'is_active' => true,
             'roles' => 'ADMIN,PAMI',
             'menu_id'=>$PPE,
