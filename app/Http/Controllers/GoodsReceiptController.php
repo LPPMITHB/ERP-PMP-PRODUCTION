@@ -16,6 +16,7 @@ use App\Models\StorageLocation;
 use App\Models\Material;
 use App\Models\Resource;
 use App\Models\ResourceDetail;
+use App\Models\PurchaseRequisition;
 use App\Models\Branch;
 use App\Models\Stock;
 use App\Models\Uom;
@@ -30,15 +31,19 @@ class GoodsReceiptController extends Controller
     public function createGrWithRef(Request $request,$id)
     {
         $route = $request->route()->getPrefix();
+        // print_r($route);exit();
         $modelPO = PurchaseOrder::where('id',$id)->with('vendor')->first();
         if($modelPO->purchaseRequisition->type == 1){
             $modelPODs = PurchaseOrderDetail::where('purchase_order_id',$modelPO->id)->whereColumn('received','!=','quantity')->with('material')->get();
+            // foreach($modelPODs as $POD){
+            //     $POD['already_received'] = $POD->received;
+            // }
             $modelSloc = StorageLocation::all();
             $datas = Collection::make();
-
             
             foreach($modelPODs as $POD){
                 $datas->push([
+                    "id" => $POD->id,
                     "purchase_order_id" => $modelPO->id,
                     "purchase_requisition_detail_id" => $POD->purchase_requisition_detail_id,
                     "quantity" => $POD->quantity,
@@ -50,12 +55,15 @@ class GoodsReceiptController extends Controller
                     "wbs_id" => $POD->wbs_id,
                     "total_price" => $POD->total_price,
                     "sloc_id" => "",
+                    "item_OK" => 0,
                     ]);
                 }
                 // print_r($datas);exit();
-            
 
+
+            
             return view('goods_receipt.createGrWithRef', compact('modelPO','modelPODs','modelSloc','route','datas'));
+        
         }elseif($modelPO->purchaseRequisition->type == 2){
             // $modelPODs = PurchaseOrderDetail::where('purchase_order_id',$modelPO->id)->whereColumn('received','!=','quantity')->get();
             // $resource_categories = Configuration::get('resource_category');
@@ -98,7 +106,6 @@ class GoodsReceiptController extends Controller
         }elseif($route == "/goods_receipt_repair"){
             $modelProject = Project::where('status',1)->where('business_unit_id',2)->pluck('id')->toArray();
         }
-
         $modelWOs = WorkOrder::where('status',2)->whereIn('project_id',$modelProject)->get();
         $modelPOs = PurchaseOrder::where('status',2)->whereIn('project_id',$modelProject)->get();
 
@@ -135,9 +142,11 @@ class GoodsReceiptController extends Controller
 
     public function index(Request $request){
         $route = $request->route()->getPrefix();
-        $modelGRs = GoodsReceipt::all();
+        $modelPRs = PurchaseRequisition::where('type',1)->pluck('id')->toArray();
+        $modelPOs = PurchaseOrder::whereIn('purchase_requisition_id',$modelPRs)->pluck('id')->toArray();
+        $modelGRs = GoodsReceipt::whereIn('purchase_order_id',$modelPOs)->where('status',1)->get(); 
 
-        return view ('goods_receipt.index', compact('modelGRs','route'));
+        return view ('goods_receipt.index', compact('modelPRs','route','modelPOs','modelGRs'));
     }
 
     public function store(Request $request)
@@ -150,21 +159,28 @@ class GoodsReceiptController extends Controller
         try {
             $GR = new GoodsReceipt;
             $GR->number = $gr_number;
+            if($route == "/goods_receipt"){
+                $GR->business_unit_id = 1;                
+            }elseif($route == "/goods_receipt_repair"){
+                $GR->business_unit_id = 2;
+            }
             $GR->purchase_order_id = $datas->purchase_order_id;
+            $GR->type = 1;
             $GR->description = $datas->description;
             $GR->branch_id = Auth::user()->branch->id;
             $GR->user_id = Auth::user()->id;
             $GR->save();
             foreach($datas->POD as $data){
-                if($data->received >0){
+                if($data->received >0 && $data->sloc_id != ""){
                     $GRD = new GoodsReceiptDetail;
                     $GRD->goods_receipt_id = $GR->id;
-                    $GRD->quantity = $data->received;
+                    $GRD->quantity = $data->received; 
                     $GRD->material_id = $data->material_id;
                     $GRD->storage_location_id = $data->sloc_id;
+                    $GRD->item_OK = $data->item_OK;
                     $GRD->save();
-                
-                    $this->updatePOD($data->purchase_order_id,$data->received);
+                    
+                    $this->updatePOD($data->id,$data->received);
                     $this->updateStock($data->material_id, $data->quantity);
                     $this->updateSlocDetail($data->material_id, $data->sloc_id,$data->quantity);
                 }
@@ -195,6 +211,11 @@ class GoodsReceiptController extends Controller
         try {
             $GR = new GoodsReceipt;
             $GR->number = $gr_number;
+            if($route == "/goods_receipt"){
+                $GR->business_unit_id = 1;                
+            }elseif($route == "/goods_receipt_repair"){
+                $GR->business_unit_id = 2;
+            }
             $GR->work_order_id = $datas->wo_id;
             $GR->description = $datas->description;
             $GR->branch_id = Auth::user()->branch->id;
@@ -239,6 +260,11 @@ class GoodsReceiptController extends Controller
         try {
             $GR = new GoodsReceipt;
             $GR->number = $gr_number;
+            if($route == "/goods_receipt"){
+                $GR->business_unit_id = 1;                
+            }elseif($route == "/goods_receipt_repair"){
+                $GR->business_unit_id = 2;
+            }
             $GR->description = $datas->description;
             $GR->branch_id = Auth::user()->branch->id;
             $GR->user_id = Auth::user()->id;
@@ -273,13 +299,14 @@ class GoodsReceiptController extends Controller
     }
     public function updatePOD($purchase_order_id,$received){
         $modelPOD = PurchaseOrderDetail::findOrFail($purchase_order_id);
-        
         if($modelPOD){
             $modelPOD->received = $modelPOD->received + $received;
             $modelPOD->update();
+        }else{
+
         }
     }
-
+ 
     public function updateStock($material_id,$received){
         $modelStock = Stock::where('material_id',$material_id)->first();
        
