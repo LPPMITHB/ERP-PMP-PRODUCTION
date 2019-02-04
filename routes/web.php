@@ -684,6 +684,7 @@ Route::name('work_request.')->prefix('work_request')->group(function() {
 
     Route::post('/storeWRD', 'WorkRequestController@storeWRD')->name('storeWRD')->middleware('can:edit-work-request');
 
+    Route::get('/print/{id}', 'WorkRequestController@printPdf')->name('print')->middleware('can:show-work-request');    
 });
 
 //Work Request Routes
@@ -714,6 +715,7 @@ Route::name('work_request_repair.')->prefix('work_request_repair')->group(functi
 
     Route::post('/storeWRD', 'WorkRequestController@storeWRD')->name('storeWRD')->middleware('can:edit-work-request-repair');
 
+    Route::get('/print/{id}', 'WorkRequestController@printPdf')->name('print')->middleware('can:show-work-request-repair');    
 });
 
 //Purchase Requisition Routes
@@ -743,6 +745,8 @@ Route::name('purchase_requisition.')->prefix('purchase_requisition')->group(func
     Route::get('/edit/{id}', 'PurchaseRequisitionController@edit')->name('edit')->middleware('can:edit-purchase-requisition');
 
     Route::post('/', 'PurchaseRequisitionController@store')->name('store')->middleware('can:create-purchase-requisition');
+
+    Route::get('/print/{id}', 'PurchaseRequisitionController@printPdf')->name('print')->middleware('can:show-purchase-requisition');    
 });
 
 //Purchase Requisition Repair Routes
@@ -772,6 +776,8 @@ Route::name('purchase_requisition_repair.')->prefix('purchase_requisition_repair
     Route::get('/edit/{id}', 'PurchaseRequisitionController@edit')->name('edit')->middleware('can:edit-purchase-requisition-repair');
 
     Route::post('/', 'PurchaseRequisitionController@store')->name('store')->middleware('can:create-purchase-requisition-repair');
+
+    Route::get('/print/{id}', 'PurchaseRequisitionController@printPdf')->name('print')->middleware('can:show-purchase-requisition-repair');    
 });
 
 //Purchase Order Routes
