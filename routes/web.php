@@ -222,6 +222,8 @@ Route::name('resource.')->prefix('resource')->group(function() {
 
 //Resource Management Routes
 Route::name('resource_repair.')->prefix('resource_repair')->group(function() {
+    Route::put('/updateDetail', 'ResourceController@updateDetail')->name('updateDetail')->middleware('can:show-resource');
+    
     Route::get('/assignResource', 'ResourceController@assignResource')->name('assignResource')->middleware('can:list-resource-repair');
 
     Route::get('/selectPO', 'ResourceController@selectPO')->name('selectPO')->middleware('can:create-receive-resource-repair');
@@ -430,6 +432,14 @@ Route::name('project.')->prefix('project')->group(function() {
 
     //Project
     Route::get('/create', 'ProjectController@create')->name('create')->middleware('can:create-project');
+
+    Route::get('/indexCopyProject', 'ProjectController@indexCopyProject')->name('indexCopyProject')->middleware('can:create-project');
+    
+    Route::get('/copyProject/{id}', 'ProjectController@copyProject')->name('copyProject')->middleware('can:create-project');
+
+    Route::post('/storeCopyProject', 'ProjectController@storeCopyProject')->name('storeCopyProject')->middleware('can:create-project');
+
+    Route::get('/copyProjectStructure/{old_id}/{new_id}', 'ProjectController@copyProjectStructure')->name('copyProjectStructure')->middleware('can:create-project');
 
     Route::get('/', 'ProjectController@index')->name('index')->middleware('can:list-project');
 
@@ -803,6 +813,8 @@ Route::name('purchase_order.')->prefix('purchase_order')->group(function() {
     Route::patch('/', 'PurchaseOrderController@update')->name('update')->middleware('can:edit-purchase-order');
 
     Route::post('/', 'PurchaseOrderController@store')->name('store')->middleware('can:create-purchase-order');
+
+    Route::get('/print/{id}', 'PurchaseOrderController@printPdf')->name('print')->middleware('can:show-purchase-order');  
 });
 
 //Purchase Order Repair Routes
@@ -828,6 +840,8 @@ Route::name('purchase_order_repair.')->prefix('purchase_order_repair')->group(fu
     Route::patch('/', 'PurchaseOrderController@update')->name('update')->middleware('can:edit-purchase-order-repair');
 
     Route::post('/', 'PurchaseOrderController@store')->name('store')->middleware('can:create-purchase-order-repair');
+
+    Route::get('/print/{id}', 'PurchaseOrderController@printPdf')->name('print')->middleware('can:show-purchase-order-repair');  
 });
 
 //Work Order Routes
@@ -968,6 +982,9 @@ Route::name('goods_receipt.')->prefix('goods_receipt')->group(function() {
     Route::get('/', 'GoodsReceiptController@index')->name('index')->middleware('can:list-goods-receipt');
 
     Route::get('/{id}', 'GoodsReceiptController@show')->name('show')->middleware('can:show-goods-receipt');
+
+    Route::get('/print/{id}', 'GoodsReceiptController@printPdf')->name('print')->middleware('can:show-goods-receipt');    
+
 });
 
 // Goods Receipt Repair Routes
@@ -989,6 +1006,9 @@ Route::name('goods_receipt_repair.')->prefix('goods_receipt_repair')->group(func
     Route::get('/', 'GoodsReceiptController@index')->name('index')->middleware('can:list-goods-receipt-repair');
 
     Route::get('/{id}', 'GoodsReceiptController@show')->name('show')->middleware('can:show-goods-receipt-repair');
+
+    Route::get('/print/{id}', 'GoodsReceiptController@printPdf')->name('print')->middleware('can:show-goods-receipt-repair');    
+
 });
 
 //Goods Return 
@@ -1041,6 +1061,9 @@ Route::name('material_requisition.')->prefix('material_requisition')->group(func
     Route::post('/', 'MaterialRequisitionController@store')->name('store')->middleware('can:create-material-requisition');
 
     Route::delete('/{id}', 'MaterialRequisitionController@destroy')->name('destroy')->middleware('can:destroy-material-requisition');
+
+    Route::get('/print/{id}', 'MaterialRequisitionController@printPdf')->name('print')->middleware('can:show-material-requisition');    
+
 });
 
 //Material Requisition Repair Routes
@@ -1064,6 +1087,9 @@ Route::name('material_requisition_repair.')->prefix('material_requisition_repair
     Route::post('/', 'MaterialRequisitionController@store')->name('store')->middleware('can:create-material-requisition-repair');
 
     Route::delete('/{id}', 'MaterialRequisitionController@destroy')->name('destroy')->middleware('can:destroy-material-requisition-repair');
+
+    Route::get('/print/{id}', 'MaterialRequisitionController@printPdf')->name('print')->middleware('can:show-material-requisition-repair');    
+
 });
 
 // Goods Issue Routes
@@ -1089,6 +1115,8 @@ Route::name('goods_issue.')->prefix('goods_issue')->group(function() {
     Route::post('/', 'GoodsIssueController@store')->name('store')->middleware('can:create-goods-issue');
 
     Route::delete('/{id}', 'GoodsIssueController@destroy')->name('destroy')->middleware('can:destroy-goods-issue');
+    
+    Route::get('/print/{id}', 'GoodsIssueController@printPdf')->name('print')->middleware('can:show-goods-issue');    
 });
 
 // Goods Issue Repair Routes
@@ -1114,6 +1142,8 @@ Route::name('goods_issue_repair.')->prefix('goods_issue_repair')->group(function
     Route::post('/', 'GoodsIssueController@store')->name('store')->middleware('can:create-goods-issue-repair');
 
     Route::delete('/{id}', 'GoodsIssueController@destroy')->name('destroy')->middleware('can:destroy-goods-issue-repair');
+    
+    Route::get('/print/{id}', 'GoodsIssueController@printPdf')->name('print')->middleware('can:show-goods-issue-repair');    
 });
 
 

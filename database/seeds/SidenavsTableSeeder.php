@@ -26,6 +26,16 @@ class SidenavsTableSeeder extends Seeder
 
         DB::table('sidenav')->insert([
             'menu_id' => $manageProject,
+            'route_name' => 'project.indexCopyProject',
+        ]);
+
+        DB::table('sidenav')->insert([
+            'menu_id' => $manageProject,
+            'route_name' => 'project.copyProject',
+        ]);
+
+        DB::table('sidenav')->insert([
+            'menu_id' => $manageProject,
             'route_name' => 'project.create',
         ]);
 
@@ -88,6 +98,16 @@ class SidenavsTableSeeder extends Seeder
         DB::table('sidenav')->insert([
             'menu_id' => $manageProjectRepair,
             'route_name' => 'project_repair.index',
+        ]);
+
+        DB::table('sidenav')->insert([
+            'menu_id' => $manageProjectRepair,
+            'route_name' => 'project_repair.indexCopyProject',
+        ]);
+
+        DB::table('sidenav')->insert([
+            'menu_id' => $manageProjectRepair,
+            'route_name' => 'project_repair.copyProject',
         ]);
 
         DB::table('sidenav')->insert([
@@ -375,6 +395,7 @@ class SidenavsTableSeeder extends Seeder
             'route_name' => 'rap_repair.showMaterialEvaluation',
         ]);
 
+        // WR
         $createWr = Menu::where('route_name','work_request.create')->select('id')->first()->id;
         DB::table('sidenav')->insert([
             'menu_id' => $createWr,
@@ -387,16 +408,23 @@ class SidenavsTableSeeder extends Seeder
             'route_name' => 'work_request.indexApprove',
         ]);
         
+        DB::table('sidenav')->insert([
+            'menu_id' => $indexApproveWR,
+            'route_name' => 'work_request.showApprove',
+        ]);
+
         $viewWr = Menu::where('route_name','work_request.index')->select('id')->first()->id;
         DB::table('sidenav')->insert([
             'menu_id' => $viewWr,
             'route_name' => 'work_request.index',
         ]);
-            
+
         DB::table('sidenav')->insert([
             'menu_id' => $viewWr,
-            'route_name' => 'work_request.showApprove',
+            'route_name' => 'work_request.edit',
         ]);
+
+
         // WR REPAIR
         $createWrRepair = Menu::where('route_name','work_request_repair.create')->select('id')->first()->id;
         DB::table('sidenav')->insert([
@@ -419,6 +447,11 @@ class SidenavsTableSeeder extends Seeder
         DB::table('sidenav')->insert([
             'menu_id' => $viewWrRepair,
             'route_name' => 'work_request_repair.index',
+        ]);
+
+        DB::table('sidenav')->insert([
+            'menu_id' => $viewWrRepair,
+            'route_name' => 'work_request_repair.edit',
         ]);
 
         // Purchase Requisition
@@ -590,6 +623,11 @@ class SidenavsTableSeeder extends Seeder
             'menu_id' => $selectPO,
             'route_name' => 'goods_receipt.createGrWithRef',
         ]);
+
+        DB::table('sidenav')->insert([
+            'menu_id' => $selectPO,
+            'route_name' => 'goods_receipt.createGrFromWo',
+        ]);
         
         $viewGr = Menu::where('route_name','goods_receipt.index')->select('id')->first()->id;
         DB::table('sidenav')->insert([
@@ -613,6 +651,11 @@ class SidenavsTableSeeder extends Seeder
         DB::table('sidenav')->insert([
             'menu_id' => $selectPORepair,
             'route_name' => 'goods_receipt_repair.createGrWithRef',
+        ]);
+
+        DB::table('sidenav')->insert([
+            'menu_id' => $selectPORepair,
+            'route_name' => 'goods_receipt_repair.createGrFromWo',
         ]);
         
         $viewGrRepair = Menu::where('route_name','goods_receipt_repair.index')->select('id')->first()->id;
@@ -1028,7 +1071,7 @@ class SidenavsTableSeeder extends Seeder
             'menu_id' => $indexProductionOrder,
             'route_name' => 'production_order.indexPrO',
         ]);
-
+        
         DB::table('sidenav')->insert([
             'menu_id' => $indexProductionOrder,
             'route_name' => 'production_order.show',
@@ -1037,6 +1080,11 @@ class SidenavsTableSeeder extends Seeder
         DB::table('sidenav')->insert([
             'menu_id' => $indexProductionOrder,
             'route_name' => 'production_order.editPrO',
+        ]);
+
+        DB::table('sidenav')->insert([
+            'menu_id' => $indexProductionOrder,
+            'route_name' => 'production_order.index',
         ]);
 
         // production order repair
@@ -1101,11 +1149,6 @@ class SidenavsTableSeeder extends Seeder
         $reportProductionOrder = Menu::where('route_name','production_order_repair.selectProjectIndex')->select('id')->first()->id;
         DB::table('sidenav')->insert([
             'menu_id' => $reportProductionOrder,
-            'route_name' => 'production_order_repair.index',
-        ]);
-
-        DB::table('sidenav')->insert([
-            'menu_id' => $reportProductionOrder,
             'route_name' => 'production_order_repair.selectProjectReport',
         ]);
 
@@ -1127,12 +1170,12 @@ class SidenavsTableSeeder extends Seeder
 
         DB::table('sidenav')->insert([
             'menu_id' => $indexProductionOrderRepair,
-            'route_name' => 'production_order_repair.show',
+            'route_name' => 'production_order_repair.editPrO',
         ]);
 
         DB::table('sidenav')->insert([
-            'menu_id' => $indexProductionOrderRepair,
-            'route_name' => 'production_order_repair.editPrO',
+            'menu_id' => $reportProductionOrder,
+            'route_name' => 'production_order_repair.index',
         ]);
 
         $yardPlan = Menu::where('route_name','yard_plan.index')->select('id')->first()->id;

@@ -93,6 +93,7 @@ class PermissionsTableSeeder extends Seeder
             'updated_at' => date('Y-m-d'),
         ]);
 
+
         //BOM
         $viewBOM = Menu::where('name','View BOM')->select('id')->first()->id;
         DB::table('permissions')->insert([
@@ -1924,6 +1925,14 @@ class PermissionsTableSeeder extends Seeder
             'name' => 'Show Production Order Repair',
             'menu_id' => $viewProductionOrderRepair,
             'middleware' => 'show-production-order-repair',
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
+        ]);
+
+        DB::table('permissions')->insert([
+            'name' => 'Edit Production Order',
+            'menu_id' => $viewProductionOrderRepair,
+            'middleware' => 'edit-production-order-repair',
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d'),
         ]);
