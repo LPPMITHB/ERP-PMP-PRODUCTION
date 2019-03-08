@@ -22,4 +22,14 @@ class ResourceTrx extends Model
     {
         return $this->belongsTo('App\Models\Resource');
     }
+
+    public function resourceDetail()
+    {
+        return $this->belongsTo('App\Models\ResourceDetail');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User');
+    }
 }

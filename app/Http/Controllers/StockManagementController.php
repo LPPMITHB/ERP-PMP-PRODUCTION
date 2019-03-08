@@ -29,7 +29,7 @@ class StockManagementController extends Controller
         $storage_locations = StorageLocation::all();
         $warehouses = Warehouse::all();
         $materials = Material::all();
-        $stocks = Stock::with('material')->get();
+        $stocks = Stock::with('material','material.uom')->get();
 
         return view('stock_management.index', compact('storage_locations','materials','warehouses','stocks'));
     }
@@ -84,7 +84,7 @@ class StockManagementController extends Controller
         $data = array();
         
         $sloc = StorageLocation::where('id',$id)->first();
-        $slocDetails = StorageLocationDetail::where('storage_location_id',$sloc->id)->with('material')->get();
+        $slocDetails = StorageLocationDetail::where('storage_location_id',$sloc->id)->with('material','material.uom')->get();
         $data['sloc'] = $sloc;
         $data['slocDetail'] = $slocDetails;
         
@@ -96,8 +96,8 @@ class StockManagementController extends Controller
             $inventory_qty += $slocDetail->quantity;
         }
 
-        $inventory_value = number_format($inventory_value);
-        $inventory_qty = number_format($inventory_qty);
+        $inventory_value = number_format($inventory_value,2);
+        $inventory_qty = number_format($inventory_qty,2);
 
         $data['sloc'] = $sloc;
         $data['slocDetail'] = $slocDetails;
@@ -131,8 +131,8 @@ class StockManagementController extends Controller
         //     }
         // }
 
-        $inventory_value = number_format($inventory_value);
-        $inventory_qty = number_format($inventory_qty);
+        $inventory_value = number_format($inventory_value,2);
+        $inventory_qty = number_format($inventory_qty,2);
 
         $data['sloc'] = $slocs;
         $data['warehouseValue'] = $inventory_value;
@@ -145,7 +145,7 @@ class StockManagementController extends Controller
         $slocs = $warehouse->storageLocations;
         $sloc_ids = $slocs->pluck('id')->toArray();
 
-        $sloc_details = StorageLocationDetail::whereIn('storage_location_id',$sloc_ids)->with('material')->get();
+        $sloc_details = StorageLocationDetail::whereIn('storage_location_id',$sloc_ids)->with('material','material.uom')->get();
 
         return response($sloc_details, Response::HTTP_OK);
     } 
@@ -164,9 +164,9 @@ class StockManagementController extends Controller
             $reserved_inventory_qty += $stock->reserved;
         }
 
-        $inventory_value = number_format($inventory_value);
-        $inventory_qty = number_format($inventory_qty);
-        $reserved_inventory_qty = number_format($reserved_inventory_qty);
+        $inventory_value = number_format($inventory_value,2);
+        $inventory_qty = number_format($inventory_qty,2);
+        $reserved_inventory_qty = number_format($reserved_inventory_qty,2);
 
         $data['stockValue'] = $inventory_value;
         $data['stockQuantity'] = $inventory_qty;

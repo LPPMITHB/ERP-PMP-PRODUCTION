@@ -193,7 +193,52 @@
                 </div>
             </div>
         </div>
+        <div class="col-sm-12" style="margin-top: -5px;">
+            <div class="box box-solid">
+                <div class="box-body">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="vertical-align: middle" class="textCenter" rowspan="2">Comp. %</th>
+                                <th class="textCenter" colspan="4">In-Wk & Cum Performance</th>
+                            </tr>
+                            <tr>
+                                <th class="textCenter">Last Week</th>
+                                <th class="textCenter">This Week</th>
+                                <th class="textCenter">In-Wk Gain</th>
+                                <th style="width: 10%" class="textCenter">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>Expected Comp. %</th>
+                                <td class="textCenter">{{progressStatus.last_week_planned}} %</td>
+                                <td class="textCenter">{{progressStatus.this_week_planned}} %</td>
+                                <td class="textCenter">{{progressStatus.this_week_planned - progressStatus.last_week_planned}} %</td>
+                                <td v-if="progressStatus.this_week_actual - progressStatus.this_week_planned < 0" rowspan="2" class="textCenter" style="background-color: red; color: white; font-size:1.2em">
+                                    <i>{{getStatus(progressStatus.this_week_actual - progressStatus.this_week_planned)}}</i> {{Math.abs(progressStatus.this_week_actual - progressStatus.this_week_planned)}} %
+                                </td>
+                                <td v-else-if="progressStatus.this_week_actual - progressStatus.this_week_planned > 0" rowspan="2" class="textCenter" style="background-color: green; color: white; font-size:1.2em">
+                                    <i>{{getStatus(progressStatus.this_week_actual - progressStatus.this_week_planned)}}</i> {{Math.abs(progressStatus.this_week_actual - progressStatus.this_week_planned)}} %
+                                </td>
+                                <td v-else-if="progressStatus.this_week_actual - progressStatus.this_week_planned == 0" rowspan="2" class="textCenter" style="background-color: green; color: white; font-size:1.2em">
+                                    <i>{{getStatus(progressStatus.this_week_actual - progressStatus.this_week_planned)}}</i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Actual Comp. %</th>
+                                <td class="textCenter">{{progressStatus.last_week_actual}} %</td>
+                                <td class="textCenter">{{progressStatus.this_week_actual}} %</td>
+                                <td class="textCenter">{{progressStatus.this_week_actual - progressStatus.last_week_actual}} %</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- unused -->
     <div class="modal fade" id="confirm_activity_modal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -240,7 +285,7 @@
                                     <th style="width: 15%">Code</th>
                                     <th style="width: 29%">Name</th>
                                     <th style="width: 29%">Description</th>
-                                    <th style="width: 15%">WBS Code</th>
+                                    <th style="width: 15%">WBS Number</th>
                                     <th style="width: 12%">Status</th>
                                 </tr>
                             </thead>
@@ -250,7 +295,7 @@
                                     <td class="tdEllipsis p-b-15 p-t-15" data-container="body" v-tooltip:top="tooltipText(data.code)">{{ data.code }}</td>
                                     <td class="tdEllipsis p-b-15 p-t-15" data-container="body" v-tooltip:top="tooltipText(data.name)">{{ data.name }}</td>
                                     <td class="tdEllipsis p-b-15 p-t-15" data-container="body" v-tooltip:top="tooltipText(data.description)">{{ data.description }}</td>
-                                    <td class="tdEllipsis p-b-15 p-t-15" data-container="body" v-tooltip:top="tooltipText(data.wbs.code)">{{ data.wbs.code }}</td>
+                                    <td class="tdEllipsis p-b-15 p-t-15" data-container="body" v-tooltip:top="tooltipText(data.wbs.number)">{{ data.wbs.number }}</td>
                                     <td class="textCenter">
                                         <template v-if="data.status == 0">
                                             <i class='fa fa-check'></i>
@@ -404,8 +449,10 @@
     </div>
 </div>
 
-
-
+<form id="form" class="form-horizontal" method="POST">
+    <input type="hidden" name="_method" value="PATCH">
+    @csrf
+</form>
 
 
 
@@ -619,10 +666,25 @@
         gantt.templates.rightside_text = function(start, end, task){
             if(task.status != undefined){
                 if(task.status == 0){
-                    return "<b>Completed</b>"
+                    var text = task.text.replace('[Actual]','');
+                    return "<b>"+text+" Completed</b>"
+                }else{
+                    return "<b>"+task.text+"</b>"
                 }
             }else{
-                return "Progress: <b>" + task.progress*100+ "%</b>";
+                if(task.$level != 0){
+                    return "<b>"+task.text+"</b> | Progress: <b>" + task.progress*100+ "%</b>"
+                }else{
+                    return "Progress: <b>" + task.progress*100+ "%</b>";
+                }
+            }
+        };
+
+        gantt.templates.task_text=function(start,end,task){
+            if(task.$level == 0){
+                return "<b>"+task.text+"</b>";
+            }else{
+                return "";
             }
         };
         
@@ -725,6 +787,7 @@
             project_id : @json($project->id),
             project : @json($project),
             today : @json($today),
+            progressStatus : @json($progressStatus),
             predecessorActivities : [],
             activity:"",
             confirmActivity : {
@@ -782,6 +845,18 @@
 
             }, 
             methods:{
+                getStatus:function(data){
+                    text = "";
+                    if(data < 0){
+                        text = "Behind";
+                    }else if(data == 0){
+                        text = "On Time";
+                    }else if(data > 0){
+                        text = "Ahead";
+                    }
+
+                    return text;
+                },
                 styleProgressBar: function(data){
                     return "width: "+data+"%";
                 },
@@ -1044,13 +1119,19 @@
         }
 
         gantt.attachEvent("onTaskClick", function(id,e){
-            if(id.indexOf("ACT") !== -1){
-                $("#confirm_activity_modal").modal('show');
-                vm.openConfirmModal(id);
-                return true;
+            if(vm.menu == "building"){
+                var url = "/production_order/checkProdOrder/"+id;
+
+                const form = document.getElementById('form');
+                form.setAttribute('action', url);
+                form.submit();
             }else{
-                return true;
+                var url = "/production_order_repair/checkProdOrder/"+id;
+                const form = document.getElementById('form');
+                form.setAttribute('action', url);
+                form.submit();
             }
+            return true;
         });
     });
     

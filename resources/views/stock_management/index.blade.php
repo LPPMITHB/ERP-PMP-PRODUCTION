@@ -93,7 +93,9 @@
                                     <table class="table table-bordered showTable tablePagingVue tableFixed" style="border-collapse:collapse;">
                                         <thead>
                                             <th style="width: 5%">No</th>
-                                            <th style="width: 45%">Material</th>
+                                            <th style="width: 15%">Material Number</th>
+                                            <th style="width: 25%">Material Description</th>
+                                            <th style="width: 5%">Unit</th>
                                             <th style="width: 10%">Quantity</th>
                                             <th style="width: 10%">Reserved</th>
                                             <th style="width: 15%">Total Value</th>
@@ -102,7 +104,9 @@
                                         <tbody>
                                             <tr v-for="(stock,index) in stocks">
                                                 <td>{{ index + 1 }}</td>
-                                                <td class="tdEllipsis">{{ stock.material.code }} - {{ stock.material.name }}</td>
+                                                <td class="tdEllipsis">{{ stock.material.code }}</td>
+                                                <td class="tdEllipsis">{{ stock.material.description }}</td>
+                                                <td class="tdEllipsis">{{ stock.material.uom.unit }}</td>
                                                 <td class="tdEllipsis">{{ stock.quantity }}</td>
                                                 <td class="tdEllipsis">{{ stock.reserved }}</td>
                                                 <td class="tdEllipsis">Rp {{ (stock.material.cost_standard_price * stock.quantity+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</td>
@@ -117,7 +121,9 @@
                                     <table id="tablePagingVue2" class="table table-bordered showTable tableFixed" style="border-collapse:collapse;">
                                         <thead>
                                             <th style="width: 5%">No</th>
-                                            <th style="width: 45%">Material</th>
+                                            <th style="width: 15%">Material Number</th>
+                                            <th style="width: 25%">Material Description</th>
+                                            <th style="width: 5%">Unit</th>
                                             <th style="width: 10%">Quantity</th>
                                             <th style="width: 15%">Total Value</th>
                                             <th style="width: 10%">Aging</th>
@@ -125,9 +131,11 @@
                                         <tbody>
                                             <tr v-for="(selectedDetail,index) in selectedSlocDetail">
                                                 <td>{{ index + 1 }}</td>
-                                                <td class="tdEllipsis">{{ selectedDetail.material.code }} - {{ selectedDetail.material.name }}</td>
+                                                <td class="tdEllipsis">{{ selectedDetail.material.code }}</td>
+                                                <td class="tdEllipsis">{{ selectedDetail.material.description }}</td>
+                                                <td class="tdEllipsis">{{ selectedDetail.material.uom.unit }}</td>
                                                 <td class="tdEllipsis">{{ selectedDetail.quantity }}</td>
-                                                <td class="tdEllipsis">Rp {{ (selectedDetail.material.cost_standard_price * selectedDetail.quantity+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</td>
+                                                <td class="tdEllipsis">Rp {{ selectedDetail.totalValue }}</td>
                                                 <td class="tdEllipsis">{{ selectedDetail.quantity + 0 }} Days</td>
                                             </tr>
                                         </tbody>
@@ -156,7 +164,7 @@
         $('.tablePagingVue thead tr').clone(true).appendTo( '.tablePagingVue thead' );
         $('.tablePagingVue thead tr:eq(1) th').addClass('indexTable').each( function (i) {
             var title = $(this).text();
-            if(title != 'Material'){
+            if(title != 'Material Number' && title != 'Material Description'){
                 $(this).html( '<input disabled class="form-control width100" type="text"/>' );
             }else{
                 $(this).html( '<input class="form-control width100 search" type="text" placeholder="Search '+title+'"/>' );
@@ -211,6 +219,7 @@
         data : data,
         watch : {
             'sloc_id' : function(newValue){
+                $('div.overlay').show();
                 if(newValue != ""){
                     $('div.overlay').show();
                     window.axios.get('/api/getSlocSM/'+newValue).then(({ data }) => {
@@ -221,7 +230,30 @@
 
                         var data = this.selectedSlocDetail;
                         data.forEach(slocDetail => {
-                            slocDetail.quantity = (slocDetail.quantity+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");            
+                            var decimalQty = (slocDetail.quantity+"").replace(/,/g, '').split('.');
+                            if(decimalQty[1] != undefined){
+                                var maxDecimal = 2;
+                                if((decimalQty[1]+"").length > maxDecimal){
+                                    slocDetail.quantity = (decimalQty[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimalQty[1]+"").substring(0,maxDecimal).replace(/\D/g, "");
+                                }else{
+                                    slocDetail.quantity = (decimalQty[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimalQty[1]+"").replace(/\D/g, "");
+                                }
+                            }else{
+                                slocDetail.quantity = (slocDetail.quantity+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                            }  
+                            
+                            slocDetail.totalValue = (slocDetail.material.cost_standard_price * slocDetail.quantity+"");
+                            var decimalQty = (slocDetail.totalValue+"").replace(/,/g, '').split('.');
+                            if(decimalQty[1] != undefined){
+                                var maxDecimal = 2;
+                                if((decimalQty[1]+"").length > maxDecimal){
+                                    slocDetail.totalValue = (decimalQty[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimalQty[1]+"").substring(0,maxDecimal).replace(/\D/g, "");
+                                }else{
+                                    slocDetail.totalValue = (decimalQty[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimalQty[1]+"").replace(/\D/g, "");
+                                }
+                            }else{
+                                slocDetail.totalValue = (slocDetail.totalValue+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                            }
                         });
 
                         $('#tablePagingVue2').DataTable().destroy();
@@ -232,7 +264,7 @@
                             $('#tablePagingVue2 thead tr').clone(true).appendTo( '#tablePagingVue2 thead' );
                             $('#tablePagingVue2 thead tr:eq(1) th').addClass('indexTable2').each( function (i) {
                                 var title = $(this).text();
-                                if(title != 'Material'){
+                                if(title != 'Material Number' && title != 'Material Description'){
                                     $(this).html( '<input disabled class="form-control width100" type="text"/>' );
                                 }else{
                                     $(this).html( '<input class="form-control width100 search" type="text" placeholder="Search '+title+'"/>' );
@@ -276,7 +308,30 @@
 
                             var data = this.selectedSlocDetail;
                             data.forEach(slocDetail => {
-                                slocDetail.quantity = (slocDetail.quantity+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");            
+                                var decimalQty = (slocDetail.quantity+"").replace(/,/g, '').split('.');
+                            if(decimalQty[1] != undefined){
+                                var maxDecimal = 2;
+                                if((decimalQty[1]+"").length > maxDecimal){
+                                    slocDetail.quantity = (decimalQty[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimalQty[1]+"").substring(0,maxDecimal).replace(/\D/g, "");
+                                }else{
+                                    slocDetail.quantity = (decimalQty[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimalQty[1]+"").replace(/\D/g, "");
+                                }
+                            }else{
+                                slocDetail.quantity = (slocDetail.quantity+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                            }  
+                            
+                            slocDetail.totalValue = (slocDetail.material.cost_standard_price * slocDetail.quantity+"");
+                            var decimalQty = (slocDetail.totalValue+"").replace(/,/g, '').split('.');
+                            if(decimalQty[1] != undefined){
+                                var maxDecimal = 2;
+                                if((decimalQty[1]+"").length > maxDecimal){
+                                    slocDetail.totalValue = (decimalQty[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimalQty[1]+"").substring(0,maxDecimal).replace(/\D/g, "");
+                                }else{
+                                    slocDetail.totalValue = (decimalQty[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimalQty[1]+"").replace(/\D/g, "");
+                                }
+                            }else{
+                                slocDetail.totalValue = (slocDetail.totalValue+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                            }            
                             });
 
                             $('#tablePagingVue2').DataTable().destroy();
@@ -287,7 +342,7 @@
                                 $('#tablePagingVue2 thead tr').clone(true).appendTo( '#tablePagingVue2 thead' );
                                 $('#tablePagingVue2 thead tr:eq(1) th').addClass('indexTable2').each( function (i) {
                                     var title = $(this).text();
-                                    if(title != 'Material'){
+                                    if(title != 'Material Number' && title != 'Material Description'){
                                         $(this).html( '<input disabled class="form-control width100" type="text"/>' );
                                     }else{
                                         $(this).html( '<input class="form-control width100 search" type="text" placeholder="Search '+title+'"/>' );
@@ -341,7 +396,30 @@
 
                         var data = this.selectedSlocDetail;
                         data.forEach(slocDetail => {
-                            slocDetail.quantity = (slocDetail.quantity+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");            
+                            var decimalQty = (slocDetail.quantity+"").replace(/,/g, '').split('.');
+                            if(decimalQty[1] != undefined){
+                                var maxDecimal = 2;
+                                if((decimalQty[1]+"").length > maxDecimal){
+                                    slocDetail.quantity = (decimalQty[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimalQty[1]+"").substring(0,maxDecimal).replace(/\D/g, "");
+                                }else{
+                                    slocDetail.quantity = (decimalQty[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimalQty[1]+"").replace(/\D/g, "");
+                                }
+                            }else{
+                                slocDetail.quantity = (slocDetail.quantity+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                            }  
+                            
+                            slocDetail.totalValue = (slocDetail.material.cost_standard_price * slocDetail.quantity+"");
+                            var decimalQty = (slocDetail.totalValue+"").replace(/,/g, '').split('.');
+                            if(decimalQty[1] != undefined){
+                                var maxDecimal = 2;
+                                if((decimalQty[1]+"").length > maxDecimal){
+                                    slocDetail.totalValue = (decimalQty[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimalQty[1]+"").substring(0,maxDecimal).replace(/\D/g, "");
+                                }else{
+                                    slocDetail.totalValue = (decimalQty[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimalQty[1]+"").replace(/\D/g, "");
+                                }
+                            }else{
+                                slocDetail.totalValue = (slocDetail.totalValue+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                            }            
                         });
 
                         $('#tablePagingVue2').DataTable().destroy();
@@ -351,7 +429,7 @@
                                 $('#tablePagingVue2 thead tr').clone(true).appendTo( '#tablePagingVue2 thead' );
                                 $('#tablePagingVue2 thead tr:eq(1) th').addClass('indexTable2').each( function (i) {
                                     var title = $(this).text();
-                                    if(title != 'Material'){
+                                    if(title != 'Material Number' && title != 'Material Description'){
                                         $(this).html( '<input disabled class="form-control width100" type="text"/>' );
                                     }else{
                                         $(this).html( '<input class="form-control width100 search" type="text" placeholder="Search '+title+'"/>' );
@@ -375,13 +453,14 @@
                                     lengthChange    : false,
                                 });
                             })
+                            $('div.overlay').hide();
                         }else{
                             elements[0].parentNode.parentNode.removeChild(elements[0].parentNode);
                             this.$nextTick(function() {
                                 $('#tablePagingVue2 thead tr').clone(true).appendTo( '#tablePagingVue2 thead' );
                                 $('#tablePagingVue2 thead tr:eq(1) th').addClass('indexTable2').each( function (i) {
                                     var title = $(this).text();
-                                    if(title != 'Material'){
+                                    if(title != 'Material Number' && title != 'Material Description'){
                                         $(this).html( '<input disabled class="form-control width100" type="text"/>' );
                                     }else{
                                         $(this).html( '<input class="form-control width100 search" type="text" placeholder="Search '+title+'"/>' );
@@ -405,6 +484,7 @@
                                     lengthChange    : false,
                                 });
                             })
+                            $('div.overlay').hide();
                         }
 
                     })
@@ -420,7 +500,6 @@
                         this.storageLocations = data.sloc;
                         this.warehouseValue = "Rp "+data.warehouseValue;
                         this.warehouseQuantity = data.warehouseQuantity;
-                        $('div.overlay').hide();
                     })
                     .catch((error) => {
                         iziToast.warning({
@@ -435,7 +514,9 @@
                     this.storageLocations = "";
                     $('div.overlay').hide();
                 }
+                
             }
+            
         },
         created: function(){
             window.axios.get('/api/getStockInfoSM/').then(({ data }) => {

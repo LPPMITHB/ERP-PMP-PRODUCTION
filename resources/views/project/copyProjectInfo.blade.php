@@ -58,6 +58,16 @@
                             </div>
 
                             <div class="form-group">
+                                <label for="project_type" class="col-sm-2 control-label">Project Type</label>
+                
+                                <div class="col-sm-10">
+                                    <selectize name="project_type" id="project_type" required>
+                                        <option v-for="(data, index) in projectType" :value="data.id">{{ data.name }}</option>
+                                    </selectize>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
                                 <label for="customer" class="col-sm-2 control-label">Customer Name</label>
                 
                                 <div class="col-sm-10">
@@ -162,6 +172,20 @@
                                 </div>
                             </div>
 
+                            <div class="form-group">
+                                <label for="upload" class="col-sm-2 control-label">Upload Drawing</label>
+                                <div class="col-sm-5">
+                                    <div class="input-group">
+                                        <label class="input-group-btn">
+                                            <span class="btn btn-primary">
+                                                Browse&hellip; <input type="file" style="display: none;" multiple id="drawing" name="drawing">
+                                            </span>
+                                        </label>
+                                        <input type="text" class="form-control" readonly>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="box-footer">
                                 <button @click.prevent="submitForm()" type="button" class="btn btn-primary pull-right">CREATE</button>
                             </div>
@@ -169,9 +193,6 @@
                         @endverbatim
                     </div>
                 </form>
-            </div>
-            <div class="overlay">
-                <i class="fa fa-refresh fa-spin"></i>
             </div>
         </div>
     </div>
@@ -215,6 +236,7 @@ $(document).ready(function(){
         projectRef:  @json($project->id== null ? "": $project->id),
         customers : @json($customers),
         ships : @json($ships),
+        projectType : @json($projectType),
         ownerRep : "",
         project : {
             number : "",
@@ -236,6 +258,7 @@ $(document).ready(function(){
         data: data,
         methods : {
             submitForm(){
+                $('div.overlay').show();                
                 if(this.project.class_cp_phone.length > 13 || this.project.class_cp_phone.length < 10 && this.menu == "building" && this.project.class_cp_phone != ""){
                     iziToast.warning({
                         title: 'Classification Contact Person Phone format is not appropriate !',
@@ -329,7 +352,7 @@ $(document).ready(function(){
 
     });
     $('div.overlay').hide();
-    $('#customer,#ship').selectize();
+    $('#customer,#ship,#project_type').selectize();
     $('.datepicker').datepicker({
         autoclose : true,
     });
@@ -427,6 +450,10 @@ $(document).ready(function(){
         var $selectShip = $("#ship").selectize();
         var selectizeShip = $selectShip[0].selectize;
         selectizeShip.setValue(@JSON($project->ship_id));
+
+        var $selectProjectType = $("#project_type").selectize();
+        var selectizeProjectType = $selectProjectType[0].selectize;
+        selectizeProjectType.setValue(@JSON($project->project_type));
     }
 
     if(@JSON(Request::old('planned_start_date')) != null){
@@ -447,6 +474,11 @@ $(document).ready(function(){
         var $selectShip = $("#ship").selectize();
         var selectizeShip = $selectShip[0].selectize;
         selectizeShip.setValue(@JSON(Request::old('ship')));
+    }
+    if(@JSON(Request::old('project_type')) != null){
+        var $selectProjectType = $("#project_type").selectize();
+        var selectizeProjectType = $selectProjectType[0].selectize;
+        selectizeProjectType.setValue(@JSON(Request::old('project_type')));
     }
 
 

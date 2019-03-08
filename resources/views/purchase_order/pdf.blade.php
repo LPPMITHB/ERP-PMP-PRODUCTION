@@ -55,7 +55,11 @@
                 <div class="col-xs-12">
                     <div class="box-header no-padding" style="margin-bottom : 47px">
                         <div class="col-sm-3 col-md-3 col-lg-3 no-padding-left m-b-7">
-                            <img src="{{ asset('images/logo-PMP.png') }}" alt="" srcset="">                    
+                            @if($route == '/purchase_order')
+                            <img src="{{ asset('images/logo-PMP.png') }}" alt="" srcset="">    
+                            @else 
+                            <img src="{{ asset('images/logo-PAMI.jpg') }}" alt="" srcset="">    
+                            @endif                     
                         </div>
                         <div class="row" style="margin-left: -5px;">
                             <div class="col-sm-12" style="font-size: 11px;line-height: 13px">
@@ -123,12 +127,6 @@
                                 {{($modelPO->project) ? $modelPO->project->number : '-'}}                 
                             </div>
                         </div>
-                        <div  style="margin-left: 450px;">
-                            <div style="font-size: 11px;">Request By  </div>
-                            <div class="p-l-5" style="font-size: 11px;margin-left: 120px; margin-top:-20px">
-                                {{$modelPO->user->name}}                  
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <div class="col-xs-12">
@@ -146,7 +144,7 @@
                             <thead>
                                 <tr>
                                     <th style="font-size: 11px" width="5%" class="text-center">No</th>
-                                    <th style="font-size: 11px" width="15%" class="text-center" >Material Code</th>
+                                    <th style="font-size: 11px" width="15%" class="text-center" >Material Number</th>
                                     <th style="font-size: 11px" width="20%" class="text-center">Material Name</th>
                                     <th style="font-size: 11px" width="7%" class="text-center">Qty</th>
                                     <th style="font-size: 11px" width="8%" class="text-center">Unit</th>
