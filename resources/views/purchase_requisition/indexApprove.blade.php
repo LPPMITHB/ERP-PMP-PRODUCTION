@@ -41,8 +41,10 @@
                                 <td>{{ $loop->iteration }}</td>
                                 @if($modelPR->type == 1)
                                     <td>Material</td>
-                                @else
+                                @elseif($modelPR->type == 2)
                                     <td>Resource</td>
+                                @elseif($modelPR->type == 3)
+                                    <td>Subcon</td>
                                 @endif
                                 <td>{{ $modelPR->number }}</td>
                                 <td class="tdEllipsis" data-container="body" data-toggle="tooltip" title="{{$modelPR->description}}">{{ $modelPR->description }}</td>
@@ -62,9 +64,9 @@
                                 @endif
                                 <td class="textCenter">
                                     @if($route == "/purchase_requisition")
-                                        <a href="{{ route('purchase_requisition.showApprove', ['id'=>$modelPR->id]) }}" class="btn btn-primary btn-xs">SELECT</a>
+                                        <a onClick="loading()" href="{{ route('purchase_requisition.showApprove', ['id'=>$modelPR->id]) }}" class="btn btn-primary btn-xs">SELECT</a>
                                     @elseif($route == "/purchase_requisition_repair")
-                                        <a href="{{ route('purchase_requisition_repair.showApprove', ['id'=>$modelPR->id]) }}" class="btn btn-primary btn-xs">SELECT</a>
+                                        <a onClick="loading()" href="{{ route('purchase_requisition_repair.showApprove', ['id'=>$modelPR->id]) }}" class="btn btn-primary btn-xs">SELECT</a>
                                     @endif
                                 </td>
                             </tr>
@@ -85,5 +87,9 @@
     $(document).ready(function(){
         $('div.overlay').hide();
     });
+
+    function loading(){
+        $('div.overlay').show();
+    }
 </script>
 @endpush

@@ -30,8 +30,7 @@
                         <thead>
                             <tr>
                                 <th style="width: 5%">No</th>
-                                <th style="width: 10%">Code</th>
-                                <th style="width: 30%">Name</th>
+                                <th style="width: 10%">Item Number</th>
                                 <th style="width: 35%">Description</th>
                                 <th style="width: 10%">Type</th>
                                 <th style="width: 10%"></th>
@@ -42,14 +41,13 @@
                             <tr v-for="(data,index) in materials">
                                 <td>{{ index + 1 }}</td>
                                 <td class="tdEllipsis">{{ data.code }}</td>
-                                <td class="tdEllipsis" data-container="body" data-toggle="tooltip" :title="data.name">{{ data.name }}</td>
                                 <td class="tdEllipsis" data-container="body" data-toggle="tooltip" :title="data.description">{{ data.description }}</td>
                                 <td v-if="data.type == 3">Bulk part</td>
                                 <td v-else-if="data.type == 2">Component</td>
                                 <td v-else-if="data.type == 1">Consumable</td>
                                 <td v-else-if="data.type == 0">Raw</td>
                                 <td class="p-l-0 p-r-0 textCenter">
-                                    <a :href="createRouteShow(data.code)" class="btn btn-primary btn-xs">VIEW</a>
+                                    <a :href="createRouteShow(data.id)" class="btn btn-primary btn-xs">VIEW</a>
                                     <a :href="createRouteEdit(data.id)" class="btn btn-primary btn-xs">EDIT</a>
                                 </td>
                             </tr>
@@ -58,9 +56,6 @@
                 </div> <!-- /.box-body -->
             </div>
             @endverbatim
-            <div class="overlay">
-                <i class="fa fa-refresh fa-spin"></i>
-            </div>
         </div>
     </div> <!-- /.col-xs-12 -->
 </div> <!-- /.row -->

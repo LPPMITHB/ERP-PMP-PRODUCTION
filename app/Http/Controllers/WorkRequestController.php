@@ -10,7 +10,10 @@ use App\Models\Branch;
 use App\Models\Material;
 use App\Models\Stock;
 use App\Models\WBS;
+use App\Models\Activity;
+use App\Models\ActivityDetail;
 use App\Models\Bom;
+use App\Models\BomPrep;
 use App\Models\BomDetail;
 use App\Models\Project;
 use DateTime;
@@ -59,13 +62,18 @@ class WorkRequestController extends Controller
     public function create(Request $request)
     {
         $menu = $request->route()->getPrefix() == "/work_request" ? "building" : "repair";    
+        $allmaterial = Material::all();
+
         if($menu == "repair"){
             $modelProject = Project::where('status',1)->where('business_unit_id',2)->get();
+            return view('work_request.createRepair', compact('modelProject', 'menu','allmaterial'));
+
         }elseif($menu == "building"){
             $modelProject = Project::where('status',1)->where('business_unit_id',1)->get();
+
+            return view('work_request.create', compact('modelProject', 'menu','allmaterial'));
         }
 
-        return view('work_request.create', compact('modelProject', 'menu'));
     }
 
     /**
@@ -127,7 +135,8 @@ class WorkRequestController extends Controller
                         $WRD->description = $data->description;
                         $WRD->material_id = $data->material_id;
                         $WRD->required_date = $required_date;
-                        $WRD->wbs_id = $data->wbs_id;
+                        $WRD->type = 0;
+                        $WRD->wbs_id = $data->wbs_id != "" ? $data->wbs_id : null;
                         $WRD->save();
 
                         // $this->reserveStock($data->material_id, $data->quantityInt);
@@ -139,7 +148,58 @@ class WorkRequestController extends Controller
                     $WRD->description = $data->description;
                     $WRD->material_id = $data->material_id;
                     $WRD->required_date = $required_date;
+                    $WRD->type = 0;
+                    $WRD->wbs_id = $data->wbs_id != "" ? $data->wbs_id : null;
+                    $WRD->save();
+
+                    // $this->reserveStock($data->material_id, $data->quantityInt);
+                }
+            }
+
+            foreach($datas->materialsFG as $data){
+                $modelWRDs = WorkRequestDetail::where('work_request_id',$WR->id)->get();
+                $required_date = DateTime::createFromFormat('d-m-Y', $data->required_date);
+                if($required_date){
+                    $required_date = $required_date->format('Y-m-d');
+                }else{
+                    $required_date = null;
+                }
+                if(count($modelWRDs)>0){
+                    $status = 0;
+                    foreach($modelWRDs as $WRD){
+                        if($WRD->material_id == $data->material_id && $WRD->wbs_id == $data->wbs_id){
+                            $updatedQty = $WRD->quantity + $data->quantityInt;
+                            // $this->updateReserveStock($data->material_id, $WRD->quantity ,$updatedQty);
+                            $WRD->quantity = $updatedQty;
+                            $WRD->update();
+
+                            $status = 1;
+                        }
+                    }
+                    if($status == 0){
+                        $WRD = new WorkRequestDetail;
+                        $WRD->work_request_id = $WR->id;
+                        $WRD->quantity = $data->quantityInt;
+                        $WRD->description = $data->description;
+                        $WRD->material_id = $data->material_id;
+                        $WRD->required_date = $required_date;
+                        $WRD->type = 1;
+                        $WRD->wbs_id = $data->wbs_id;
+                        $WRD->activity_id = $data->activity_id;
+                        $WRD->save();
+
+                        // $this->reserveStock($data->material_id, $data->quantityInt);
+                    }
+                }else{
+                    $WRD = new WorkRequestDetail;
+                    $WRD->work_request_id = $WR->id;
+                    $WRD->quantity = $data->quantityInt;
+                    $WRD->description = $data->description;
+                    $WRD->material_id = $data->material_id;
+                    $WRD->required_date = $required_date;
+                    $WRD->type = 1;
                     $WRD->wbs_id = $data->wbs_id;
+                    $WRD->activity_id = $data->activity_id;
                     $WRD->save();
 
                     // $this->reserveStock($data->material_id, $data->quantityInt);
@@ -195,16 +255,42 @@ class WorkRequestController extends Controller
         $menu = $request->route()->getPrefix() == "/work_request" ? "building" : "repair";  
 
         $modelWR = WorkRequest::findOrFail($id);
-        $project = Project::where('id',$modelWR->project_id)->with('customer','ship')->first();
-        $modelWRD = WorkRequestDetail::where('work_request_id',$modelWR->id)->with('material','wbs')->get();
+        $project = Project::where('id',$modelWR->project_id)->with('customer','ship')->get();
+        foreach($project as $data){
+            $planStartDate = DateTime::createFromFormat('Y-m-d', $data['planned_start_date']);
+            $data['planned_start_date'] = $planStartDate->format('d-m-Y');
+
+            $planEndDate = DateTime::createFromFormat('Y-m-d', $data['planned_end_date']);
+            $data['planned_end_date'] = $planEndDate->format('d-m-Y');
+        }
+
+        $modelWRD = WorkRequestDetail::where('work_request_id',$modelWR->id)->where('type',0)->with('material','wbs','material.uom')->get();
         foreach($modelWRD as $wrd){
             $material = Stock::where('material_id',$wrd->material_id)->first();
             $wrd['available'] = $material->quantity-$material->reserved;
+            $wrd['old_data'] = true;
         }
         $modelWRD->jsonSerialize();
+
+        $modelWRDFG = WorkRequestDetail::where('work_request_id',$modelWR->id)->where('type',1)->with('material','wbs','material.uom','activity')->get();
+        foreach($modelWRDFG as $wrdfg){
+            $wrdfg['old_data'] = true;
+        }
+        $modelWRDFG->jsonSerialize();
         $wbss = [];
         $wbss = WBS::where('project_id',$modelWR->project_id)->get()->jsonSerialize();
-        return view('work_request.edit', compact('modelWR','project','modelWRD','wbss','menu'));
+
+        // $existMaterial = WorkRequestDetail::where('work_request_id',$modelWR->id)->pluck('material_id')->toArray();
+        $bomPrep = BomPrep::where('project_id',$modelWR->project_id)->pluck('id')->toArray();
+        $materials = BomDetail::whereIn('bom_prep_id',$bomPrep)->where('source','Stock')->with('material')->get();
+
+        if($menu == "repair"){
+            return view('work_request.editRepair', compact('modelWR','project','modelWRD','wbss','menu','modelWRDFG','materials'));
+        
+        }elseif($menu == "building"){
+            return view('work_request.edit', compact('modelWR','project','modelWRD','wbss','menu','modelWRDFG','materials'));
+        }
+
     }
 
     /**
@@ -227,10 +313,144 @@ class WorkRequestController extends Controller
                 $WR->status = 4;
             }
             $WR->update();
+
+            if($menu == "building"){
+                
+                foreach($datas->materials as $data){
+    
+                    if($data->required_date != null && $data->required_date != ''){
+                        $required_date = DateTime::createFromFormat('d-m-Y', $data->required_date);
+                        $required_date = $required_date->format('Y-m-d');
+                    }else{
+                        $required_date = null;
+                    }
+    
+                    if($data->wrd_id != null){
+                        $WRD = WorkRequestDetail::find($data->wrd_id);
+                        // $this->updateReserveStock($data->material_id, $WRD->quantity ,$data->quantityInt);
+                        
+                        $WRD->quantity = $data->quantityInt;
+                        $WRD->description = $data->description;
+                        $WRD->required_date = $required_date;
+                        $WRD->material_id = $data->material_id;
+                        $WRD->type = 0;
+                        $WRD->wbs_id = $data->wbs_id;
+                        $WRD->update();
+                    }else{
+                        $modelWRDs = WorkRequestDetail::where('work_request_id',$WR->id)->get();
+                        if(count($modelWRDs)>0){
+                            $status = 0;
+                            foreach($modelWRDs as $WRD){
+                                if($WRD->material_id == $data->material_id && $WRD->wbs_id == $data->wbs_id){
+                                    $updatedQty = $WRD->quantity + $data->quantityInt;
+                                    // $this->updateReserveStock($data->material_id, $WRD->quantity ,$updatedQty);
+                                    $WRD->quantity = $updatedQty;
+                                    $WRD->update();
+        
+                                    $status = 1;
+                                }
+                            }
+                            if($status == 0){
+                                $WRD = new WorkRequestDetail;
+                                $WRD->work_request_id = $WR->id;
+                                $WRD->quantity = $data->quantityInt;
+                                $WRD->description = $data->description;
+                                $WRD->required_date = $required_date;
+                                $WRD->material_id = $data->material_id;
+                                $WRD->type = 0;
+                                $WRD->wbs_id = $data->wbs_id;
+                                $WRD->save();
+        
+                                // $this->reserveStock($data->material_id, $data->quantityInt);
+                            }
+                        }else{
+                            $WRD = new WorkRequestDetail;
+                            $WRD->work_request_id = $WR->id;
+                            $WRD->quantity = $data->quantityInt;
+                            $WRD->description = $data->description;
+                            $WRD->required_date = $required_date;
+                            $WRD->material_id = $data->material_id;
+                            $WRD->type = 0;
+                            $WRD->wbs_id = $data->wbs_id;
+                            $WRD->save();
+        
+                            // $this->reserveStock($data->material_id, $data->quantityInt);
+                        }
+                    }
+    
+                }
+            }else{
+
+                foreach($datas->materials as $data){
+    
+                    if($data->required_date != null && $data->required_date != ''){
+                        $required_date = DateTime::createFromFormat('d-m-Y', $data->required_date);
+                        $required_date = $required_date->format('Y-m-d');
+                    }else{
+                        $required_date = null;
+                    }
+    
+                    if($data->wrd_id != null){
+                        $WRD = WorkRequestDetail::find($data->wrd_id);
+                        // $this->updateReserveStock($data->material_id, $WRD->quantity ,$data->quantityInt);
+                        
+                        $WRD->quantity = $data->quantityInt;
+                        $WRD->description = $data->description;
+                        $WRD->required_date = $required_date;
+                        $WRD->material_id = $data->material_id;
+                        $WRD->type = 0;
+                        $WRD->wbs_id = $data->wbs_id;
+                        $WRD->update();
+                    }else{
+                        $modelWRDs = WorkRequestDetail::where('work_request_id',$WR->id)->get();
+                        if(count($modelWRDs)>0){
+                            $status = 0;
+                            foreach($modelWRDs as $WRD){
+                                if($WRD->material_id == $data->material_id){
+                                    $updatedQty = $WRD->quantity + $data->quantityInt;
+                                    // $this->updateReserveStock($data->material_id, $WRD->quantity ,$updatedQty);
+                                    $WRD->quantity = $updatedQty;
+                                    $WRD->update();
+        
+                                    $status = 1;
+                                }
+                            }
+                            if($status == 0){
+                                $WRD = new WorkRequestDetail;
+                                $WRD->work_request_id = $WR->id;
+                                $WRD->quantity = $data->quantityInt;
+                                $WRD->description = $data->description;
+                                $WRD->required_date = $required_date;
+                                $WRD->material_id = $data->material_id;
+                                $WRD->type = 0;
+                                $WRD->wbs_id = $data->wbs_id;
+                                $WRD->save();
+        
+                                // $this->reserveStock($data->material_id, $data->quantityInt);
+                            }
+                        }else{
+                            $WRD = new WorkRequestDetail;
+                            $WRD->work_request_id = $WR->id;
+                            $WRD->quantity = $data->quantityInt;
+                            $WRD->description = $data->description;
+                            $WRD->required_date = $required_date;
+                            $WRD->material_id = $data->material_id;
+                            $WRD->type = 0;
+                            $WRD->wbs_id = $data->wbs_id;
+                            $WRD->save();
+        
+                            // $this->reserveStock($data->material_id, $data->quantityInt);
+                        }
+                    }
+    
+                }
+
+            }
             
-            foreach($datas->materials as $data){
-                $required_date = DateTime::createFromFormat('d-m-Y', $data->required_date);
-                if($required_date){
+
+            foreach($datas->materialsFG as $data){
+                if($data->required_date != null && $data->required_date != ''){
+                    $required_date = DateTime::createFromFormat('d-m-Y', $data->required_date);
                     $required_date = $required_date->format('Y-m-d');
                 }else{
                     $required_date = null;
@@ -243,6 +463,7 @@ class WorkRequestController extends Controller
                     $WRD->description = $data->description;
                     $WRD->required_date = $required_date;
                     $WRD->material_id = $data->material_id;
+                    $WRD->type = 1;
                     $WRD->wbs_id = $data->wbs_id;
                     $WRD->update();
                 }else{
@@ -266,6 +487,7 @@ class WorkRequestController extends Controller
                             $WRD->description = $data->description;
                             $WRD->required_date = $required_date;
                             $WRD->material_id = $data->material_id;
+                            $WRD->type = 1;
                             $WRD->wbs_id = $data->wbs_id;
                             $WRD->save();
     
@@ -278,13 +500,13 @@ class WorkRequestController extends Controller
                         $WRD->description = $data->description;
                         $WRD->required_date = $required_date;
                         $WRD->material_id = $data->material_id;
+                        $WRD->type = 1;
                         $WRD->wbs_id = $data->wbs_id;
                         $WRD->save();
     
                         // $this->reserveStock($data->material_id, $data->quantityInt);
                     }
                 }
-
 
             }
 
@@ -454,7 +676,7 @@ class WorkRequestController extends Controller
 
     public function getMaterialWrAPI($id){
         
-        return response(Material::findOrFail($id)->jsonSerialize(), Response::HTTP_OK);
+        return response(Material::where('id',$id)->with('uom')->first()->jsonSerialize(), Response::HTTP_OK);
     }
 
     public function getWbsWrAPI($id){
@@ -480,5 +702,82 @@ class WorkRequestController extends Controller
 
         return response(Material::whereNotIn('id',$ids)->get()->jsonSerialize(), Response::HTTP_OK);
     }
+
+    public function getActivityWRAPI($id){
+        $data = array();
+
+        $wbs = WBS::findOrFail($id);
+        $data['wbs'] = $wbs->jsonSerialize();
+
+        if($wbs->activities != null){
+            $activity_ids = $wbs->activities->pluck('id')->toArray();
+            $data['activity'] = Activity::whereIn('id',$activity_ids)->get();
+        }else{
+            $data['activity'] = [];
+        }
+
+
+        return response($data, Response::HTTP_OK);
+    }
+
+    public function getDataActivityWRAPI($id){
+        $data = Activity::where('id',$id)->first()->jsonSerialize();
+
+        return response($data, Response::HTTP_OK);
+    }
+
+    public function getMaterialWIPApi($id){
+        $data = array();
+
+        $wbs = WBS::findOrFail($id);
+        if($wbs->bom != null){
+            $bom_id = Bom::where('wbs_id',$wbs->id)->first();
+            $material_ids = BomDetail::where('bom_id',$bom_id->id)->where('source','WIP')->pluck('material_id')->toArray();
+            $data['materials'] = Material::whereIn('id',$material_ids)->get();
+        }else{
+            $data['materials'] = [];
+        }
+
+        $data['wbs'] = $wbs->jsonSerialize();
+
+        return response($data, Response::HTTP_OK);
+    }
+
+    public function getMaterialActivityWIPAPI($id){
+        $data = array();
+
+        $data['activity'] = ActivityDetail::where('activity_id',$id)->where('source','WIP')->with('material')->get();
+
+        return response($data, Response::HTTP_OK);
+    }
+
+    public function getBomPrepWRAPI($id){
+        $data = array();
+
+        $bomPrep = BomPrep::where('project_id',$id)->pluck('id')->toArray();
+        $data['bom'] = BomDetail::whereIn('bom_prep_id',$bomPrep)->where('source','Stock')->with('material')->get();
+
+        return response($data, Response::HTTP_OK);
+    }
+
+    public function getMaterialWIPEditAPI($id, $wr_id){
+        $data = array();
+        $wrds = WorkRequest::find($wr_id)->workRequestDetails;
+        $exisiting_material = $wrds->where('wbs_id',$id)->pluck('material_id')->toArray();
+
+        $wbs = WBS::findOrFail($id);
+        if($wbs->bom != null){
+            $bom_id = Bom::where('wbs_id',$wbs->id)->first();
+            $material_ids = BomDetail::where('bom_id',$bom_id->id)->where('source','WIP')->pluck('material_id')->toArray();
+            $data['materials'] = Material::whereIn('id',$material_ids)->whereNotIn('id', $exisiting_material)->get();
+        }else{
+            $data['materials'] = [];
+        }
+
+        $data['wbs'] = $wbs->jsonSerialize();
+
+        return response($data, Response::HTTP_OK);
+    }
+    
 
 }

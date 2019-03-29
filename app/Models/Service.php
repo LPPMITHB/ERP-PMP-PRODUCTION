@@ -27,5 +27,15 @@ class Service extends Model
     {
         return $this->belongsTo('App\Models\User');
     }
+
+    public function ship()
+    {
+        return $this->belongsTo('App\Models\Ship');
+    }
     
+    public function serviceDetails()
+    {
+        return $this->hasMany('App\Models\ServiceDetail');
+    }
+
 }

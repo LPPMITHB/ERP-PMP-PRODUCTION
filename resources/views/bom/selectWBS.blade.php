@@ -37,10 +37,10 @@
                     <div class="box-body no-padding">
                         <div class="col-sm-12 no-padding"><b>Project Information</b></div>
                         
-                        <div class="col-md-4 col-xs-4 no-padding">Code</div>
+                        <div class="col-md-4 col-xs-4 no-padding">Number</div>
                         <div class="col-md-8 col-xs-8 no-padding"><b>: {{$project->number}}</b></div>
                         
-                        <div class="col-md-4 col-xs-4 no-padding">Ship</div>
+                        <div class="col-md-4 col-xs-4 no-padding">Ship Type</div>
                         <div class="col-md-8 col-xs-8 no-padding"><b>: {{$project->ship->type}}</b></div>
 
                         <div class="col-md-4 col-xs-4 no-padding">Customer</div>
@@ -71,9 +71,6 @@
                     
                 </div>
             </div>
-            <div class="overlay">
-                <i class="fa fa-refresh fa-spin"></i>
-            </div>
         </div>
     </div>
 </div>
@@ -83,6 +80,7 @@
 <script>
     $(document).ready(function(){
         var data = @json($data);
+        var project = @json($project);
 
         $('#treeview').jstree({
             "core": {
@@ -106,5 +104,11 @@
         });
         $('div.overlay').hide();
     });
+
+    $('#treeview').on("select_node.jstree", function (e, data) {
+        if(data.node.a_attr.href != '#'){
+            $('div.overlay').show();
+        }
+     });
 </script>
 @endpush

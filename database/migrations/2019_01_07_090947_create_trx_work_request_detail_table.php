@@ -20,12 +20,15 @@ class CreateTrxWorkRequestDetailTable extends Migration
             $table->integer('quantity');
             $table->integer('reserved')->default(0);            
             $table->text('description')->nullable();
+            $table->integer('type');
             $table->unsignedInteger('material_id')->nullable();
             $table->unsignedInteger('wbs_id')->nullable();
+            $table->unsignedInteger('activity_id')->nullable();
             $table->timestamps();
 
             $table->foreign('material_id')->references('id')->on('mst_material');
             $table->foreign('wbs_id')->references('id')->on('pro_wbs');
+            $table->foreign('activity_id')->references('id')->on('pro_activity');
             $table->foreign('work_request_id')->references('id')->on('trx_work_request');
         });
     }

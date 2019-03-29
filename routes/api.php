@@ -34,6 +34,7 @@ Route::get('/getBomDetail/{id}', 'BOMController@getBomDetailAPI')->name('api.bom
 Route::get('/getMaterialsBOM/{id}', 'BOMController@getMaterialsAPI')->name('api.bom.getMaterialsAPI');
 Route::get('/getServicesBOM/{id}', 'BOMController@getServicesAPI')->name('api.bom.getServicesAPI');
 Route::get('/getPRBom/{id}', 'BOMController@getPRAPI')->name('api.bom.getPRAPI');
+Route::get('/getBomHeader/{id}', 'BOMController@getBomHeaderAPI')->name('api.bom.getBomHeaderAPI');
 
 // bos
 Route::get('/getServiceBOS/{id}', 'BOSController@getServiceAPI')->name('api.bos.getServiceAPI');
@@ -52,13 +53,18 @@ Route::get('/getMaterialPR/{id}', 'PurchaseRequisitionController@getMaterialAPI'
 Route::get('/getResourcePR/{id}', 'PurchaseRequisitionController@getResourceAPI')->name('api.purchase_requisition.getResourceAPI');
 // Route::get('/getMaterials/{id}', 'PurchaseRequisitionController@getMaterialsAPI')->name('api.purchase_requisition.getMaterialsAPI');
 Route::get('/getWbsPR/{id}', 'PurchaseRequisitionController@getWbsAPI')->name('api.purchase_requisition.getWbsAPI');
+Route::get('/getModelWbsPR/{id}', 'PurchaseRequisitionController@getModelWbsAPI')->name('api.purchase_requisition.getModelWbsAPI');
+Route::get('/getModelActivityPR/{id}/{ids}', 'PurchaseRequisitionController@getModelActivityAPI')->name('api.purchase_requisition.getModelActivityAPI');
 Route::get('/getPRD/{id}', 'PurchaseRequisitionController@getPRDAPI')->name('api.purchase_requisition.getPRDAPI');
+Route::get('/getActivityId', 'PurchaseRequisitionController@getActivityIdAPI')->name('api.purchase_requisition.getActivityIdAPI');
 
 // material_requisition
-Route::get('/getWbsMR/{id}', 'MaterialRequisitionController@getWbsAPI')->name('api.purchase_requisition.getWbsAPI');
-Route::get('/getWbsMREdit/{id}/{mr_id}', 'MaterialRequisitionController@getWbsEditAPI')->name('api.purchase_requisition.getWbsEditAPI');
-Route::get('/getProjectMR/{id}', 'MaterialRequisitionController@getProjectApi')->name('api.purchase_requisition.getProjectApi');
-Route::get('/getMaterialMR/{id}', 'MaterialRequisitionController@getMaterialAPI')->name('api.purchase_requisition.getMaterialAPI');
+Route::get('/getWbsMR/{id}', 'MaterialRequisitionController@getWbsAPI')->name('api.material_requisition.getWbsAPI');
+Route::get('/getWbsMREdit/{id}/{mr_id}', 'MaterialRequisitionController@getWbsEditAPI')->name('api.material_requisition.getWbsEditAPI');
+Route::get('/getProjectMR/{id}', 'MaterialRequisitionController@getProjectApi')->name('api.material_requisition.getProjectApi');
+Route::get('/getMaterialMR/{id}', 'MaterialRequisitionController@getMaterialAPI')->name('api.material_requisition.getMaterialAPI');
+Route::get('/getStockMR/{id}', 'MaterialRequisitionController@getStockAPI')->name('api.material_requisition.getStockAPI');
+Route::get('/getMaterialInfoAPI/{id}/{wbs_id}', 'MaterialRequisitionController@getMaterialInfoAPI')->name('api.material_requisition.getMaterialInfoAPI');
 
 
 // goods_receipt
@@ -70,6 +76,7 @@ Route::get('/getPRD/{id}', 'GoodsReceiptController@getGRDAPI')->name('api.goods_
 // purchase order
 Route::get('/getVendor', 'PurchaseOrderController@getVendorAPI')->name('api.purchase_order.getVendorAPI');
 Route::get('/getResourcePO/{id}', 'PurchaseOrderController@getResourceAPI')->name('api.purchase_order.getResourceAPI');
+Route::get('/getVendorList/{id}', 'PurchaseOrderController@getVendorListAPI')->name('api.purchase_order.getVendorListAPI');
 
 // stock management
 Route::get('/getSlocSM/{id}', 'StockManagementController@getSlocApi')->name('api.stock_management.getSlocApi');
@@ -84,11 +91,17 @@ Route::get('/getWbsWr/{id}', 'WorkRequestController@getWbsWrAPI')->name('api.wor
 Route::get('/getBomWr/{id}', 'WorkRequestController@getBomWrAPI')->name('api.work_request.getBomWrAPI');
 Route::get('/getBomDetailWr/{id}', 'WorkRequestController@getBomDetailWrAPI')->name('api.work_request.getBomDetailWrAPI');
 Route::get('/getProjectWR/{id}', 'WorkRequestController@getProjectApi')->name('api.work_request.getProjectApi');
+Route::get('/getMaterialWIP/{id}', 'WorkRequestController@getMaterialWIPApi')->name('api.work_request.getMaterialWIPApi');
 Route::get('/getWbsWREdit/{id}/{wr_id}', 'WorkRequestController@getWbsEditAPI')->name('api.work_request.getWbsEditAPI');
+Route::get('/getMaterialWIPEdit/{id}/{wr_id}', 'WorkRequestController@getMaterialWIPEditAPI')->name('api.work_request.getMaterialWIPEditAPI');
+Route::get('/getActivityWR/{id}', 'WorkRequestController@getActivityWRAPI')->name('api.work_request.getActivityWRAPI');
+Route::get('/getMaterialActivityWIP/{id}', 'WorkRequestController@getMaterialActivityWIPAPI')->name('api.work_request.getMaterialActivityWIPAPI');
+Route::get('/getBomPrepWR/{id}', 'WorkRequestController@getBomPrepWRAPI')->name('api.work_request.getBomPrepWRAPI');
+Route::get('/getDataActivityWR/{id}', 'WorkRequestController@getDataActivityWRAPI')->name('api.work_request.getDataActivityWRAPI');
 
 // material write off
-Route::get('/getMaterial/{id}', 'MaterialWriteOffController@getMaterialApi')->name('api.material_write_off.getMaterialApi');
-Route::get('/getMaterials/{id}', 'MaterialWriteOffController@getMaterialsApi')->name('api.material_write_off.getMaterialsApi');
+Route::get('/getMaterialMwo/{id}', 'MaterialWriteOffController@getMaterialApi')->name('api.material_write_off.getMaterialApi');
+Route::get('/getMaterialsMWO/{id}', 'MaterialWriteOffController@getMaterialsMWOApi')->name('api.material_write_off.getMaterialsMWOApi');
 Route::get('/getSloc/{id}', 'MaterialWriteOffController@getSlocApi')->name('api.material_write_off.getSlocApi');
 
 // goods movement
@@ -120,6 +133,8 @@ Route::get('/getResourceDetail/{data}', 'ResourceController@getResourceDetailApi
 Route::get('/getCategoryAR/{id}', 'ResourceController@getCategoryARApi')->name('api.resource.getCategoryARApi');
 Route::get('/generateCodeGrResource/{data}', 'ResourceController@generateCodeAPI')->name('api.resource.generateCodeAPI');
 Route::get('/getNewResourceDetail/{id}', 'ResourceController@getNewResourceDetailAPI')->name('api.resource.getNewResourceDetailAPI');
+Route::get('/getSchedule/{id}', 'ResourceController@getScheduleAPI')->name('api.resource.getScheduleAPI');
+Route::get('/getCodeRSCD', 'ResourceController@getCodeRSCDAPI')->name('api.resource.getCodeRSCDAPI');
 
 // yard plan
 Route::get('/getWbs/{id}', 'YardPlanController@getWbsAPI')->name('api.yard_plan.getWbsAPI');
@@ -137,13 +152,20 @@ Route::get('/getActualStartDate/{id}', 'ProjectController@getActualStartDateAPI'
 
 // wbs
 Route::get('/getWbs/{id}', 'WBSController@getWbsAPI')->name('api.wbs.getWbsAPI');
+Route::get('/getWbsProfile/{menu}/{project_type}', 'WBSController@getWbsProfileAPI')->name('api.wbs.getWbsProfileAPI');
+Route::get('/getWbsConfiguration', 'WBSController@getWbsConfigurationAPI')->name('api.wbs.getWbsConfigurationAPI');
 Route::get('/getAllWbs/{id}', 'WBSController@getAllWbsAPI')->name('api.wbs.getAllWbsAPI');
 Route::get('/getSubWbs/{id}', 'WBSController@getSubWbsAPI')->name('api.wbs.getSubWbsAPI');
+Route::get('/getSubWbsProfile/{id}', 'WBSController@getSubWbsProfileAPI')->name('api.wbs.getSubWbsProfileAPI');
+Route::get('/getSubWbsConfiguration/{id}', 'WBSController@getSubWbsConfigurationAPI')->name('api.wbs.getSubWbsConfigurationAPI');
 Route::get('/getWeightWbs/{id}', 'WBSController@getWeightWbsAPI')->name('api.wbs.getWeightWbsAPI');
 Route::get('/getWeightProject/{id}', 'WBSController@getWeightProjectAPI')->name('api.wbs.getWeightProjectAPI');
+Route::get('/getDataProfileJstree/{id}', 'WBSController@getDataProfileJstreeAPI')->name('api.project.getDataProfileJstreeAPI');
 
 // activity
 Route::get('/getActivities/{id}', 'ActivityController@getActivitiesAPI')->name('api.activity.getActivitiesAPI');
+Route::get('/getActivitiesProfile/{id}', 'ActivityController@getActivitiesProfileAPI')->name('api.activity.getActivitiesProfileAPI');
+Route::get('/getActivitiesConfiguration/{id}', 'ActivityController@getActivitiesConfigurationAPI')->name('api.activity.getActivitiesConfigurationAPI');
 Route::get('/getActivitiesNetwork/{id}', 'ActivityController@getActivitiesNetworkAPI')->name('api.activity.getActivitiesNetworkAPI');
 Route::get('/getAllActivities/{id}', 'ActivityController@getAllActivitiesAPI')->name('api.activity.getAllActivitiesAPI');
 Route::get('/getAllActivitiesEdit/{project_id}/{activity_id}', 'ActivityController@getAllActivitiesEditAPI')->name('api.activity.getAllActivitiesEditAPI');
@@ -151,4 +173,10 @@ Route::get('/getPredecessor/{id}', 'ActivityController@getPredecessorAPI')->name
 Route::get('/getProjectActivity/{id}', 'ActivityController@getProjectAPI')->name('api.activity.getProjectAPI');
 Route::get('/getLatestPredecessor/{id}', 'ActivityController@getLatestPredecessorAPI')->name('api.activity.getLatestPredecessorAPI');
 
+// bom profile
+Route::get('/getBomProfile/{id}', 'WBSController@getBomProfileAPI')->name('api.wbs.getBomProfileAPI');
+Route::get('/getResourceProfile/{id}', 'WBSController@getResourceProfileAPI')->name('api.wbs.getResourceProfileAPI');
+Route::get('/getRdProfiles/{id}', 'WBSController@getRdProfilesAPI')->name('api.wbs.getRdProfilesAPI');
 
+// service
+Route::get('/getNewServiceDetail/{id}', 'ServiceController@getNewServiceDetailAPI')->name('api.service.getNewServiceDetailAPI');

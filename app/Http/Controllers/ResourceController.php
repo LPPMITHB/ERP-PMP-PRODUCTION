@@ -53,8 +53,17 @@ class ResourceController extends Controller
             $modelProject = Project::where('status',1)->where('business_unit_id',2)->get();
         }
         $resources = Resource::all();
+        $resource_categories = Configuration::get('resource_category');
+        foreach($resource_categories as $key => $rc){
+            if($rc->id == 0){
+                unset($resource_categories[$key]);
+            }
+        }
+        rsort($resource_categories);
+        $operation_hours = Configuration::get('operation_hours');
+        $resourceDetails = ResourceDetail::where('status','!=',0)->get()->jsonSerialize();
 
-        return view('resource.assignResource', compact('resources','modelProject','route'));
+        return view('resource.assignResource', compact('resourceDetails','resource_categories','resources','modelProject','route','operation_hours'));
     }
 
     public function create(Request $request)
@@ -76,6 +85,11 @@ class ResourceController extends Controller
             $resource->code = strtoupper($data->code);
             $resource->name = ucwords($data->name);
             $resource->description = $data->description;
+            if($data->cost_standard_price != null || $data->cost_standard_price != ""){
+                $resource->cost_standard_price = $data->cost_standard_price;
+            }else{
+                $resource->cost_standard_price = 0;
+            }
             $resource->user_id = Auth::user()->id;
             $resource->branch_id = Auth::user()->branch->id;
             $resource->save();
@@ -262,7 +276,6 @@ class ResourceController extends Controller
     {
         $route = $request->route()->getPrefix();
         $modelGRs = GoodsReceipt::all();
-        // print_r($modelGRs);exit();
         foreach($modelGRs as $key => $GR){
             if($GR->purchaseOrder->purchaseRequisition->type != 2){
                 $modelGRs->forget($key);
@@ -401,7 +414,6 @@ class ResourceController extends Controller
     public function updateDetail(Request $request)
     {
         $data = $request->json()->all();
-
         DB::beginTransaction();
         try {
             $modelRD = ResourceDetail::findOrFail($data['resource_detail_id']);
@@ -410,15 +422,19 @@ class ResourceController extends Controller
             $modelRD->performance_uom_id = ($data['performance_uom_id'] != '') ? $data['performance_uom_id'] : null;
             $modelRD->lifetime_uom_id = ($data['lifetime_uom_id'] != '') ? $data['lifetime_uom_id'] : null;
             if($modelRD->lifetime_uom_id != null){
-                if($data['lt'] != ''){
+                if($data['lifetime'] != ''){
                     if($modelRD->lifetime_uom_id == 1){
-                        $modelRD->lifetime = $data['lt'] * 8;
+                        $modelRD->lifetime = $data['lifetime'] * 8;
                     }elseif($modelRD->lifetime_uom_id == 2){
-                        $modelRD->lifetime = $data['lt'] * 8 * 30;
+                        $modelRD->lifetime = $data['lifetime'] * 8 * 30;
                     }elseif($modelRD->lifetime_uom_id == 3){
-                        $modelRD->lifetime = $data['lt'] * 8 * 365;
+                        $modelRD->lifetime = $data['lifetime'] * 8 * 365;
                     }
                 }
+            }
+            if($data['lifetime_uom_id'] == '' || $data['lifetime'] == ''){
+                $modelRD->lifetime = null;
+                $modelRD->lifetime_uom_id = null;
             }
             if($data['category_id'] == 0){
                 $modelRD->sub_con_address = $data['sub_con_address'];
@@ -445,17 +461,27 @@ class ResourceController extends Controller
                 }
                 $modelRD->purchasing_price = ($data['purchasing_price'] != '') ? $data['purchasing_price'] : null;
                 $modelRD->cost_per_hour = ($data['cost_per_hour'] != '') ? $data['cost_per_hour'] : null;
+                $modelRD->serial_number = ($data['serial_number'] != '') ? $data['serial_number'] : null;
+                $modelRD->quantity = ($data['quantity'] != '') ? $data['quantity'] : null;
+                $modelRD->kva = ($data['kva'] != '') ? $data['kva'] : null;
+                $modelRD->amp = ($data['amp'] != '') ? $data['amp'] : null;
+                $modelRD->volt = ($data['volt'] != '') ? $data['volt'] : null;
+                $modelRD->phase = ($data['phase'] != '') ? $data['phase'] : null;
+                $modelRD->length = ($data['length'] != '') ? $data['length'] : null;
+                $modelRD->width = ($data['width'] != '') ? $data['width'] : null;
+                $modelRD->height = ($data['height'] != '') ? $data['height'] : null;
+                $modelRD->manufactured_in = ($data['manufactured_in'] != '') ? $data['manufactured_in'] : null;
             }
 
             if(!$modelRD->update()){
-                return redirect()->route('resource.show',$data['resource_detail_id'])->with('error','Failed to save, please try again !');
+                return response(["error"=>"Failed to save, please try again!"],Response::HTTP_OK);
             }else{
                 DB::commit();
-                return response(json_encode($modelRD),Response::HTTP_OK);
+                return response(["response"=>"Resource Detail Updated"],Response::HTTP_OK);
             }
         } catch (\Exception $e) {
             DB::rollback();
-            return redirect()->route('resource.show',$data['resource_detail_id'])->with('error', $e->getMessage());
+            return response(["error"=> $e->getMessage()],Response::HTTP_OK);
         }
     }
 
@@ -477,6 +503,11 @@ class ResourceController extends Controller
             $resource->code = strtoupper($data->code);
             $resource->name = ucwords($data->name);
             $resource->description = $data->description;
+            if($data->cost_standard_price != null || $data->cost_standard_price != ""){
+                $resource->cost_standard_price = $data->cost_standard_price;
+            }else{
+                $resource->cost_standard_price = 0;
+            }
             $resource->update();
 
             DB::commit();
@@ -506,6 +537,22 @@ class ResourceController extends Controller
             $resource_ref->resource_id = $data['resource_id'];
             $resource_ref->wbs_id = $data['wbs_id'];
             $resource_ref->quantity = $data['quantity'];
+            if($data['category_id'] == 3){
+                if($data['resource_detail_id'] != "" && $data['resource_detail_id'] != null){
+                    $resource_ref->resource_detail_id = $data['resource_detail_id'];
+                    if($data['start_date'] != "" && $data['start_date'] != null && $data['end_date'] != "" && $data['end_date'] != null){
+                        $resource_ref->start_date = $data['start_date'];
+                        $resource_ref->end_date = $data['end_date'];
+                    }else{
+                        $resource_ref->start_date = null;
+                        $resource_ref->end_date = null;
+                    }
+                }else{
+                    $resource_ref->resource_detail_id = null;
+                    $resource_ref->start_date = null;
+                    $resource_ref->end_date = null;
+                }
+            }
 
             if(!$resource_ref->save()){
                 return response(["error"=>"Failed to save, please try again!"],Response::HTTP_OK);
@@ -527,10 +574,22 @@ class ResourceController extends Controller
         DB::beginTransaction();
         try {
             $resource = new ResourceTrx;
+            $resource->category_id = $data['category_id'];
             $resource->resource_id = $data['resource_id'];
+            if($data['resource_detail_id'] != ''){
+                $resource->resource_detail_id = $data['resource_detail_id'];
+            }
             $resource->project_id = $data['project_id'];
             $resource->wbs_id = $data['wbs_id'];
             $resource->quantity = $data['quantity'];
+            if($data['start_date'] != ''){
+                $resource->start_date = $data['start_date'];
+            }
+            if($data['end_date'] != ''){
+                $resource->end_date = $data['end_date'];
+            }
+            $resource->user_id = Auth::user()->id;
+            $resource->branch_id = Auth::user()->branch->id;
 
             $ProdOrder = ProductionOrder::where('wbs_id',$data['wbs_id'])->where('status',1)->first();
             if($ProdOrder){
@@ -559,6 +618,14 @@ class ResourceController extends Controller
         }
     }
 
+    public function resourceSchedule(Request $request){
+        $route = $request->route()->getPrefix();
+        $resources = Resource::all();
+        $resourceDetail = ResourceDetail::where('category_id',3)->get();
+
+        return view('resource.resourceSchedule', compact('route','resources','resourceDetail'));        
+    }
+
     public function createInternal(Request $request,$id)
     {
         $route = $request->route()->getPrefix();
@@ -576,12 +643,23 @@ class ResourceController extends Controller
 
         DB::beginTransaction();
         try {
+
                 $RD = new ResourceDetail;
                 $RD->code = $data->code;
                 $RD->resource_id = $data->resource_id;
+                $RD->serial_number = $data->serial_number;
                 $RD->category_id = 3;
+                $RD->quantity = ($data->quantity != '') ? $data->quantity : 1;
                 $RD->description = $data->description;
-                $RD->brand = $data->brand;
+                $RD->kva = ($data->kva != '') ? $data->kva : null;
+                $RD->amp = ($data->amp != '') ? $data->amp : null;
+                $RD->volt = ($data->volt != '') ? $data->volt : null;
+                $RD->phase = ($data->phase != '') ? $data->phase : null;
+                $RD->length = ($data->length != '') ? $data->length : null;
+                $RD->width = ($data->width != '') ? $data->width : null;
+                $RD->height = ($data->height != '') ? $data->height : null;
+                $RD->brand = ($data->brand != '') ? $data->brand : null;
+                $RD->manufactured_in = $data->manufactured_in;
                 if($data->depreciation_method != ""){
                     $RD->depreciation_method = $data->depreciation_method;
                 }
@@ -635,13 +713,13 @@ class ResourceController extends Controller
     public function generateResourceCode(){
         $code = 'RSC';
         $modelResource = Resource::orderBy('code', 'desc')->first();
-        
+
         $number = 1;
 		if(isset($modelResource)){
-            $number += intval(substr($modelResource->code, -4));
+            $number += intval(substr($modelResource->code, -3));
 		}
 
-        $resource_code = $code.''.sprintf('%04d', $number);
+        $resource_code = $code.''.sprintf('%03d', $number);
 		return $resource_code;
     }
 
@@ -721,7 +799,7 @@ class ResourceController extends Controller
     }
 
     public function getResourceTrxApi($id){
-        $resourceTrx = ResourceTrx::with('project','resource','wbs')->where('project_id',$id)->get()->jsonSerialize();
+        $resourceTrx = ResourceTrx::with('project','resource','wbs','resourceDetail')->where('project_id',$id)->get()->jsonSerialize();
 
         return response($resourceTrx, Response::HTTP_OK);
     }
@@ -751,5 +829,17 @@ class ResourceController extends Controller
         $modelRD = ResourceDetail::where('resource_id',$id)->with('goodsReceiptDetail.goodsReceipt.purchaseOrder','performanceUom','productionOrderDetails.productionOrder.wbs','productionOrderDetails.performanceUom','productionOrderDetails.resourceDetail')->get()->jsonSerialize();
 
         return response($modelRD, Response::HTTP_OK);
+    }
+
+    public function getScheduleAPI($id){
+        $modelTR = ResourceTrx::where('resource_detail_id',$id)->with('wbs','user','project')->get()->jsonSerialize();
+
+        return response($modelTR, Response::HTTP_OK);
+    }
+
+    public function getCodeRSCDAPI(){
+        $modelRSCD = ResourceDetail::all()->jsonSerialize();
+
+        return response($modelRSCD, Response::HTTP_OK);
     }
 }

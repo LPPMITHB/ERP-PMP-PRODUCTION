@@ -12,22 +12,22 @@ class StorageLocationDetailsTableSeeder extends Seeder
      */
     public function run()
     {
-        // $modelMaterials = Material::all();
-        // foreach($modelMaterials as $material){
-        //     $quantity = rand(1,1000);
-        //     DB::table('mst_storage_location_detail')->insert([
-        //         'material_id' => $material->id,
-        //         'quantity' => $quantity,
-        //         'storage_location_id' => rand(1,3),
-        //     ]);
+        $modelMaterials = Material::all();
+        foreach($modelMaterials as $material){
+            $quantity = rand(1,1000);
+            DB::table('mst_storage_location_detail')->insert([
+                'material_id' => $material->id,
+                'quantity' => $quantity,
+                'storage_location_id' => rand(1,3),
+            ]);
 
-        //     $quantity = rand(1,1000);
-        //     DB::table('mst_storage_location_detail')->insert([
-        //         'material_id' => $material->id,
-        //         'quantity' => $quantity,
-        //         'storage_location_id' => rand(4,7),
-        //     ]);
+            $quantity = rand(1,1000);
+            DB::table('mst_storage_location_detail')->insert([
+                'material_id' => $material->id,
+                'quantity' => $quantity,
+                'storage_location_id' => rand(4,7),
+            ]);
 
-        // }
+        }
     }
 }

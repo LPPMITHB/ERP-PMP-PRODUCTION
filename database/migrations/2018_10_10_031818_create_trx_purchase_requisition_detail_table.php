@@ -17,21 +17,25 @@ class CreateTrxPurchaseRequisitionDetailTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('purchase_requisition_id');
             $table->date('required_date')->nullable();
-            $table->integer('quantity');
-            $table->integer('reserved')->default(0);
+            $table->float('quantity',15,2);
+            $table->float('reserved',15,2)->default(0);
             $table->unsignedInteger('material_id')->nullable();
             $table->unsignedInteger('resource_id')->nullable();
             $table->unsignedInteger('wbs_id')->nullable();
+            $table->unsignedInteger('vendor_id')->nullable();
+            $table->unsignedInteger('activity_detail_id')->nullable();
             $table->string('alocation')->nullable();
+            $table->integer('status')->nullable();
             $table->unsignedInteger('user_id')->nullable();
             $table->unsignedInteger('project_id')->nullable();
             $table->timestamps();
 
             $table->foreign('material_id')->references('id')->on('mst_material');
             $table->foreign('resource_id')->references('id')->on('mst_resource');
-            $table->foreign('wbs_id')->references('id')->on('pro_wbs');
             $table->foreign('purchase_requisition_id')->references('id')->on('trx_purchase_requisition');
             $table->foreign('project_id')->references('id')->on('pro_project');
+            $table->foreign('wbs_id')->references('id')->on('pro_wbs');
+            $table->foreign('vendor_id')->references('id')->on('mst_vendor');
             $table->foreign('user_id')->references('id')->on('users');
         });
     }

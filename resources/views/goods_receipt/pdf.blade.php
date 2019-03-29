@@ -43,7 +43,11 @@
                 <div class="col-xs-12">
                     <div class="box-header no-padding" style="margin-bottom : 47px">
                         <div class="col-sm-3 col-md-3 col-lg-3 no-padding-left m-b-7">
-                            <img src="{{ asset('images/logo-PMP.png') }}" alt="" srcset="">                    
+                            @if($route == '/goods_receipt')
+                            <img src="{{ asset('images/logo-PMP.png') }}" alt="" srcset="">    
+                            @else 
+                            <img src="{{ asset('images/logo-PAMI.jpg') }}" alt="" srcset="">    
+                            @endif                    
                         </div>
                         <div class="row" style="margin-left: -5px;">
                             <div class="col-sm-12" style="font-size: 11px;line-height: 13px">
@@ -83,7 +87,7 @@
                                 -
                                 @endif
                             </div>
-                            <div style="font-size: 11px;">Project  :</div>
+                            {{-- <div style="font-size: 11px;">Project  :</div>
                             <div class="p-l-5" style="word-wrap:break-word;width: 340px; margin-left: 65px; margin-top: -50px;">
                                 @if($modelGR->purchase_order_id != "")
                                 <b style="font-size: 12px;">{{$modelGR->purchaseOrder->project->name}}</b>
@@ -92,7 +96,7 @@
                                 @elseif($modelGR->purchase_order_id == "" && $modelGR->work_order_id == "")
                                 -
                                 @endif
-                            </div>
+                            </div> --}}
                             <div style="font-size: 11px;">Dept  :</div>
                             <div class="p-l-5" style="word-wrap:break-word;width: 340px; margin-left: 65px; margin-top: -50px;">
                                 <b style="font-size: 12px;">{{$modelGR->user->role->name}}</b>
@@ -140,7 +144,7 @@
                             <div style="font-size: 11px;">Ship Date  </div>
                             <div class="p-l-5" style="font-size: 11px;margin-left: 120px; margin-top:-20px">
                                 @if($modelGR->ship_date != "")
-                                {{$modelGR->ship_date}}
+                                {{date("d-m-Y", strtotime($modelGR->ship_date))}}
                                 @else 
                                 -
                                 @endif
@@ -158,10 +162,11 @@
                             <thead>
                                 <tr>
                                     <th style="font-size: 11px" width="4%" class="text-center">NO</th>
-                                    <th style="font-size: 11px" width="22%" class="text-center" >ITEM NO</th>
+                                    <th style="font-size: 11px" width="15%" class="text-center" >ITEM NO</th>
                                     <th style="font-size: 11px" width="33%" class="text-center">ITEM DESCRIPTION</th>
                                     <th style="font-size: 11px" width="8%" class="text-center">QUANTITY</th>
                                     <th style="font-size: 11px" width="8%" class="text-center">U/M</th>
+                                    <th style="font-size: 11px" width="7%" class="text-center">RECEIVED DATE</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -169,10 +174,11 @@
                                     @if($GRD->quantity > 0)
                                         <tr>
                                             <td style="font-size: 11px" width="4%">{{ $loop->iteration }}</td>
-                                            <td style="font-size: 11px; padding-top:2px; padding-bottom:2px; padding-left:4px;" width="22%" class="tdBreakWord">{{ $GRD->material->code }} - {{ $GRD->material->name }}</td>
+                                            <td style="font-size: 11px; padding-top:2px; padding-bottom:2px; padding-left:4px;" width="15%" class="tdBreakWord">{{ $GRD->material->code }}</td>
                                             <td style="font-size: 11px; padding-top:2px; padding-bottom:2px; padding-left:4px;" width="30%" class="tdBreakWord">{{ $GRD->material->description }}</td>
                                             <td style="font-size: 11px" width="8%" class="tdBreakWord text-center">{{ number_format($GRD->quantity) }}</td>
                                             <td style="font-size: 11px" width="8%" class="tdBreakWord text-center">{{ $GRD->material->uom->unit }}</td>
+                                            <td style="font-size: 11px" width="7%" class="tdBreakWord text-center">{{date("d-m-Y", strtotime($GRD->received_date))}}</td>
                                         </tr>
                                     @endif
                                 @endforeach

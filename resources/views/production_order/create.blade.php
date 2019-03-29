@@ -72,7 +72,7 @@
                     <div class="col-sm-12 no-padding"><b>WBS Information</b></div>
 
                     <div class="col-md-4 col-xs-4 no-padding">Name</div>
-                    <div class="col-md-6 col-xs-8 no-padding"><b>: {{$wbs->name}}</b></div>
+                    <div class="col-md-6 col-xs-8 no-padding"><b>: {{$wbs->number}}</b></div>
                     
                     <div class="col-md-4 col-xs-4 no-padding">Description</div>
                     <div class="col-md-6 col-xs-8 no-padding"><b>: {{$wbs->description}}</b></div>
@@ -82,7 +82,7 @@
                     
                     <div class="col-md-4 col-xs-4 no-padding">Deadline</div>
                     <div class="col-md-6 col-xs-8 no-padding"><b>: @php
-                            $date = DateTime::createFromFormat('Y-m-d', $wbs->planned_deadline);
+                            $date = DateTime::createFromFormat('Y-m-d', $wbs->planned_end_date);
                             $date = $date->format('d-m-Y');
                             echo $date;
                         @endphp
@@ -132,7 +132,7 @@
                     <thead>
                         <tr>
                             <th width="5%">No</th>
-                            <th width="35%">Material Name</th>
+                            <th width="15%">Material Code</th>
                             <th width="30%">Description</th>
                             <th width="10%">Quantity</th>
                             <th width="10%">Unit</th>
@@ -145,7 +145,7 @@
                             @if($BOMD->material_id != "")
                                 <tr>
                                     <td>{{ $counter++ }}</td>
-                                    <td class="tdEllipsis" data-container="body" data-toggle="tooltip" title="{{ $BOMD->material->code }} - {{ $BOMD->material->name }}">{{ $BOMD->material->code }} - {{ $BOMD->material->name }}</td>
+                                    <td class="tdEllipsis" data-container="body" data-toggle="tooltip" title="{{ $BOMD->material->code }}">{{ $BOMD->material->code }}</td>
                                     <td class="tdEllipsis" data-container="body" data-toggle="tooltip" title="{{ $BOMD->material->description }}">{{ $BOMD->material->description }}</td>
                                     <td>{{ number_format($BOMD->quantity) }}</td>
                                     <td>{{ $BOMD->material->uom->unit }}</td>

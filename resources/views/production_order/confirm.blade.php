@@ -97,7 +97,7 @@
                             <tr>
                                 <td>Name</td>
                                 <td>:</td>
-                                <td>&ensp;<b>{{$modelPrO->wbs->name}}</b></td>
+                                <td>&ensp;<b>{{$modelPrO->wbs->number}}</b></td>
                             </tr>
                             <tr>
                                 <td>Description</td>
@@ -133,12 +133,12 @@
                     <table id="activity-table" class="table table-bordered tableFixed" >
                         <thead>
                             <tr>
-                                <th style="width: 5%">No</th>
+                                <th style="width: 4%">No</th>
                                 <th style="width: 25%">Activity Name</th>
                                 <th style="width: 30%">Description</th>
-                                <th style="width: 10%">Status</th>
                                 <th style="width: 10%">Progress</th>
                                 <th style="width: 10%">Weight</th>
+                                <th style="width: 10%">Status</th>
                                 <th style="width: 10%"></th>
                             </tr>
                         </thead>
@@ -147,16 +147,43 @@
                                 <td>{{ index + 1 }}</td>
                                 <td class="tdEllipsis" data-container="body" v-tooltip:top="tooltipText(data.name)">{{ data.name }}</td>
                                 <td class="tdEllipsis" data-container="body" v-tooltip:top="tooltipText(data.description)">{{ data.description }}</td>
-                                <td class="textCenter">
-                                    <template v-if="data.status == 0">
-                                        <i class='fa fa-check'></i>
-                                    </template>
-                                    <template v-else>
-                                        <i class='fa fa-times'></i>
-                                    </template>
-                                </td>
                                 <td>{{ data.progress }} %</td>
                                 <td>{{ data.weight }} %</td>
+                                <template v-if="data.status == 0">
+                                    <template v-if="data.planned_end_date > data.actual_end_date">
+                                        <td style="background-color: green; color: white;">
+                                            Ahead {{data.date_diff}} Day(s)
+                                        </td>
+                                    </template>                                       
+                                    <template v-if="data.planned_end_date == data.actual_end_date">
+                                        <td style="background-color: green; color: white;">
+                                            On Time
+                                        </td>
+                                    </template>                                       
+                                    <template v-if="data.planned_end_date < data.actual_end_date">
+                                        <td style="background-color: red; color: white;">
+                                            Behind {{data.date_diff}} Day(s)
+                                        </td>
+                                    </template>                                       
+                                </template>
+                                <template v-else>
+                                    <template v-if="data.planned_end_date > today">
+                                        <td style="background-color: red; color: white;">
+                                            Behind {{data.date_diff}} Day(s)
+                                        </td>
+                                    </template>                                       
+                                    <template v-if="data.planned_end_date == today">
+                                        <td style="background-color: green; color: white;">
+                                            On Time
+                                        </td>
+                                    </template>                                       
+                                    <template v-if="data.planned_end_date < today">
+                                        <td style="background-color: green; color: white;">
+                                            Ahead {{data.date_diff}} Day(s)
+                                        </td>
+                                    </template>
+                                </template>
+                                </td>
                                 <td class="textCenter">
                                     <button type="button" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#confirm_activity_modal"  @click.prevent="openConfirmModal(data)">CONFIRM</button>
                                 </td>
@@ -182,22 +209,22 @@
                                             <tr>
                                                 <td>Planned Start Date</td>
                                                 <td>:</td>
-                                                <td>&ensp;<b id="planned_start_date"></b></td>
+                                                <td>&nbsp;<b id="planned_start_date"></b></td>
                                             </tr>
                                             <tr>
                                                 <td>Planned End Date</td>
                                                 <td>:</td>
-                                                <td>&ensp;<b id="planned_end_date"></b></td>
+                                                <td>&nbsp;<b id="planned_end_date"></b></td>
                                             </tr>
                                             <tr>
                                                 <td>Planned Duration</td>
                                                 <td>:</td>
-                                                <td>&ensp;<b id="planned_duration"></b></td>
+                                                <td>&nbsp;<b id="planned_duration"></b></td>
                                             </tr>
                                             <tr>
                                                 <td>Predecessor</td>
                                                 <td>:</td>
-                                                <td>&ensp;<template v-if="havePredecessor == false">-</template></td>
+                                                <td>&nbsp;<template v-if="havePredecessor == false">-</template></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -210,7 +237,7 @@
                                                     <th style="width: 15%">Code</th>
                                                     <th style="width: 29%">Name</th>
                                                     <th style="width: 29%">Description</th>
-                                                    <th style="width: 15%">WBS Code</th>
+                                                    <th style="width: 15%">WBS Number</th>
                                                     <th style="width: 12%">Status</th>
                                                 </tr>
                                             </thead>
@@ -220,13 +247,13 @@
                                                     <td class="tdEllipsis p-b-15 p-t-15" data-container="body" v-tooltip:top="tooltipText(data.code)">{{ data.code }}</td>
                                                     <td class="tdEllipsis p-b-15 p-t-15" data-container="body" v-tooltip:top="tooltipText(data.name)">{{ data.name }}</td>
                                                     <td class="tdEllipsis p-b-15 p-t-15" data-container="body" v-tooltip:top="tooltipText(data.description)">{{ data.description }}</td>
-                                                    <td class="tdEllipsis p-b-15 p-t-15" data-container="body" v-tooltip:top="tooltipText(data.wbs.code)">{{ data.wbs.code }}</td>
+                                                    <td class="tdEllipsis p-b-15 p-t-15" data-container="body" v-tooltip:top="tooltipText(data.wbs.number)">{{ data.wbs.number }}</td>
                                                     <td class="textCenter">
                                                         <template v-if="data.status == 0">
-                                                            <i class='fa fa-check'></i>
+                                                            <i class="fa fa-check text-success"></i>
                                                         </template>
                                                         <template v-else>
-                                                            <i class='fa fa-times'></i>
+                                                            <i class='fa fa-times text-danger'></i>
                                                         </template>    
                                                     </td>
                                                 </tr>
@@ -285,7 +312,7 @@
                             <table id="material-table" class="table table-bordered tableFixed">
                                 <thead>
                                     <tr>
-                                        <th width="5%">No</th>
+                                        <th width="4%">No</th>
                                         <th width="30%">Material Name</th>
                                         <th width="28%">Description</th>
                                         <th width="8%">Quantity</th>
@@ -317,7 +344,7 @@
                             <table id="service-table" class="table table-bordered tableFixed" style="border-collapse:collapse;">
                                 <thead>
                                     <tr>
-                                        <th style="width: 5%">No</th>
+                                        <th style="width: 4%">No</th>
                                         <th style="width: 25%">Code</th>
                                         <th style="width: 25%">Name</th>
                                         <th style="width: 15%">Quantity</th>
@@ -523,7 +550,6 @@
 
     $(document).ready(function(){
         $('.datepicker').datepicker({
-            format: 'yyyy-mm-dd',
             autoclose : true,
         });
         $('div.overlay').hide();
@@ -538,6 +564,7 @@
     })
 
     var data = {
+        today : "",
         route : @json($route),
         menu : @json($route),
         uoms : @json($uoms),
@@ -584,6 +611,7 @@
         mounted() {
             $('.datepicker').datepicker({
                 autoclose : true,
+                format: 'dd-mm-yyyy',
             });
 
             $("#actual_start_date").datepicker().on(
@@ -822,9 +850,9 @@
                     document.getElementById("actual_duration").disabled = false;
                 }
                 document.getElementById("confirm_activity_code").innerHTML= data.code;
-                document.getElementById("planned_start_date").innerHTML= data.planned_start_date;
-                document.getElementById("planned_end_date").innerHTML= data.planned_end_date;
-                document.getElementById("planned_duration").innerHTML= data.planned_duration+" Days";
+                document.getElementById("planned_start_date").innerHTML= data.planned_start_date.split("-").reverse().join("-");
+                document.getElementById("planned_end_date").innerHTML= data.planned_end_date.split("-").reverse().join("-");
+                document.getElementById("planned_duration").innerHTML= data.planned_duration+" Day(s)";
 
 
                 this.confirmActivity.activity_id = data.id;
@@ -836,7 +864,7 @@
                 if(this.confirmActivity.actual_duration != "" && this.confirmActivity.actual_start_date != ""){
                     var actual_duration = parseInt(this.confirmActivity.actual_duration);
                     var actual_start_date = this.confirmActivity.actual_start_date;
-                    var actual_end_date = new Date(actual_start_date);
+                    var actual_end_date = new Date(actual_start_date.split("-").reverse().join("-"));
                     
                     actual_end_date.setDate(actual_end_date.getDate() + actual_duration-1);
                     $('#actual_end_date').datepicker('setDate', actual_end_date);
@@ -848,6 +876,14 @@
             getActivities(){
                 window.axios.get('/api/getActivities/'+this.wbs_id).then(({ data }) => {
                     this.activities = data;
+                    
+                    this.activities.forEach(activity => {
+                        if(activity.status == 0){
+                            activity.date_diff = Math.abs(datediff(parseDate(activity.planned_end_date.split("-").reverse().join("-")), parseDate(activity.actual_end_date.split("-").reverse().join("-"))) - 1);
+                        }else{
+                            activity.date_diff = Math.abs(datediff(parseDate(activity.planned_end_date.split("-").reverse().join("-")), parseDate(this.today.split("-").reverse().join("-"))) - 1);
+                        }
+                    });
                 });
 
             },
@@ -935,7 +971,8 @@
                 }
             },
             'confirmActivity.actual_duration' : function(newValue){
-                this.confirmActivity.actual_duration = newValue+"".replace(/\D/g, "");
+                if(newValue != ""){
+                    this.confirmActivity.actual_duration = newValue+"".replace(/\D/g, "");
                     if(parseInt(newValue) < 1 ){
                         iziToast.warning({
                             displayMode: 'replace',
@@ -945,6 +982,7 @@
                         this.confirmActivity.actual_duration = "";
                         this.confirmActivity.actual_end_date = "";
                     }
+                }
             },
             'editInput.performance' : function(newValue){
                 this.editInput.performance = (this.editInput.performance+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");  
@@ -954,8 +992,14 @@
             }
         },
         created: function() {
-
             this.getActivities();
+            var today = new Date();
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            var yyyy = today.getFullYear();
+
+            today = yyyy + '-' + mm + '-' + dd;
+            this.today = today;
             this.modelPrOD.forEach(POD => {
                 if(POD.material_id != null){
                     if(POD.actual == null){
@@ -1007,8 +1051,9 @@
         },
     });
     function parseDate(str) {
-        var mdy = str.split('/');
-        return new Date(mdy[2], mdy[0]-1, mdy[1]);
+        var mdy = str.split('-');
+        var date = new Date(mdy[2], mdy[1]-1, mdy[0]);
+        return date;
     }
 
     function datediff(first, second) {

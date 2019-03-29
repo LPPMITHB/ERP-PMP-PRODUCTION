@@ -44,13 +44,18 @@ class ConfigurationsTableSeeder extends Seeder
         $currencies = array(
             0 => array(
                 'name' => 'Rupiah',
-                'unit' => 'Rp',
+                'unit' => 'IDR',
                 'value' => 1
             ),
             1 => array(
                 'name' => 'Singapore Dollar',
-                'unit' => 'S$',
+                'unit' => 'SGD',
                 'value' => 10552.3
+            ),
+            2 => array(
+                'name' => 'US Dollar',
+                'unit' => 'USD',
+                'value' => 14015.5
             ),
         );
 
@@ -66,19 +71,19 @@ class ConfigurationsTableSeeder extends Seeder
         $resource_category = array(
             
             0 => array(
-                'id' => 0,
+                'id' => 1,
                 'name' => 'Subcon',
             ),
             1 => array(
-                'id' => 1,
+                'id' => 2,
                 'name' => 'Others',
             ),
             2 => array(
-                'id' => 2,
+                'id' => 3,
                 'name' => 'External Equipment',
             ),
             3 => array(
-                'id' => 3,
+                'id' => 4,
                 'name' => 'Internal Equipment',
             ),
         );
@@ -136,6 +141,91 @@ class ConfigurationsTableSeeder extends Seeder
             'slug' => 'vendor_category',
             'title' => 'Vendor Category',
             'value' => json_encode($vendor_category),
+            'is_active' => true,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        $project_type = array(
+            0 => array(
+                'id' => 1,
+                'name' => 'Special Service',
+            ),
+            1 => array(
+                'id' => 2,
+                'name' => 'Intermediate',
+            ),
+            2 => array(
+                'id' => 3,
+                'name' => 'Occasional',
+            ),
+            3 => array(
+                'id' => 4,
+                'name' => 'Onboard',
+            ),
+            4 => array(
+                'id' => 5,
+                'name' => 'Spot',
+            ),
+        );
+
+        DB::table('mst_configuration')->insert([
+            'slug' => 'project_type',
+            'title' => 'Project Type',
+            'value' => json_encode($project_type),
+            'is_active' => true,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        $operation_hours = array(
+            0 => array(
+                'start' => '08:00',
+                'end' => '22:00',
+            ),
+        );
+
+        DB::table('mst_configuration')->insert([
+            'slug' => 'operation_hours',
+            'title' => 'Operation Hours',
+            'value' => json_encode($operation_hours),
+            'is_active' => true,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        $material_family = array(
+            0 => array(
+                'id' => 1,
+                'name' => 'Plate',
+            ),
+            1 => array(
+                'id' => 2,
+                'name' => 'Bar',
+            ),
+        );
+
+        DB::table('mst_configuration')->insert([
+            'slug' => 'material_family',
+            'title' => 'Material Family',
+            'value' => json_encode($material_family),
+            'is_active' => true,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        $density = array(
+            0 => array(
+                'id' => 1,
+                'name' => 'Iron',
+                'value' => 0.75,
+            ),
+        );
+
+        DB::table('mst_configuration')->insert([
+            'slug' => 'density',
+            'title' => 'Density',
+            'value' => json_encode($density),
             'is_active' => true,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')

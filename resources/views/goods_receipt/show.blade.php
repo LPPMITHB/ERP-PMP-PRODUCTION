@@ -47,14 +47,14 @@
                     <div class="col-sm-4 col-md-4">
                             <div class="box-header no-padding">
                                 <div class="box-body">
-                                    <div class="col-md-4 col-xs-4 no-padding"> Project Name</div>
-                                    <div class="col-md-6 no-padding"> : <b> {{ isset($modelGR->purchaseOrder->project) ? $modelGR->purchaseOrder->project->name :  '-'}} </b></div>
-                                
                                     <div class="col-md-4 col-xs-4 no-padding">PO Code</div>
-                                    <div class="col-md-6 no-padding">: <b> {{ isset($modelGR->purchaseOrder->project) ? $modelGR->purchaseOrder->number : '-' }} </b></div>
+                                    <div class="col-md-6 no-padding">: <b> {{ isset($modelGR->purchaseOrder) ? $modelGR->purchaseOrder->number : '-' }} </b></div>
                                 
                                     <div class="col-md-4 col-xs-4 no-padding">Vendor Name</div>
-                                    <div class="col-md-6 no-padding">: <b> {{ isset($modelGR->purchaseOrder->project) ? $modelGR->purchaseOrder->vendor->name : '-'}} </b></div>
+                                    <div class="col-md-6 no-padding tdEllipsis" data-container="body" data-toggle="tooltip" title="{{ isset($modelGR->purchaseOrder) ? $modelGR->purchaseOrder->vendor->name : '-'}}">: <b> {{ isset($modelGR->purchaseOrder) ? $modelGR->purchaseOrder->vendor->name : '-'}} </b></div>
+
+                                    <div class="col-md-4 col-xs-4 no-padding">Ship Date</div>
+                                    <div class="col-md-6 no-padding">: <b> {{ isset($modelGR->ship_date) ? date('d-m-Y', strtotime($modelGR->ship_date)) : '-'}} </b></div>
                                 </div>
                             </div>
                     </div>
@@ -74,18 +74,24 @@
                             <thead>
                                 <tr>
                                     <th width="5%">No</th>
-                                    <th width="40%">Material Name</th>
-                                    <th width="25%">Quantity</th>
-                                    <th width="30%">Storage Location</th>
+                                    <th width="20%">Material Number</th>
+                                    <th width="20%">Material Description</th>
+                                    <th width="5%">Unit</th>
+                                    <th width="15%">Quantity</th>
+                                    <th width="25%">Storage Location</th>
+                                    <th width="10%">Received Date</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($modelGRD as $GRD)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $GRD->material->code }} - {{ $GRD->material->name }}</td>
-                                    <td>{{ number_format($GRD->quantity) }}</td>
+                                    <td>{{ $GRD->material->code }}</td>
+                                    <td class="tdEllipsis" data-container="body" data-toggle="tooltip" title="{{$GRD->material->description}}">{{ $GRD->material->description }}</td>
+                                    <td>{{ $GRD->material->uom->unit }}</td>
+                                    <td>{{ number_format($GRD->quantity,2) }}</td>
                                     <td>{{ isset($GRD->storageLocation->name) ? $GRD->storageLocation->name : '-' }} </td>
+                                    <td>{{ isset($GRD->received_date) ? date('d-m-Y', strtotime($GRD->received_date)) : '-' }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>

@@ -12,5 +12,10 @@ class Activity extends Model
     {
         return $this->belongsTo('App\Models\WBS', 'wbs_id');
     }
+    
+    public function activityDetails()
+    {
+        return $this->hasMany('App\Models\ActivityDetail');
+    }
 
 }

@@ -1,8 +1,10 @@
 @extends('layouts.main')
 @if($modelPR->type == 1)
     @php($type = 'Material')
-@else  
+@elseif($modelPR->type == 2)
     @php($type = 'Resource')
+@elseif($modelPR->type == 3)
+    @php($type = 'Subcon')
 @endif
 @section('content-header')
 @if($route == "/purchase_order")
@@ -46,16 +48,23 @@
                 @csrf
                     @verbatim
                     <div id="prd">
-                        <table class="table table-bordered tableFixed tablePagingVue">
+                        <table class="table table-bordered tableFixed tablePagingVue" v-if="modelPR.type != 3">
                             <thead>
                                 <tr>
                                     <th width="5%">No</th>
-                                    <th v-if="modelPR.type == 1" width="30%">Material</th>
-                                    <th v-else width="30%">Resource</th>
-                                    <th width="10%">Quantity</th>
-                                    <th width="10%">Ordered</th>
-                                    <th width="10%">Remaining</th>
-                                    <th width="20%">WBS Name</th>
+                                    <template v-if="modelPR.type == 1">
+                                        <th width="15%">Material Number</th>
+                                        <th width="25%">Material Description</th>
+                                    </template>
+                                    <template v-else>
+                                        <th width="15%">Resource Number</th>
+                                        <th width="25%">Resource Description</th>
+                                    </template>
+                                    <th width="8%">Qty</th>
+                                    <th width="8%">Ord</th>
+                                    <th width="8%">Rmn</th>
+                                    <th width="6%">Unit</th>
+                                    <th width="15%">Project Number</th>
                                     <th width="10%">Alocation</th>
                                     <th width="5%"></th>
                                 </tr>
@@ -63,16 +72,56 @@
                             <tbody>
                                 <tr v-for="(PRD,index) in modelPRD">
                                     <td>{{ index+1 }}</td>
-                                    <td v-if="PRD.material != null">{{ PRD.material.code }} - {{ PRD.material.name }}</td>
-                                    <td v-else>{{ PRD.resource.code }} - {{ PRD.resource.name }}</td>
-                                    <td>{{ PRD.quantity }}</td>
-                                    <td>{{ PRD.reserved }}</td>
-                                    <td>{{ PRD.remaining }}</td>
-                                    <td v-if="PRD.wbs != null">{{ PRD.wbs.name }}</td>
-                                    <td v-else>-</td>
-                                    <td v-if="PRD.alocation != null">{{ PRD.alocation }}</td>
-                                    <td v-else>-</td>
+                                    <template v-if="modelPR.type == 1">
+                                        <td class="tdEllipsis">{{ PRD.material.code }}</td>
+                                        <td class="tdEllipsis">{{ PRD.material.description }}</td>
+                                        <td class="tdEllipsis">{{ PRD.quantity }}</td>
+                                        <td class="tdEllipsis">{{ PRD.reserved }}</td>
+                                        <td class="tdEllipsis">{{ PRD.remaining }}</td>
+                                        <td class="tdEllipsis">{{ PRD.material.uom.unit }}</td>
+                                        <td class="tdEllipsis" v-if="PRD.project != null">{{ PRD.project.number }}</td>
+                                        <td class="tdEllipsis" v-else>-</td>
+                                        <td class="tdEllipsis" v-if="PRD.alocation != null">{{ PRD.alocation }}</td>
+                                        <td class="tdEllipsis" v-else>-</td>
+                                    </template>
+                                    <template v-else>
+                                        <td class="tdEllipsis">{{ PRD.resource.code }}</td>
+                                        <td class="tdEllipsis">{{ PRD.resource.name }}</td>
+                                        <td class="tdEllipsis">{{ PRD.quantity }}</td>
+                                        <td class="tdEllipsis">{{ PRD.reserved }}</td>
+                                        <td class="tdEllipsis">{{ PRD.remaining }}</td>
+                                        <td class="tdEllipsis">-</td>
+                                        <td class="tdEllipsis" v-if="PRD.project != null">{{ PRD.project.number }}</td>
+                                        <td class="tdEllipsis" v-else>-</td>
+                                        <td class="tdEllipsis" v-if="PRD.alocation != null">{{ PRD.alocation }}</td>
+                                        <td class="tdEllipsis" v-else>-</td>
+                                    </template>
                                     <td class="no-padding p-t-2 p-b-2" align="center">
+                                        <input type="checkbox" v-icheck="" v-model="checkedPRD" :value="PRD.id">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="table table-bordered tableFixed tablePagingVue" v-else-if="modelPR.type == 3">
+                            <thead>
+                                <tr>
+                                    <th width="5%">No</th>
+                                    <th width="15%">Project Number</th>
+                                    <th width="20%">WBS</th>
+                                    <th width="35%">Job Order</th>
+                                    <th width="15%">Vendor</th>
+                                    <th width="5%"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(PRD,index) in modelPRD">
+                                    <td class="tdEllipsis">{{ index+1 }}</td>
+                                    <td class="tdEllipsis">{{ PRD.project.number }}</td>
+                                    <td class="tdEllipsis">{{ PRD.wbs.number }} - {{ PRD.wbs.description }}</td>
+                                    <td class="tdEllipsis">{{ PRD.activity_detail.service_detail.service.name }} - {{ PRD.activity_detail.service_detail.name }}</td>
+                                    <td class="tdEllipsis" v-if="PRD.vendor != null">{{ PRD.vendor.name }}</td>
+                                    <td class="tdEllipsis" v-else>-</td>
+                                    <td class="tdEllipsis" class="no-padding p-t-2 p-b-2" align="center">
                                         <input type="checkbox" v-icheck="" v-model="checkedPRD" :value="PRD.id">
                                     </td>
                                 </tr>
@@ -103,7 +152,7 @@
         $('.tablePagingVue thead tr').clone(true).appendTo( '.tablePagingVue thead' );
         $('.tablePagingVue thead tr:eq(1) th').addClass('indexTable').each( function (i) {
             var title = $(this).text();
-            if(title == '' || title == 'No' || title == "Quantity" || title == "Ordered" || title == "Remaining"){
+            if(title == '' || title == 'No' || title == "Qty" || title == "Ord" || title == "Rmn"){
                 $(this).html( '<input disabled class="form-control width100" type="text"/>' );
             }else{
                 $(this).html( '<input class="form-control width100" type="text" placeholder="Search '+title+'"/>' );
@@ -151,6 +200,7 @@
         },
         methods: {
             submitForm(){
+                $('div.overlay').show();
                 var prd = this.checkedPRD;
                 var jsonPrd = JSON.stringify(prd);
                 jsonPrd = JSON.parse(jsonPrd);
@@ -202,9 +252,45 @@
             var data = this.modelPRD;
             data.forEach(PRD => {
                 PRD.remaining = PRD.quantity - PRD.reserved;
-                PRD.remaining = (PRD.remaining+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                PRD.quantity = (PRD.quantity+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                PRD.reserved = (PRD.reserved+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");            
+
+                // remaining
+                var decimal = (PRD.remaining+"").replace(/,/g, '').split('.');
+                if(decimal[1] != undefined){
+                    var maxDecimal = 2;
+                    if((decimal[1]+"").length > maxDecimal){
+                        PRD.remaining = (decimal[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimal[1]+"").substring(0,maxDecimal).replace(/\D/g, "");
+                    }else{
+                        PRD.remaining = (decimal[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimal[1]+"").replace(/\D/g, "");
+                    }
+                }else{
+                    PRD.remaining = (PRD.remaining+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                }
+
+                // quantity
+                var decimal = (PRD.quantity+"").replace(/,/g, '').split('.');
+                if(decimal[1] != undefined){
+                    var maxDecimal = 2;
+                    if((decimal[1]+"").length > maxDecimal){
+                        PRD.quantity = (decimal[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimal[1]+"").substring(0,maxDecimal).replace(/\D/g, "");
+                    }else{
+                        PRD.quantity = (decimal[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimal[1]+"").replace(/\D/g, "");
+                    }
+                }else{
+                    PRD.quantity = (PRD.quantity+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                }
+
+                // reserved
+                var decimal = (PRD.reserved+"").replace(/,/g, '').split('.');
+                if(decimal[1] != undefined){
+                    var maxDecimal = 2;
+                    if((decimal[1]+"").length > maxDecimal){
+                        PRD.reserved = (decimal[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimal[1]+"").substring(0,maxDecimal).replace(/\D/g, "");
+                    }else{
+                        PRD.reserved = (decimal[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimal[1]+"").replace(/\D/g, "");
+                    }
+                }else{
+                    PRD.reserved = (PRD.reserved+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                }
             });
         }
     });

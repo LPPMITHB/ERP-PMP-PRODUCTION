@@ -65,7 +65,9 @@
                                 <thead>
                                     <tr>
                                         <th width="5%">No</th>
-                                        <th width="45%">Material</th>
+                                        <th width="13%">Material Number</th>
+                                        <th width="25%">Material Description</th>
+                                        <th width="10%">Type</th>
                                         <th width="13%">Quantity</th>
                                         <th width="13%">Issued</th>
                                         <th width="14%">Manage Picking</th>
@@ -74,7 +76,12 @@
                                 <tbody>
                                     <tr v-for="(MRD,index) in modelMRD">
                                         <td>{{ index+1 }}</td>
-                                        <td>{{ MRD.material.code }} - {{ MRD.material.name }}</td>
+                                        <td>{{ MRD.material.code }}</td>
+                                        <td class="tdEllipsis" data-container="body" v-tooltip:top="tooltipText(MRD.material.description)">{{ MRD.material.description }}</td>
+                                        <td v-if="MRD.type == 3">Bulk Part</td>
+                                        <td v-else-if="MRD.type == 2">Component</td>
+                                        <td v-else-if="MRD.type == 1">Consumable</td>
+                                        <td v-else>-</td>
                                         <td>{{ MRD.quantity - MRD.already_issued }}</td>
                                         <td>{{ total[index] }}</td>
                                         <td class="p-l-0 p-r-0 textCenter">
@@ -83,11 +90,11 @@
                                                 <div class="modal fade" :id="MRD.id">
                                                     <div class="modal-dialog">
                                                         <div class="modal-content">
-                                                            <div class="modal-header">
+                                                            <div class="modal-header text-left">
                                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                                     <span aria-hidden="true">×</span>
                                                                 </button>
-                                                                <h4 class="modal-title">Picking Configuration for <b>{{MRD.material.name}}</b></h4>
+                                                                <h4 class="modal-title">Picking Configuration for <b>{{MRD.material.description}}</b></h4>
                                                             </div>
                                                             <div class="modal-body">
                                                                 <table style="line-height: 20px">
@@ -195,6 +202,14 @@
         $('div.overlay').hide();
     });
 
+    Vue.directive('tooltip', function(el, binding){
+        $(el).tooltip({
+            title: binding.value,
+            placement: binding.arg,
+            trigger: 'hover'             
+        })
+    })
+
     var data = {
         modelProject: @json($modelProject),
         modelMRD : @json($modelMRDs),
@@ -240,14 +255,18 @@
             targetModal(id){
                 return '#'+id;
             },
+            tooltipText: function(text) {
+                return text
+            },
             submitForm(){
+                $('div.overlay').show();
                 var data = this.modelMRD;
                 data = JSON.stringify(data)
                 data = JSON.parse(data)
 
                 data.forEach(MRD => {
                     MRD.modelGI.forEach(modelGI => {
-                        modelGI.issued = parseInt((modelGI.issued+"").replace(/,/g , ''));
+                        modelGI.issued = parseFloat((modelGI.issued+"").replace(/,/g , ''));
                     });  
                 });
 
@@ -273,13 +292,13 @@
                             activeMRD.issued = 0;
                             total = 0;
                             activeMRD.modelGI.forEach(function (modelGI, index) {
-                                var issued = parseInt((modelGI.issued+"").replace(/,/g , ''));
-                                var qty = parseInt((modelGI.quantity+"").replace(/,/g , ''));
+                                var issued = parseFloat((modelGI.issued+"").replace(/,/g , ''));
+                                var qty = parseFloat((modelGI.quantity+"").replace(/,/g , ''));
 
-                                var maxQtyMR =  parseInt((activeMRD.quantity+"").replace(/,/g , ''));
-                                maxQtyMR -=  parseInt((activeMRD.already_issued+"").replace(/,/g , ''));
+                                var maxQtyMR =  parseFloat((activeMRD.quantity+"").replace(/,/g , ''));
+                                maxQtyMR -=  parseFloat((activeMRD.already_issued+"").replace(/,/g , ''));
                                 if(modelGI.issued != ""){
-                                    total += parseInt((modelGI.issued+"").replace(/,/g , ''));
+                                    total += parseFloat((modelGI.issued+"").replace(/,/g , ''));
                                     if(total > maxQtyMR){
                                         iziToast.warning({
                                             title: 'Issued quantity cannot be more than MR quantity',
@@ -298,8 +317,21 @@
                                     });
                                     modelGI.issued = modelGI.quantity;
                                 }
-
-                                modelGI.issued = (modelGI.issued+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                if(modelGI.material.uom.is_decimal == 1){
+                                    var decimal = (modelGI.issued+"").replace(/,/g, '').split('.');
+                                    if(decimal[1] != undefined){
+                                        var maxDecimal = 2;
+                                        if((decimal[1]+"").length > maxDecimal){
+                                            modelGI.issued = (decimal[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimal[1]+"").substring(0,maxDecimal).replace(/\D/g, "");
+                                        }else{
+                                            modelGI.issued = (decimal[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimal[1]+"").replace(/\D/g, "");
+                                        }
+                                    }else{
+                                        modelGI.issued = (modelGI.issued+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                    }
+                                }else{
+                                    modelGI.issued = (modelGI.issued+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                }
                             });
                             arrTot.push(total);
                             

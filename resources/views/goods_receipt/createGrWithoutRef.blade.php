@@ -36,12 +36,11 @@
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-lg-3 col-md-12">
-                                    <div class="col-md-3 col-xs-3 no-padding">Ship Date:</div>
-
-                                    <div class="col-sm-12 col-lg-8 p-t-0 p-l-0">
-                                        <input v-model="ship_date" autocomplete="off" type="text" class="form-control datepicker width100" name="ship_date" id="ship_date" placeholder="Ship Date">
+                                        <div class="col-md-8 col-xs-12 p-l-0">Ship Date:</div>
+                                        <div class="col-sm-12 col-lg-8  p-l-0">
+                                            <input v-model="ship_date" autocomplete="off" type="text" class="form-control datepicker" name="ship_date" id="ship_date" placeholder="Ship Date" style="width: 180px">
+                                        </div>
                                     </div>
-                                </div>
                             </div>
                         <div class="col-sm-12">
                             <div class="row">
@@ -49,18 +48,24 @@
                                     <thead>
                                         <tr>
                                             <th style="width: 5%">No</th>
-                                            <th style="width: 32%">Material Name</th>
-                                            <th style="width: 25%">Received</th>
+                                            <th style="width: 17%">Material Number</th>
+                                            <th style="width: 20%">Material Description</th>
+                                            <th style="width: 5%">Unit</th>
+                                            <th style="width: 10%">Received</th>
                                             <th style="width: 28%">Storage Location</th>
+                                            <th style="width: 12%">Received Date</th>
                                             <th style="width: 10%"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr v-for="(material,index) in dataMaterial">
                                             <td>{{ index + 1 }}</td>
-                                            <td class="tdEllipsis">{{ material.material_code }} - {{ material.material_name }}</td>
+                                            <td class="tdEllipsis">{{ material.material_code }}</td>
+                                            <td class="tdEllipsis">{{ material.material_name }}</td>
+                                            <td class="tdEllipsis">{{ material.unit }}</td>
                                             <td class="tdEllipsis">{{ material.quantity }}</td>
                                             <td class="tdEllipsis">{{ material.sloc_name }}</td>
+                                            <td class="tdEllipsis">{{ material.received_date }}</td>
                                             <td class="p-l-0 textCenter">
                                                 <a class="btn btn-primary btn-xs" data-toggle="modal" href="#edit_item" @click="openEditModal(material,index)">
                                                     EDIT
@@ -74,18 +79,24 @@
                                     <tfoot>
                                         <tr>
                                             <td class="p-l-10">{{newIndex}}</td>
-                                            <td class="p-l-0 textLeft">
+                                            <td class="p-l-0 textLeft" colspan="2">
                                                 <selectize v-model="dataInput.material_id" :settings="materialSettings">
-                                                    <option v-for="(material, index) in materials" :value="material.id">{{ material.code }} - {{ material.name }}</option>
+                                                    <option v-for="(material, index) in materials" :value="material.id">{{ material.code }} - {{ material.description }}</option>
                                                 </selectize>
                                             </td>
                                             <td class="p-l-0">
-                                                <input class="form-control width100" v-model="dataInput.quantity" placeholder="Please Input Received Quantity">
+                                                <input class="form-control width100" v-model="dataInput.unit" disabled>
+                                            </td>
+                                            <td class="p-l-0">
+                                                <input :disabled="materialOk" class="form-control width100" v-model="dataInput.quantity" placeholder="Please Input Received Quantity">
                                             </td>
                                             <td class="p-l-0 textLeft">
                                                 <selectize v-model="dataInput.sloc_id" :settings="slocSettings">
                                                     <option v-for="(sloc, index) in modelSloc" :value="sloc.id">{{ sloc.name }}</option>
                                                 </selectize>
+                                            </td>
+                                            <td class="p-l-0 textLeft">
+                                                <input v-model="dataInput.received_date" required autocomplete="off" type="text" class="form-control datepicker width100" name="input_received_date" id="input_received_date" placeholder="Received Date">  
                                             </td>
                                             <td class="p-l-0 textCenter">
                                                 <button @click.prevent="add" :disabled="createOk" class="btn btn-primary btn-xs" id="btnSubmit">ADD</button>
@@ -114,8 +125,12 @@
                                                 <div class="col-sm-12">
                                                     <label for="type" class="control-label">Material</label>
                                                     <selectize id="edit_modal" v-model="editInput.material_id" :settings="materialSettings">
-                                                        <option v-for="(material, index) in materials" :value="material.id">{{ material.code }} - {{ material.name }}</option>
+                                                        <option v-for="(material, index) in materials" :value="material.id">{{ material.code }} - {{ material.description }}</option>
                                                     </selectize>
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <label for="unit" class="control-label">Unit</label>
+                                                    <input type="text" id="unit" v-model="editInput.unit" class="form-control" disabled>
                                                 </div>
                                                 <div class="col-sm-12">
                                                     <label for="quantity" class="control-label">Quantity</label>
@@ -126,6 +141,10 @@
                                                     <selectize id="edit_modal" v-model="editInput.sloc_id" :settings="slocSettings">
                                                         <option v-for="(sloc, index) in modelSloc" :value="sloc.id">{{sloc.code}} - {{sloc.name}}</option>
                                                     </selectize>
+                                                </div>
+                                                <div class="col-sm-12"> 
+                                                    <label for="type" class="control-label">Received Date</label>
+                                                    <input v-model="editInput.received_date" required autocomplete="off" type="text" class="form-control datepicker width100" name="edit_received_date" id="edit_received_date" placeholder="Received Date">  
                                                 </div>
                                             </div>
                                         </div>
@@ -185,9 +204,13 @@
             material_code : "",
             material_name : "",
             quantity : "",
-            quantityInt : 0,
+            quantityFloat : 0,
             sloc_id : "",
-            sloc_name : ""
+            sloc_name : "",
+            received_date: "",
+            unit:"",
+            is_decimal : "",
+
         },
         editInput : {
             old_material_id : "",
@@ -195,9 +218,12 @@
             material_code : "",
             material_name : "",
             quantity : "",
-            quantityInt : 0,
+            quantityFloat : 0,
             sloc_id : "",
-            sloc_name : ""
+            sloc_name : "",
+            received_date: "",
+            unit:"",
+            is_decimal : "",
         },
         material_id:[],
         material_id_modal:[],
@@ -212,10 +238,23 @@
         mounted(){
             $('.datepicker').datepicker({
                 autoclose : true,
+                format : "dd-mm-yyyy"
+
             });
             $("#ship_date").datepicker().on(
                 "changeDate", () => {
                     this.ship_date = $('#ship_date').val();
+                }
+            );
+
+            $("#input_received_date").datepicker().on(
+                "changeDate", () => {
+                    this.dataInput.received_date = $('#input_received_date').val();
+                }
+            );
+            $("#edit_received_date").datepicker().on(
+                "changeDate", () => {
+                    this.editInput.received_date = $('#edit_received_date').val();
                 }
             );
         },
@@ -233,10 +272,10 @@
             createOk: function(){
                 let isOk = false;
 
-                var string_newValue = this.dataInput.quantityInt+"";
-                this.dataInput.quantityInt = parseInt(string_newValue.replace(/,/g , ''));
+                var string_newValue = this.dataInput.quantityFloat+"";
+                this.dataInput.quantityFloat = parseFloat(string_newValue.replace(",", ''));
 
-                if(this.dataInput.material_id == "" || this.dataInput.quantityInt < 1 || this.dataInput.quantityInt == "" || isNaN(this.dataInput.quantityInt) || this.dataInput.sloc_id ==""){
+                if(this.dataInput.material_id == "" || this.dataInput.quantityFloat < 0 || this.dataInput.quantityFloat == 0 || this.dataInput.quantityFloat == "" || isNaN(this.dataInput.quantityFloat) || this.dataInput.sloc_id =="" || this.dataInput.received_date == ""){
                     isOk = true;
                 }
 
@@ -245,32 +284,79 @@
             updateOk: function(){
                 let isOk = false;
 
-                var string_newValue = this.editInput.quantityInt+"";
-                this.editInput.quantityInt = parseInt(string_newValue.replace(/,/g , ''));
+                var string_newValue = this.editInput.quantityFloat+"";
+                this.editInput.quantityFloat = parseFloat(string_newValue.replace(",", ''));
 
-                if(this.editInput.material_id == "" || this.editInput.quantityInt < 1 || this.editInput.quantityInt == "" || isNaN(this.editInput.quantityInt)){
+                if(this.editInput.material_id == "" ||  this.editInput.quantityFloat < 0|| this.editInput.quantityFloat == 0 || this.editInput.quantityFloat == "" || isNaN(this.editInput.quantityFloat)){
                     isOk = true;
                 }
 
                 return isOk;
-            }
+            },
+            materialOk: function(){
+                let isOk = false;
+
+                if(this.dataInput.material_id == ""){
+                    isOk = true;
+                }
+
+                return isOk;
+            },
+            materialEditOk: function(){
+                let isOk = false;
+
+                if(this.editInput.material_id == ""){
+                    isOk = true;
+                }
+
+                return isOk;
+            },
         },
         watch : {
             'dataInput.quantity': function(newValue){
-                this.dataInput.quantityInt = newValue;
-                var string_newValue = newValue+"";
-                quantity_string = string_newValue.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                Vue.nextTick(() => this.dataInput.quantity = quantity_string);
+                if(this.dataInput.is_decimal == 1){
+                    var decimalReceived = (newValue+"").replace(/,/g, '').split('.');
+                    if(decimalReceived[1] != undefined){
+                        var maxDecimal = 2;
+                        if((decimalReceived[1]+"").length > maxDecimal){
+                            this.dataInput.quantity = (decimalReceived[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimalReceived[1]+"").substring(0,maxDecimal).replace(/\D/g, "");
+                            this.dataInput.quantityFloat = this.dataInput.quantity.replace(',', '');
+                        }else{
+                            this.dataInput.quantity = (decimalReceived[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimalReceived[1]+"").replace(/\D/g, "");
+                            this.dataInput.quantityFloat = this.dataInput.quantity.replace(',', '');
+                        }
+                    }else{
+                        this.dataInput.quantity = (newValue+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                        this.dataInput.quantityFloat = this.dataInput.quantity.replace(',', '');
+                    }
+                }else{
+                    this.dataInput.quantity = (newValue+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");            
+                    this.dataInput.quantityFloat = this.dataInput.quantity.replace(',', '');
+                }
             },
             'editInput.quantity': function(newValue){
-                this.editInput.quantityInt = newValue;
-                var string_newValue = newValue+"";
-                quantity_string = string_newValue.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                Vue.nextTick(() => this.editInput.quantity = quantity_string);
+                if(this.editInput.is_decimal == 1){
+                    var decimalReceived = (newValue+"").replace(/,/g, '').split('.');
+                    if(decimalReceived[1] != undefined){
+                        var maxDecimal = 2;
+                        if((decimalReceived[1]+"").length > maxDecimal){
+                            this.editInput.quantity = (decimalReceived[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimalReceived[1]+"").substring(0,maxDecimal).replace(/\D/g, "");
+                            this.editInput.quantityFloat = this.editInput.quantity.replace(',', '');
+                        }else{
+                            this.editInput.quantity = (decimalReceived[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimalReceived[1]+"").replace(/\D/g, "");
+                            this.editInput.quantityFloat = this.editInput.quantity.replace(',', '');
+                        }
+                    }else{
+                        this.editInput.quantity = (newValue+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                        this.editInput.quantityFloat = this.editInput.quantity.replace(',', '');
+                    }
+                }else{
+                    this.editInput.quantity = (newValue+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");            
+                    this.editInput.quantityFloat = this.editInput.quantity.replace(',', '');
+                }
             },
             'dataInput.sloc_id': function(newValue){
                 if(newValue != ""){
-                    console.log(newValue);
                     $('div.overlay').show();
                     window.axios.get('/api/getSlocGR/'+newValue).then(({ data }) => {
                         this.dataInput.sloc_name = data.name;
@@ -288,12 +374,36 @@
                     this.dataInput.sloc_id = "";
                 }
             },
+            'dataInput.material_id': function(newValue){
+                if(newValue != ""){
+                    this.dataInput.quantity = "";
+                    this.materials.forEach(material => {
+                        if(newValue == material.id){
+                            this.dataInput.unit = material.uom.unit;
+                            this.dataInput.is_decimal = material.uom.is_decimal;
+                        }
+                    });
+                }
+            },
+            'editInput.material_id': function(newValue){
+                if(newValue != ""){
+                    if(newValue != this.editInput.old_material_id){
+                        this.editInput.quantity = "";
+                    }
+                    this.materials.forEach(material => {
+                        if(newValue == material.id){
+                            this.editInput.unit = material.uom.unit;
+                            this.editInput.is_decimal = material.uom.is_decimal;
+                        }
+                    });
+                }
+            },
         },
         methods : {
             
             submitForm(){
                 this.dataMaterial.forEach(material => {
-                    material.quantity = parseInt((material.quantity+"").replace(/,/g , ''));
+                    material.quantity = parseFloat((material.quantity+"").replace("," , ''));
                 });
                 this.submittedForm.materials = this.dataMaterial;
                 this.submittedForm.description = this.description;
@@ -307,40 +417,41 @@
                 form.submit();
             },
             update(old_material_id, new_material_id){
-                
-                        var material = this.dataMaterial[this.editInput.index];
-                        material.quantityInt = this.editInput.quantityInt;
-                        material.quantity = this.editInput.quantity;
-                        material.material_id = new_material_id;
-                        material.sloc_id = this.editInput.sloc_id;
+                var material = this.dataMaterial[this.editInput.index];
+                material.quantityFloat = this.editInput.quantityFloat;
+                material.quantity = this.editInput.quantity;
+                material.material_id = new_material_id;
+                material.sloc_id = this.editInput.sloc_id;
+                material.unit = this.editInput.unit;
 
-                        window.axios.get('/api/getMaterialPR/'+new_material_id).then(({ data }) => {
-                            material.material_name = data.name;
-                            material.material_code = data.code;
+                window.axios.get('/api/getMaterialPR/'+new_material_id).then(({ data }) => {
+                    material.material_name = data.description;
+                    material.material_code = data.code;
+                    material.received_date = this.editInput.received_date;
 
-                             window.axios.get('/api/getSlocGR/'+this.editInput.sloc_id).then(({ data }) => {
-                                material.sloc_name = data.name;
-                                $('div.overlay').hide();
-                            })
-                            .catch((error) => {
-                                iziToast.warning({
-                                    title: 'Please Try Again..',
-                                    position: 'topRight',
-                                    displayMode: 'replace'
-                                });
-                                $('div.overlay').hide();
-                            })
+                        window.axios.get('/api/getSlocGR/'+this.editInput.sloc_id).then(({ data }) => {
+                        material.sloc_name = data.name;
+                        $('div.overlay').hide();
+                    })
+                    .catch((error) => {
+                        iziToast.warning({
+                            title: 'Please Try Again..',
+                            position: 'topRight',
+                            displayMode: 'replace'
+                        });
+                        $('div.overlay').hide();
+                    })
 
-                            $('div.overlay').hide();
-                        })
-                        .catch((error) => {
-                            iziToast.warning({
-                                title: 'Please Try Again..',
-                                position: 'topRight',
-                                displayMode: 'replace'
-                            });
-                            $('div.overlay').hide();
-                        })
+                    $('div.overlay').hide();
+                })
+                .catch((error) => {
+                    iziToast.warning({
+                        title: 'Please Try Again..',
+                        position: 'topRight',
+                        displayMode: 'replace'
+                    });
+                    $('div.overlay').hide();
+                })
             },
            
             openEditModal(data,index){
@@ -348,10 +459,11 @@
                 this.editInput.old_material_id = data.material_id;
                 this.editInput.material_code = data.material_code;
                 this.editInput.material_name = data.material_name;
+                this.editInput.is_decimal = data.is_decimal;
                 this.editInput.quantity = data.quantity;
-                this.editInput.quantityInt = data.quantityInt;
                 this.editInput.sloc_id = data.sloc_id;
                 this.editInput.sloc_name = data.sloc_name;
+                this.editInput.received_date = data.received_date;
                 this.editInput.index = index;
 
                 var material_id = JSON.stringify(this.material_id);
@@ -370,7 +482,8 @@
                 var material_id = this.dataInput.material_id;
                 $('div.overlay').show();
                 window.axios.get('/api/getMaterialGR/'+material_id).then(({ data }) => {
-                    this.dataInput.material_name = data.name;
+                    // this.dataInput.unit = data.uom.unit;
+                    this.dataInput.material_name = data.description;
                     this.dataInput.material_code = data.code;
 
 
@@ -386,7 +499,9 @@
                     this.dataInput.quantity = "";
                     this.dataInput.material_id = "";
                     this.dataInput.sloc_id = "";
+                    this.dataInput.unit = "";
                     this.dataInput.sloc_name = "";
+                    this.dataInput.received_date = "";
                     
                     this.newIndex = Object.keys(this.dataMaterial).length+1;
 

@@ -6,7 +6,7 @@
         'items' => [
             'Dashboard' => route('index'),
             'View All Materials' => route('material.index'),
-            $material->name => route('material.show',$material->id),
+            $material->description => route('material.show',$material->id),
             'Edit Material' => route('material.edit',$material->id),
         ]
     ]
@@ -27,7 +27,7 @@
                     @verbatim
                         <div id="material">
                             <div class="form-group">
-                                <label for="code" class="col-sm-2 control-label">Code</label>
+                                <label for="code" class="col-sm-2 control-label">Item Number</label>
                 
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" data-inputmask="'mask': '99-aaa-*****-aa'" id="code" name="code" required autofocus v-model="submittedForm.code" @keyup="submittedForm.code  = this.event.target.value;">
@@ -35,18 +35,10 @@
                             </div>
                             
                             <div class="form-group">
-                                <label for="name" class="col-sm-2 control-label">Name</label>
-                
-                                <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="name" required autofocus v-model="submittedForm.name">
-                                </div>
-                            </div>
-
-                            <div class="form-group">
                                 <label for="description" class="col-sm-2 control-label">Description</label>
                 
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="description" v-model="submittedForm.description">
+                                    <input type="text" class="form-control" id="description" required autofocus v-model="submittedForm.description">
                                 </div>
                             </div>
 
@@ -73,6 +65,24 @@
                                     <selectize id="uom" v-model="submittedForm.uom_id" :settings="uom_settings">
                                         <option v-for="(uom, index) in uoms" :value="uom.id">{{ uom.unit }}</option>
                                     </selectize> 
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="family_id" class="col-sm-2 control-label">Material Family</label>
+                                <div class="col-sm-10">
+                                    <selectize id="family_id" name="family_id" v-model="submittedForm.family_id" :settings="family_id_settings">
+                                        <option v-for="(data, index) in material_families" :value="data.id">{{ data.name }}</option>
+                                    </selectize>   
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="density_id" class="col-sm-2 control-label">Density</label>
+                                <div class="col-sm-10">
+                                    <selectize id="density_id" name="density_id" v-model="submittedForm.density_id" :settings="density_id_settings">
+                                        <option v-for="(data, index) in densities" :value="data.id">{{ data.name }}</option>
+                                    </selectize>   
                                 </div>
                             </div>
 
@@ -161,6 +171,20 @@
                                 </div>
 
                                 <div class="form-group">
+                                    <label for="upload" class="col-sm-2 control-label">Upload Image</label>
+                                    <div class="col-sm-5">
+                                        <div class="input-group">
+                                            <label class="input-group-btn">
+                                                <span class="btn btn-primary">
+                                                    Browse&hellip; <input type="file" style="display: none;" multiple id="image" name="image">
+                                                </span>
+                                            </label>
+                                            <input type="text" class="form-control" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
                                     <label for="status" class="col-sm-2 control-label">Status</label>
                     
                                     <div class="col-sm-10">
@@ -198,25 +222,29 @@
 
     var data = {
         uoms : @json($uoms),
+        material_families : @json($material_families),
+        densities : @json($densities),
         submittedForm :{
             code : @json($material->code),
-            name : @json($material->name),
             description : @json($material->description),
             cost_standard_price : @json($material->cost_standard_price),
             cost_standard_service : @json($material->cost_standard_price_service),
             uom_id : @json($material->uom_id),
             min : @json($material->min),
             max : @json($material->max),
+            dimension_uom_id : @json($material->dimension_uom_id),
             weight : @json($material->weight),
-            weight_uom_id : @json($material->weight_uom_id),
+            weight_uom_id : @json($material->dimension_uom_id),
             height :@json($material->height),
-            height_uom_id : @json($material->height_uom_id),
+            height_uom_id : @json($material->dimension_uom_id),
             lengths :@json($material->length),
-            length_uom_id : @json($material->length_uom_id),
+            length_uom_id : @json($material->dimension_uom_id),
             width :@json($material->width),
-            width_uom_id : @json($material->width_uom_id),
+            width_uom_id : @json($material->dimension_uom_id),
             status : @json($material->status),
             type : @json($material->type),
+            family_id : @json($dataFamily),
+            density_id : @json($material->density_id),
         },
         uom_settings: {
             placeholder: 'Select UOM!'
@@ -239,6 +267,14 @@
         width_uom_settings: {
             placeholder: 'Select width UOM!'
         },
+        family_id_settings: {
+            placeholder: 'Select Material Family!',
+            maxItems: null,
+            plugins: ['remove_button'],
+        },
+        density_id_settings: {
+            placeholder: 'Select Density!'
+        }
     }
 
     var vm = new Vue({
@@ -248,7 +284,7 @@
             createOk :function(){
                 let isOk = false;
 
-                if(this.submittedForm.code == "" || this.submittedForm.name == "" || this.submittedForm.uom_id == ""){
+                if(this.submittedForm.code == "" || this.submittedForm.description == "" || this.submittedForm.uom_id == ""){
                     isOk = true;
                 }
 
@@ -495,6 +531,45 @@
                     }
                 }
             },
+
+            'submittedForm.weight_uom_id' : function(newValue) {
+                if(newValue != ""){
+                    this.submittedForm.length_uom_id = newValue;
+                    this.submittedForm.width_uom_id = newValue;
+                    this.submittedForm.height_uom_id = newValue;
+                    this.submittedForm.dimension_uom_id = newValue;
+                }
+            },
+            
+            'submittedForm.length_uom_id' : function(newValue) {
+                if(newValue != ""){
+                    this.submittedForm.weight_uom_id = newValue;
+                    this.submittedForm.width_uom_id = newValue;
+                    this.submittedForm.height_uom_id = newValue;
+                    this.submittedForm.dimension_uom_id = newValue;
+
+                }
+            },
+
+            'submittedForm.width_uom_id' : function(newValue) {
+                if(newValue != ""){
+                    this.submittedForm.weight_uom_id = newValue;
+                    this.submittedForm.length_uom_id = newValue;
+                    this.submittedForm.height_uom_id = newValue;
+                    this.submittedForm.dimension_uom_id = newValue;
+
+                }
+            },
+
+            'submittedForm.height_uom_id' : function(newValue) {
+                if(newValue != ""){
+                    this.submittedForm.weight_uom_id = newValue;
+                    this.submittedForm.length_uom_id = newValue;
+                    this.submittedForm.width_uom_id = newValue;
+                    this.submittedForm.dimension_uom_id = newValue;
+
+                }
+            },
         },
         created: function() {
             var maxDecimalDimension = 4;
@@ -569,7 +644,7 @@
                 this.submittedForm.width = (this.submittedForm.width+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             }
 
-        }
+        },
     });
 </script>
 

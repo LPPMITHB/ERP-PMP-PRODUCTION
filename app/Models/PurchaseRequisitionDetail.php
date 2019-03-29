@@ -13,14 +13,9 @@ class PurchaseRequisitionDetail extends Model
         return $this->belongsTo('App\Models\Material');
     }
 
-        public function resource()
+    public function resource()
     {
         return $this->belongsTo('App\Models\Resource');
-    }
-
-    public function wbs()
-    {
-        return $this->belongsTo('App\Models\WBS');
     }
 
     public function purchaseRequisition()
@@ -36,5 +31,20 @@ class PurchaseRequisitionDetail extends Model
     public function project()
     {
         return $this->belongsTo('App\Models\Project');
+    }
+
+    public function activityDetail()
+    {
+        return $this->belongsTo('App\Models\ActivityDetail');
+    }
+
+    public function wbs()
+    {
+        return $this->belongsTo('App\Models\WBS');
+    }
+
+    public function vendor()
+    {
+        return $this->belongsTo('App\Models\Vendor');
     }
 }
