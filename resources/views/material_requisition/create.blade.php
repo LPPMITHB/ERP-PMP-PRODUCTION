@@ -102,7 +102,7 @@
                                         <tr>
                                             <td class="p-l-10">{{newIndex}}</td>
                                             <td class="p-l-0 textLeft" v-show="wbss.length > 0">
-                                                <selectize v-model="dataInput.wbs_id" :settings="wbsSettings">
+                                                <selectize class="selectizeFull" v-model="dataInput.wbs_id" :settings="wbsSettings">
                                                     <option v-for="(wbs, index) in wbss" :value="wbs.id">{{ wbs.number }} - {{ wbs.description }}</option>
                                                 </selectize>
                                             </td>
