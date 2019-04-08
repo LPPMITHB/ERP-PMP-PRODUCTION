@@ -75,16 +75,6 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="project_type" class="col-sm-2 control-label">Project Type</label>
-                
-                                <div class="col-sm-10">
-                                    <selectize name="project_type" id="project_type" required>
-                                        <option v-for="(data, index) in projectType" :value="data.id">{{ data.name }}</option>
-                                    </selectize>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
                                 <label for="customer" class="col-sm-2 control-label">Customer Name</label>
                 
                                 <div class="col-sm-10">
