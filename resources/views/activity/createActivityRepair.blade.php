@@ -1505,7 +1505,7 @@ var vm = new Vue({
                     this.newIndex = Object.keys(this.activities).length+1;
                     this.activities.forEach(data => {
                         if(data.planned_start_date != null){
-                            data.planned_start_date = data.planned_start_date.split("-").reverse().join("-");
+                            data.planned_start_date = data.planned_start_date.split("-").reverse().join("-");   
                         }
 
                         if(data.planned_end_date != null){
