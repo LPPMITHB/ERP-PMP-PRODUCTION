@@ -791,13 +791,15 @@ class BOMController extends Controller
             if($pr_id != null){
                 $bom_details = $bom_prep_model->bomDetails;
                 foreach ($bom_details as $bom_detail) {
-                    $PRD = new PurchaseRequisitionDetail;
-                    $PRD->purchase_requisition_id = $pr_id;
-                    $PRD->material_id = $bom_detail->material_id;
-                    $PRD->quantity = $bom_detail->pr_quantity;
-                    $PRD->project_id = $modelProject->id;
-                    $PRD->alocation = "Stock";
-                    $PRD->save();
+                    if($bom_detail->pr_quantity != null){
+                        $PRD = new PurchaseRequisitionDetail;
+                        $PRD->purchase_requisition_id = $pr_id;
+                        $PRD->material_id = $bom_detail->material_id;
+                        $PRD->quantity = $bom_detail->pr_quantity;
+                        $PRD->project_id = $modelProject->id;
+                        $PRD->alocation = "Stock";
+                        $PRD->save();
+                    }
                 }
             }
         }
@@ -1039,15 +1041,28 @@ class BOMController extends Controller
         $stocks = Stock::with('material')->get();
         $existing_bom = $project->boms->first();
         foreach ($bomPreps as $bomPrep) {
-            $bomPrep['quantity'] = ceil($bomPrep->weight/$bomPrep->material->weight);
-            if(count($bomPrep->bomDetails) > 0){
-                $bomPrep['already_prepared'] = $bomPrep->bomDetails->sum('quantity');
-                foreach ($bomPrep->bomDetails as $bomDetail) {
-                    $bomDetail['prepared'] = $bomDetail->quantity;
+            if($bomPrep->weight != null){
+                $bomPrep['quantity'] = ceil($bomPrep->weight/$bomPrep->material->weight);
+                if(count($bomPrep->bomDetails) > 0){
+                    $bomPrep['already_prepared'] = $bomPrep->bomDetails->sum('quantity');
+                    foreach ($bomPrep->bomDetails as $bomDetail) {
+                        $bomDetail['prepared'] = $bomDetail->quantity;
+                    }
+                }else{
+                    $bomPrep['bom_details'] = [];
+                    $bomPrep['already_prepared'] = 0;
                 }
-            }else{
-                $bomPrep['bom_details'] = [];
-                $bomPrep['already_prepared'] = 0;
+            }elseif($bomPrep->quantity != null){
+                $bomPrep['quantity'] = $bomPrep->quantity;
+                if(count($bomPrep->bomDetails) > 0){
+                    $bomPrep['already_prepared'] = $bomPrep->bomDetails->sum('quantity');
+                    foreach ($bomPrep->bomDetails as $bomDetail) {
+                        $bomDetail['prepared'] = $bomDetail->quantity;
+                    }
+                }else{
+                    $bomPrep['bom_details'] = [];
+                    $bomPrep['already_prepared'] = 0;
+                }
             }
         }
 
