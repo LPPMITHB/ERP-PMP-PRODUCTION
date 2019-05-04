@@ -149,24 +149,24 @@ class ConfigurationsTableSeeder extends Seeder
         $project_type = array(
             0 => array(
                 'id' => 1,
-                'name' => 'New Building',
+                'name' => 'Special Service',
             ),
             1 => array(
                 'id' => 2,
-                'name' => 'Marine Services',
+                'name' => 'Intermediate',
             ),
             2 => array(
                 'id' => 3,
-                'name' => 'Fabrications',
+                'name' => 'Occasional',
             ),
-            // 3 => array(
-            //     'id' => 4,
-            //     'name' => 'Onboard',
-            // ),
-            // 4 => array(
-            //     'id' => 5,
-            //     'name' => 'Spot',
-            // ),
+            3 => array(
+                'id' => 4,
+                'name' => 'Onboard',
+            ),
+            4 => array(
+                'id' => 5,
+                'name' => 'Spot',
+            ),
         );
 
         DB::table('mst_configuration')->insert([
