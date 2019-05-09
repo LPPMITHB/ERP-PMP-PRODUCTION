@@ -37,7 +37,7 @@ class GoodsIssueController extends Controller
         $modelMRs = MaterialRequisition::whereIn('project_id',$modelProject)->pluck('id')->toArray();
         // $modelGIs = GoodsIssue::whereIn('material_requisition_id',$modelMRs)->where('type',1)->get();
         $modelGIs = GoodsIssue::where('business_unit_id',$modelProject)->get();
-        $modelGIs = GoodsIssue::where('business_unit_id',2)->orderBy('created_at', 'desc')->get();
+        $modelGIs = GoodsIssue::where('business_unit_id',1)->orderBy('created_at', 'desc')->get();
 
         return view ('goods_issue.index', compact('modelGIs','menu'));
     }
