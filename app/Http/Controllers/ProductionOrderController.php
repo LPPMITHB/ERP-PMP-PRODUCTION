@@ -1406,6 +1406,12 @@ class ProductionOrderController extends Controller
                     }
                 }
             }
+
+            foreach($modelPrO->productionOrderDetails as $prod){
+                if($prod->resource_id != null){
+                    $prod->delete();
+                }
+            }
             DB::commit();
             if($route == "/production_order"){
                 return redirect()->route('production_order.show',$PrO->id)->with('success', 'Production Order Updated');
