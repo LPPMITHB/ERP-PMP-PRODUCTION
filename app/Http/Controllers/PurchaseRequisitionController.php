@@ -231,7 +231,7 @@ class PurchaseRequisitionController extends Controller
                     $PRD = new PurchaseRequisitionDetail;
                     $PRD->purchase_requisition_id = $PR->id;
                     $PRD->quantity = 1;
-                    $PRD->activity_detail_id = $data->activity_detail_id;
+                    $PRD->job_order = $data->job_order;
                     $PRD->project_id = $data->project_id;
                     $PRD->wbs_id = $data->wbs_id;
                     $PRD->vendor_id = $data->vendor_id;
@@ -817,7 +817,7 @@ class PurchaseRequisitionController extends Controller
         $pdf->loadView('purchase_requisition.pdf',['modelPR' => $modelPR, 'branch' => $branch, 'route'=> $route]);
         $now = date("Y_m_d_H_i_s");
         
-        return $pdf->download('Purchase_Requisition_'.$now.'.pdf');
+        return $pdf->stream('Purchase_Requisition_'.$now.'.pdf');
     }
 
     public function getProjectApi($id){
