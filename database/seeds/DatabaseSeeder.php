@@ -49,6 +49,8 @@ class DatabaseSeeder extends Seeder
         $this->call(MstWbsProfileTableSeeder::class);
         $this->call(MstActivityProfileTableSeeder::class);
         $this->call(MstBomProfileTableSeeder::class);        
+        $this->call(MstBomTableSeeder::class);        
+        $this->call(MstBomDetailTableSeeder::class);        
         $this->call(MstResourceProfileTableSeeder::class);
         $this->call(PurchasingInfoRecordTableSeeder::class);
         $this->call(ProWbsTableSeeder::class);
