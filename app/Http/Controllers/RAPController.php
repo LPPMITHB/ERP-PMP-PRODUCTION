@@ -426,14 +426,15 @@ class RAPController extends Controller
             foreach ($wbs->activities as $activity) {
                 if(count($activity->activityDetails)>0){
                     foreach ($activity->activityDetails as $act_detail) {
-                        $price_per_kg = $act_detail->material->cost_standard_price_per_kg;
-                        $price = $act_detail->material->cost_standard_price;
-                        if($act_detail->weight != null){
-                            $costPerWbs += $price_per_kg * $act_detail->weight;
-                        }else{                            
-                            $costPerWbs += $price * $act_detail->quantity_material;
+                        if($act_detail->material != null){
+                            $price_per_kg = $act_detail->material->cost_standard_price_per_kg;
+                            $price = $act_detail->material->cost_standard_price;
+                            if($act_detail->weight != null){
+                                $costPerWbs += $price_per_kg * $act_detail->weight;
+                            }else{                            
+                                $costPerWbs += $price * $act_detail->quantity_material;
+                            }
                         }
-                        
                     }
                 }
             }
