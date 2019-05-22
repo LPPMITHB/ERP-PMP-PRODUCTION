@@ -435,10 +435,10 @@ class RAPController extends Controller
                                 $costPerWbs += $price * $act_detail->quantity_material;
                             }
                         }
-                        if($act_detail->serviceDetail != null){
-                            $temp = $costPerWbs;
-                            $costPerWbs += $act_detail->area * $act_detail->serviceDetail->cost_standard_price;
-                        }
+                        // if($act_detail->serviceDetail != null){
+                        //     $temp = $costPerWbs;
+                        //     $costPerWbs += $act_detail->area * $act_detail->serviceDetail->cost_standard_price;
+                        // }
                     }
                 }
             }
@@ -549,10 +549,10 @@ class RAPController extends Controller
                                 $costPerWbs += $price * $act_detail->quantity_material;
                             }
                         }
-                        if($act_detail->serviceDetail != null){
-                            $temp = $costPerWbs;
-                            $costPerWbs += $act_detail->area * $act_detail->serviceDetail->cost_standard_price;
-                        }
+                        // if($act_detail->serviceDetail != null){
+                        //     $temp = $costPerWbs;
+                        //     $costPerWbs += $act_detail->area * $act_detail->serviceDetail->cost_standard_price;
+                        // }
                         
                     }
                 }
@@ -583,10 +583,10 @@ class RAPController extends Controller
                             }
                         }
 
-                        if($act_detail->serviceDetail != null){
-                            $temp = $costPerWbs;
-                            $costPerWbs += $act_detail->area * $act_detail->serviceDetail->cost_standard_price;
-                        }
+                        // if($act_detail->serviceDetail != null){
+                        //     $temp = $costPerWbs;
+                        //     $costPerWbs += $act_detail->area * $act_detail->serviceDetail->cost_standard_price;
+                        // }
                         
                     }
                 }
