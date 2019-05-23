@@ -716,7 +716,7 @@ class ProjectController extends Controller
             $project->ship_id = $request->ship;
             $project->project_type = $request->project_type;
             $project->flag = $request->flag;
-            $project->hull_number = $request->hull_number;
+            // $project->hull_number = $request->hull_number;
             $project->class_name = $request->class_name;
             $project->class_name_2 = $request->class_name_2;
             $project->person_in_charge = $request->person_in_charge;
