@@ -165,7 +165,7 @@
                                         <td>{{ number_format($rapDetail->quantity,2) }}</td>
                                         <td>-</td>
                                     @endif
-                                    @if($rapDetail->quantity !== 0)
+                                    @if($rapDetail->quantity != 0)
                                         <td>Rp.{{ number_format($rapDetail->price / $rapDetail->quantity,2) }}</td>
                                         <td>Rp.{{ number_format($rapDetail->price,2) }}</td>
                                     @else
