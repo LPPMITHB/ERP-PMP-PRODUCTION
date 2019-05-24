@@ -86,9 +86,9 @@
                                         <td>{{ index+1 }}</td>
                                         <td>{{ MRD.material.code }}</td>
                                         <td class="tdEllipsis" data-container="body" v-tooltip:top="tooltipText(MRD.material.description)">{{ MRD.material.description }}</td>
-                                        <td v-if="MRD.type == 3">Bulk Part</td>
-                                        <td v-else-if="MRD.type == 2">Component</td>
-                                        <td v-else-if="MRD.type == 1">Consumable</td>
+                                        <td v-if="MRD.material.type == 3">Bulk Part</td>
+                                        <td v-else-if="MRD.material.type == 2">Component</td>
+                                        <td v-else-if="MRD.material.type == 1">Consumable</td>
                                         <td v-else>-</td>
                                         <td>{{ MRD.quantity - MRD.already_issued }}</td>
                                         <td>{{ total[index] }}</td>
