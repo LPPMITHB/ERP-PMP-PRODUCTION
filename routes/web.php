@@ -14,6 +14,13 @@
 Route::get('/', 'PagesController@index')->name('index')->middleware('can:show-dashboard');
 Auth::routes();
 
+// Cost Type Routes
+Route::name('cost_type.')->prefix('cost_type')->group(function() {
+    Route::get('/', 'ConfigurationController@costTypeIndex')->name('index');
+
+    Route::post('/', 'ConfigurationController@acostTypeSave')->name('save');
+});
+
 // Configuration Routes
 Route::name('appearance.')->prefix('appearance')->group(function() {
     Route::get('/', 'ConfigurationController@appearanceIndex')->name('index');
@@ -502,7 +509,7 @@ Route::name('project.')->prefix('project')->group(function() {
 //Project Routes
 Route::name('project_repair.')->prefix('project_repair')->group(function() {
     // Project Cost Evaluation
-    Route::get('/projectCE/{id}', 'ProjectController@projectCERepair')->name('projectCE')->middleware('can:show-project-repair');
+    Route::get('/projectCE/{id}', 'ProjectController@projectCE')->name('projectCE')->middleware('can:show-project-repair');
     
     //GanttChart
     Route::get('/ganttChart/{id}', 'ProjectController@showGanttChart')->name('showGanttChart')->middleware('can:show-project-repair');

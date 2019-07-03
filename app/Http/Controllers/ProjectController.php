@@ -534,11 +534,16 @@ class ProjectController extends Controller
             $project->ship_id = $request->ship;
             $project->project_type = $request->project_type;
             $project->flag = $request->flag;
+            $project->hull_number = $request->hull_number;
             $project->class_name = $request->class_name;
+            $project->class_name_2 = $request->class_name_2;
             $project->person_in_charge = $request->person_in_charge;
             $project->class_contact_person_name = $request->class_contact_person_name;
+            $project->class_contact_person_name_2 = $request->class_contact_person_name_2;
             $project->class_contact_person_phone = $request->class_contact_person_phone;
+            $project->class_contact_person_phone_2 = $request->class_contact_person_phone_2;
             $project->class_contact_person_email = $request->class_contact_person_email;
+            $project->class_contact_person_email_2 = $request->class_contact_person_email_2;
 
             $planStartDate = DateTime::createFromFormat('m/j/Y', $request->planned_start_date);
             $planEndDate = DateTime::createFromFormat('m/j/Y', $request->planned_end_date);
@@ -716,16 +721,16 @@ class ProjectController extends Controller
             $project->ship_id = $request->ship;
             $project->project_type = $request->project_type;
             $project->flag = $request->flag;
-            // $project->hull_number = $request->hull_number;
+            $project->hull_number = $request->hull_number;
             $project->class_name = $request->class_name;
-            // $project->class_name_2 = $request->class_name_2;
+            $project->class_name_2 = $request->class_name_2;
             $project->person_in_charge = $request->person_in_charge;
             $project->class_contact_person_name = $request->class_contact_person_name;
-            // $project->class_contact_person_name_2 = $request->class_contact_person_name_2;
+            $project->class_contact_person_name_2 = $request->class_contact_person_name_2;
             $project->class_contact_person_phone = $request->class_contact_person_phone;
-            // $project->class_contact_person_phone_2 = $request->class_contact_person_phone_2;
+            $project->class_contact_person_phone_2 = $request->class_contact_person_phone_2;
             $project->class_contact_person_email = $request->class_contact_person_email;
-            // $project->class_contact_person_email_2 = $request->class_contact_person_email_2;
+            $project->class_contact_person_email_2 = $request->class_contact_person_email_2;
 
             $planStartDate = DateTime::createFromFormat('m/j/Y', $request->planned_start_date);
             $planEndDate = DateTime::createFromFormat('m/j/Y', $request->planned_end_date);
@@ -1206,107 +1211,6 @@ class ProjectController extends Controller
         
     // Project Cost Evaluation
     public function projectCE($id, Request $request){
-        $modelWBS = WBS::where('project_id',$id)->where('wbs_id','!=',null)->get();
-        $project = Project::findOrFail($id);
-        $menu = $project->business_unit_id == "1" ? "building" : "repair";
-
-        $planned = Collection::make();
-        $materialEvaluation = Collection::make();
-        
-        $actual = Collection::make();
-        foreach($project->wbss as $wbs){
-            $actualCostPerWbs = 0;
-            $plannedCostPerWbs = $wbs->bom != null ? $wbs->bom->rap != null ? $wbs->bom->rap->total_price : 0 : 0;
-            
-            foreach($wbs->materialRequisitionDetails as $mrd){
-                $actualCostPerWbs = $mrd->material->cost_standard_price * $mrd->issued;
-            }
-            
-            $planned->push([
-                "wbs_number" => $wbs->number." - ".$wbs->description,
-                "cost" => $plannedCostPerWbs,                   
-            ]);
-                
-            $actual->push([
-                "wbs_number" => $wbs->number." - ".$wbs->description,
-                "cost" => $actualCostPerWbs,                   
-            ]);
-        }
-
-        $modelWBS = WBS::where('project_id',$id)->get();
-        foreach($modelWBS as $wbs){
-            if($wbs->bom){
-                foreach($wbs->bom->bomDetails as $bomDetail){
-                    if($bomDetail->material){
-                        if(count($bomDetail->material->materialRequisitionDetails)>0){
-                            $status = 0;
-                                foreach($materialEvaluation as $key => $data){
-                                    $material = $bomDetail->material->code.' - '.$bomDetail->material->description;
-                                    if($material == $data['material']){
-                                        $status = 1;
-                                        $quantity = $bomDetail->quantity + $data['quantity'];
-                                        $issued = $data['used'];
-            
-                                        unset($materialEvaluation[$key]);
-                                        $material = $bomDetail->material->code.' - '.$bomDetail->material->description;
-            
-                                        foreach ($bomDetail->material->materialRequisitionDetails as $mrd) {
-                                            if ($mrd->wbs_id == $id) {
-                                                $materialEvaluation->push([
-                                                    "material" => $material,
-                                                    "quantity" => $quantity,
-                                                    "used" => $issued + $mrd->issued,
-                                                ]);
-                                            }
-                                        }
-                                    }
-                                }
-                        if($status == 0){
-                            foreach ($bomDetail->material->materialRequisitionDetails as $mrd) {
-                                if ($mrd->wbs_id == $id) {
-                                    $materialEvaluation->push([
-                                        "material" => $bomDetail->material->code.' - '.$bomDetail->material->description,
-                                        "quantity" => $bomDetail->quantity,
-                                        "used" => $mrd->issued,
-                                    ]);
-                                }
-                            }
-                        }
-                    }else{
-                        $status = 0;
-                        foreach($materialEvaluation as $key => $data){
-                            $material = $bomDetail->material->code.' - '.$bomDetail->material->description;
-                            if($material == $data['material']){
-                                $status = 1;
-                                $quantity = $bomDetail->quantity + $data['quantity'];
-                                $issued = $data['used'];
-    
-                                unset($materialEvaluation[$key]);
-    
-                                $materialEvaluation->push([
-                                    "material" => $bomDetail->material->code.' - '.$bomDetail->material->description,
-                                    "quantity" => $quantity,
-                                    "used" => $issued,
-                                ]);
-                            }
-                        }
-                        if($status == 0){
-                            $materialEvaluation->push([
-                                "material" => $bomDetail->material->code.' - '.$bomDetail->material->description,
-                                "quantity" => $bomDetail->quantity,
-                                "used" => 0,
-                                ]);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-            
-        return view('project.showPCE', compact('modelWBS','project','actual','planned','materialEvaluation','menu'));
-    }
-
-    public function projectCERepair($id, Request $request){
         $modelWBS = WBS::where('project_id',$id)->where('wbs_id','!=',null)->get();
         $project = Project::findOrFail($id);
         $menu = $project->business_unit_id == "1" ? "building" : "repair";
@@ -2107,7 +2011,7 @@ class ProjectController extends Controller
                                         "y" => number_format(0,2)."",
                                     ]);
                                 }
-                            }                            
+                            }
                         }
                     }
                 }

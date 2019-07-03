@@ -6,6 +6,7 @@ use DB;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
+use App\Models\Configuration;
 use App\Models\Branch;
 use App\Models\Bom;
 use App\Models\Rap;
@@ -286,8 +287,9 @@ class RAPController extends Controller
     {
         $route = $request->route()->getPrefix();
         $project = Project::findOrFail($id);  
-        
-        return view('rap.createOtherCost', compact('project','route'));
+        $cost_types = Configuration::get('cost_type');
+
+        return view('rap.createOtherCost', compact('project','route','cost_types'));
     }
 
     public function inputActualOtherCost(Request $request, $id)
@@ -426,19 +428,14 @@ class RAPController extends Controller
             foreach ($wbs->activities as $activity) {
                 if(count($activity->activityDetails)>0){
                     foreach ($activity->activityDetails as $act_detail) {
-                        if($act_detail->material != null){
-                            $price_per_kg = $act_detail->material->cost_standard_price_per_kg;
-                            $price = $act_detail->material->cost_standard_price;
-                            if($act_detail->weight != null){
-                                $costPerWbs += $price_per_kg * $act_detail->weight;
-                            }else{                            
-                                $costPerWbs += $price * $act_detail->quantity_material;
-                            }
+                        $price_per_kg = $act_detail->material->cost_standard_price_per_kg;
+                        $price = $act_detail->material->cost_standard_price;
+                        if($act_detail->weight != null){
+                            $costPerWbs += $price_per_kg * $act_detail->weight;
+                        }else{                            
+                            $costPerWbs += $price * $act_detail->quantity_material;
                         }
-                        // if($act_detail->serviceDetail != null){
-                        //     $temp = $costPerWbs;
-                        //     $costPerWbs += $act_detail->area * $act_detail->serviceDetail->cost_standard_price;
-                        // }
+                        
                     }
                 }
             }
@@ -540,19 +537,13 @@ class RAPController extends Controller
             foreach ($wbs->activities as $activity) {
                 if(count($activity->activityDetails)>0){
                     foreach ($activity->activityDetails as $act_detail) {
-                        if($act_detail->material != null){
-                            $price_per_kg = $act_detail->material->cost_standard_price_per_kg;
-                            $price = $act_detail->material->cost_standard_price;
-                            if($act_detail->weight != null){
-                                $costPerWbs += $price_per_kg * $act_detail->weight;
-                            }else{                            
-                                $costPerWbs += $price * $act_detail->quantity_material;
-                            }
+                        $price_per_kg = $act_detail->material->cost_standard_price_per_kg;
+                        $price = $act_detail->material->cost_standard_price;
+                        if($act_detail->weight != null){
+                            $costPerWbs += $price_per_kg * $act_detail->weight;
+                        }else{                            
+                            $costPerWbs += $price * $act_detail->quantity_material;
                         }
-                        // if($act_detail->serviceDetail != null){
-                        //     $temp = $costPerWbs;
-                        //     $costPerWbs += $act_detail->area * $act_detail->serviceDetail->cost_standard_price;
-                        // }
                         
                     }
                 }
@@ -573,20 +564,13 @@ class RAPController extends Controller
             foreach ($wbs->activities as $activity) {
                 if(count($activity->activityDetails)>0){
                     foreach ($activity->activityDetails as $act_detail) {
-                        if($act_detail->material != null){
-                            $price_per_kg = $act_detail->material->cost_standard_price_per_kg;
-                            $price = $act_detail->material->cost_standard_price;
-                            if($act_detail->weight != null){
-                                $costPerWbs += $price_per_kg * $act_detail->weight;
-                            }else{                            
-                                $costPerWbs += $price * $act_detail->quantity_material;
-                            }
+                        $price_per_kg = $act_detail->material->cost_standard_price_per_kg;
+                        $price = $act_detail->material->cost_standard_price;
+                        if($act_detail->weight != null){
+                            $costPerWbs += $price_per_kg * $act_detail->weight;
+                        }else{                            
+                            $costPerWbs += $price * $act_detail->quantity_material;
                         }
-
-                        // if($act_detail->serviceDetail != null){
-                        //     $temp = $costPerWbs;
-                        //     $costPerWbs += $act_detail->area * $act_detail->serviceDetail->cost_standard_price;
-                        // }
                         
                     }
                 }
@@ -618,6 +602,7 @@ class RAPController extends Controller
 
             $cost->user_id = Auth::user()->id;
             $cost->branch_id = Auth::user()->branch->id;
+            $cost->cost_type = $data['cost_type'];
 
             if(!$cost->save()){
                 return response(["error"=>"Failed to save, please try again!"],Response::HTTP_OK);
@@ -688,6 +673,7 @@ class RAPController extends Controller
                 $cost->wbs_id = $data['wbs_id'];
             }
             $cost->project_id = $data['project_id'];
+            $cost->cost_type = $data['cost_type'];
 
             if(!$cost->update()){
                 return response(["error"=>"Failed to save, please try again!"],Response::HTTP_OK);

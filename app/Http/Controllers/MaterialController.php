@@ -18,7 +18,7 @@ class MaterialController extends Controller
      */
     public function index()
     {
-        $materials = Material::where('status',1)->select('code','description','type','id')->get()->jsonSerialize();
+        $materials = Material::where('status',1)->select('code','description','type','status','id')->get()->jsonSerialize();
 
         return view('material.index', compact('materials'));
     }
@@ -80,9 +80,9 @@ class MaterialController extends Controller
                     }
 
                     $result = $data->lengths * $data->width * $data->height * $value;
-                    $material->cost_standard_price_per_kg = 1/$result * $data->cost_standard_price;
+                    $material->cost_standard_price_kg = 1/$result * $data->cost_standard_price;
                 }else{
-                    $material->cost_standard_price_per_kg = 0;
+                    $material->cost_standard_price_kg = 0;
                 }
             }
 
@@ -248,9 +248,9 @@ class MaterialController extends Controller
                 }
                 
                 $result = $data->lengths * $data->width * $data->height * $value;
-                $material->cost_standard_price_per_kg = 1/$result * $data->cost_standard_price;
+                $material->cost_standard_price_kg = 1/$result * $data->cost_standard_price;
             }else{
-                $material->cost_standard_price_per_kg = 0;
+                $material->cost_standard_price_kg = 0;
             }
         }
         $material->cost_standard_price_service = $data->cost_standard_service == "" ? 0 : $data->cost_standard_service;

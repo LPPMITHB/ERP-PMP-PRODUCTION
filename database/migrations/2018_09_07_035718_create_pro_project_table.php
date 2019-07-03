@@ -26,8 +26,8 @@ class CreateProProjectTable extends Migration
             $table->string('person_in_charge')->nullable();
             $table->text('description')->nullable();
             $table->unsignedInteger('sales_order_id')->nullable();
-            $table->date('planned_start_date');
-            $table->date('planned_end_date');
+            $table->date('planned_start_date')->nullable();
+            $table->date('planned_end_date')->nullable();
             $table->string('planned_duration')->nullable();
             $table->date('actual_start_date')->nullable();
             $table->date('actual_end_date')->nullable();
@@ -35,9 +35,13 @@ class CreateProProjectTable extends Migration
             $table->float('progress');
             $table->string('flag')->nullable();
             $table->string('class_name')->nullable();
+            $table->string('class_name_2')->nullable();
             $table->string('class_contact_person_name')->nullable();
+            $table->string('class_contact_person_name_2')->nullable();
             $table->string('class_contact_person_phone')->nullable();
+            $table->string('class_contact_person_phone_2')->nullable();
             $table->string('class_contact_person_email')->nullable();
+            $table->string('class_contact_person_email_2')->nullable();
             $table->unsignedInteger('project_type');
             $table->integer('status')->default(1);
             $table->unsignedInteger('user_id');
