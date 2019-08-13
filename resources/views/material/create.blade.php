@@ -49,48 +49,48 @@
                 <form id="create-material"class="form-horizontal" method="POST" action="{{ route('material.store') }}" enctype="multipart/form-data">
                 @csrf
                     <div class="box-body">
-                       
+
                         @verbatim
                         <div id="material">
                             <div class="form-group">
-                                <label for="code" class="col-sm-2 control-label">Item Number</label>
-                
+                                <label for="code" class="col-sm-2 control-label">Item Number *</label>
+
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="code" name="code" required autofocus v-model="submittedForm.code">
                                 </div>
                             </div>
-                            
+
                             <div class="form-group">
-                                <label for="description" class="col-sm-2 control-label">Description</label>
-                
+                                <label for="description" class="col-sm-2 control-label">Description *</label>
+
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="description" name="description" required v-model="submittedForm.description">
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label for="cost_standard_price" class="col-sm-2 control-label">Cost Standard Price Material(Rp)</label>
-                                
+                                <label for="cost_standard_price" class="col-sm-2 control-label">Cost Standard Price Material(Rp) *</label>
+
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="cost_standard_price" name="cost_standard_price" required v-model="submittedForm.cost_standard_price">
                                 </div>
                             </div>
-                            
+
                             <div class="form-group">
-                                <label for="cost_standard_service" class="col-sm-2 control-label">Cost Standard Price Service (Rp)</label>
-                                
+                                <label for="cost_standard_service" class="col-sm-2 control-label">Cost Standard Price Service (Rp) *</label>
+
                                 <div class="col-sm-10">
                                     <input type="text"  class="form-control" id="cost_standard_service" name="cost_standard_service" required v-model="submittedForm.cost_standard_service">
                                 </div>
                             </div>
-                            
+
                             <div class="form-group">
-                                <label for="uom" class="col-sm-2 control-label">Unit Of Measurement</label>
+                                <label for="uom" class="col-sm-2 control-label">Unit Of Measurement *</label>
                                 
                                 <div class="col-sm-10">
                                     <selectize name="uom_id" id="uom" v-model="submittedForm.uom_id" :settings="uom_settings">
                                         <option v-for="(uom, index) in uoms" :value="uom.id">{{ uom.unit }}</option>
-                                    </selectize> 
+                                    </selectize>
                                 </div>
                             </div>
 
@@ -99,16 +99,24 @@
                                 <div class="col-sm-10">
                                     <selectize id="family_id" name="family_id" v-model="submittedForm.family_id" :settings="family_id_settings">
                                         <option v-for="(data, index) in material_families" :value="data.id">{{ data.name }}</option>
-                                    </selectize>   
+                                    </selectize>
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label for="density_id" class="col-sm-2 control-label">Density</label>
+                                <label for="density_id" class="col-sm-2 control-label">Density Type</label>
                                 <div class="col-sm-10">
                                     <selectize id="density_id" name="density_id" v-model="submittedForm.density_id" :settings="density_id_settings">
                                         <option v-for="(data, index) in densities" :value="data.id">{{ data.name }}</option>
-                                    </selectize>   
+                                    </selectize>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="max" class="col-sm-2 control-label">Max</label>
+                                
+                                <div class="col-sm-10">
+                                    <input type="text" name="max" class="form-control" id="max" required v-model="submittedForm.max">
                                 </div>
                             </div>
 
@@ -120,31 +128,35 @@
                                 </div>
                             </div>
 
+
                             <div class="form-group">
-                                <label for="max" class="col-sm-2 control-label">Max</label>
-                                
+                                <label for="dimension_type" class="col-sm-2 control-label">Dimension Type</label>
                                 <div class="col-sm-10">
-                                    <input type="text" name="max" class="form-control" id="max" required v-model="submittedForm.max">
+                                    <selectize id="dimension_type" name="dimension_type" v-model="submittedForm.dimension_type_id" :settings="dimension_type_settings">
+                                        <option v-for="(data, index) in dimension_types" :value="data.id">{{ data.name }}</option>
+                                    </selectize>   
                                 </div>
                             </div>
 
-                            <div class="form-group">
-                                <label for="weight" class="col-sm-2 control-label">Weight</label>
-                
-                                <div class="col-sm-8">
-                                    <input type="text" name="weight" :disabled="weightOk" class="form-control" id="weight" v-model="submittedForm.weight">
+                            <template v-for="dimension in selectedDimensionType">
+                                <div class="form-group">
+                                    <label for="name" class="col-sm-2 control-label">{{dimension.name}}</label>
+                    
+                                    <div class="col-sm-8">
+                                        <input type="text" name="name" class="form-control" id="weight" v-model="dimension.value">
+                                    </div>
+    
+                                    <div class="col-sm-2">
+                                        <selectize disabled id="uom" v-model="dimension.uom_id" :settings="weight_uom_settings">
+                                            <option v-for="(uom, index) in uoms" :value="uom.id">{{ uom.unit }}</option>
+                                        </selectize>    
+                                    </div>
                                 </div>
-
-                                <div class="col-sm-2">
-                                    <selectize id="uom" name="weight_uom_id" v-model="submittedForm.weight_uom_id" :settings="weight_uom_settings">
-                                        <option v-for="(uom, index) in uoms" :value="uom.id">{{ uom.unit }}</option>
-                                    </selectize>    
-                                </div>
-                            </div>
+                            </template>
 
                             <div class="form-group">
                                 <label for="length" class="col-sm-2 control-label">Length</label>
-                
+
                                 <div class="col-sm-8">
                                     <input type="text" name="length" :disabled="lengthOk" class="form-control" id="lengths" v-model="submittedForm.lengths" >
                                 </div>
@@ -152,13 +164,13 @@
                                 <div class="col-sm-2">
                                     <selectize id="uom" name="length_uom_id" v-model="submittedForm.length_uom_id" :settings="length_uom_settings">
                                         <option v-for="(uom, index) in uoms" :value="uom.id">{{ uom.unit }}</option>
-                                    </selectize>    
+                                    </selectize>
                                 </div>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label for="width" class="col-sm-2 control-label">Width</label>
-                
+
                                 <div class="col-sm-8">
                                     <input type="text" name="width" :disabled="widthOk" class="form-control" id="width" v-model="submittedForm.width"  >
                                 </div>
@@ -166,13 +178,13 @@
                                 <div class="col-sm-2">
                                     <selectize id="uom" name="width_uom_id" v-model="submittedForm.width_uom_id" :settings="width_uom_settings">
                                         <option v-for="(uom, index) in uoms" :value="uom.id">{{ uom.unit }}</option>
-                                    </selectize>    
+                                    </selectize>
                                 </div>
                             </div>
-                        
+
                             <div class="form-group">
                                 <label for="height" class="col-sm-2 control-label">Height</label>
-                
+
                                 <div class="col-sm-8">
                                     <input type="text" name="height" :disabled="heightOk" class="form-control" id="height" v-model="submittedForm.height" >
                                 </div>
@@ -180,13 +192,13 @@
                                 <div class="col-sm-2">
                                     <selectize id="uom" name="height_uom_id" v-model="submittedForm.height_uom_id" :settings="height_uom_settings">
                                         <option v-for="(uom, index) in uoms" :value="uom.id">{{ uom.unit }}</option>
-                                    </selectize>    
+                                    </selectize>
                                 </div>
                             </div>
-                            
+
 
                             <div class="form-group">
-                                <label for="type" class="col-sm-2 control-label">Type</label>
+                                <label for="type" class="col-sm-2 control-label">Material Type *</label>
                                 <div class="col-sm-10">
                                     <select v-model="submittedForm.type" class="form-control" name="type" id="type" required>
                                         <option value="3">Bulk part</option>
@@ -213,12 +225,19 @@
 
                             <div class="form-group">
                                 <label for="status" class="col-sm-2 control-label">Status</label>
-                
+
                                 <div class="col-sm-10">
                                     <select v-model="submittedForm.status" class="form-control" name="status" id="status" required>
                                         <option value="1">Active</option>
                                         <option value="0">Non Active</option>
                                     </select>
+                                </div>
+                            </div>
+                            <div class="form-group" v-if="is_pami">
+                                <label for="status" class="col-sm-2 control-label">Location Detail</label>
+
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="location_detail" name="location_detail" required v-model="submittedForm.location_detail">
                                 </div>
                             </div>
                             <!-- /.box-body -->
@@ -264,8 +283,8 @@
                     if( log ) alert(log);
                 }
             });
-        }); 
-        
+        });
+
         var data = {
             oldData : {
                 name : @json(Request::old('name')),
@@ -283,10 +302,14 @@
                 length_uom_id : @json(Request::old('length_uom_id')),
                 width : @json(Request::old('width')),
                 width_uom_id : @json(Request::old('width_uom_id')),
+                location_detail : @json(Request::old('location_detail')),
             },
             uoms : @json($uoms),
+            is_pami: @json($is_pami),
             material_families : @json($material_families),
             densities : @json($densities),
+            dimension_types : @json($dimension_types),
+            selectedDimensionType : [],
             submittedForm :{
                 code : "",
                 name : "",
@@ -309,6 +332,8 @@
                 density_id : "",
                 status : 1,
                 type : 1,
+                dimension_type_id : "",
+                location_detail : "",
             },
             uom_settings: {
                 placeholder: 'Select UOM!'
@@ -332,38 +357,44 @@
             },
             density_id_settings: {
                 placeholder: 'Select Density!',
-            }
+            },
+            dimension_type_settings: {
+                placeholder: 'Select Dimension Type!',
+            },
         }
-    
+
         var vm = new Vue({
             el : '#material',
             data: data,
             computed : {
                 createOk :function(){
                     let isOk = false;
-    
+
                     if(this.submittedForm.code == "" || this.submittedForm.description == "" || this.submittedForm.uom_id == ""){
                         isOk = true;
                     }
-    
+                    if(this.is_pami && this.submittedForm.location_detail == ""){
+                        isOk = true;
+                    }
+
                     if(this.submittedForm.weight_uom_id != ""){
                         if(this.submittedForm.weight == ""){
                             isOk = true;
                         }
                     }
-    
+
                     if(this.submittedForm.height_uom_id != ""){
                         if(this.submittedForm.height == "" || this.submittedForm.density_id == ""){
                             isOk = true;
                         }
                     }
-    
+
                     if(this.submittedForm.length_uom_id != ""){
                         if(this.submittedForm.lengths == "" || this.submittedForm.density_id == ""){
                             isOk = true;
                         }
                     }
-    
+
                     if(this.submittedForm.width_uom_id != ""){
                         if(this.submittedForm.width == "" || this.submittedForm.density_id == ""){
                             isOk = true;
@@ -373,7 +404,7 @@
                 },
                 weightOk :function(){
                     let isOk = false;
-    
+
                     if(this.submittedForm.weight_uom_id == ""){
                         isOk = true;
                     }
@@ -381,7 +412,7 @@
                 },
                 heightOk :function(){
                     let isOk = false;
-    
+
                     if(this.submittedForm.height_uom_id == ""){
                         isOk = true;
                     }
@@ -389,7 +420,7 @@
                 },
                 lengthOk :function(){
                     let isOk = false;
-    
+
                     if(this.submittedForm.length_uom_id == ""){
                         isOk = true;
                     }
@@ -397,7 +428,7 @@
                 },
                 widthOk :function(){
                     let isOk = false;
-    
+
                     if(this.submittedForm.width_uom_id == ""){
                         isOk = true;
                     }
@@ -411,14 +442,16 @@
                     this.submittedForm.cost_standard_service = this.submittedForm.cost_standard_service.replace(/,/g , '');
                     this.submittedForm.min = (this.submittedForm.min+"").replace(/,/g , '');
                     this.submittedForm.max = (this.submittedForm.max+"").replace(/,/g , '');
-    
-                    
+                    this.selectedDimensionType.forEach(dimension => {
+                        dimension.value = (dimension.value+"").replace(/,/g , '');
+                    });
+                    this.submittedForm.selectedDimensionType = this.selectedDimensionType;
                     this.submittedForm.weight = (this.submittedForm.weight+"").replace(/,/g , '');
                     this.submittedForm.height = (this.submittedForm.height+"").replace(/,/g , '');
                     this.submittedForm.lengths = (this.submittedForm.lengths+"").replace(/,/g , '');
                     this.submittedForm.width = (this.submittedForm.width+"").replace(/,/g , '');
                     // this.submittedForm.volume = (this.submittedForm.volume+"").replace(/,/g , '');
-    
+
                     if(parseInt(this.submittedForm.max) < parseInt(this.submittedForm.min)){
                         iziToast.error({
                             title: 'max value cannot exceed min value !',
@@ -436,66 +469,54 @@
                     }
                 },
             },
+            created: function() {
+                if(this.oldData.description !=null) {
+                    this.project.description=this.oldData.description;
+                }
+                if(this.oldData.cost_standard_price !=null) {
+                    this.project.cost_standard_price=this.oldData.cost_standard_price;
+                }
+                if(this.oldData.cost_standard_service !=null) {
+                    this.project.cost_standard_service=this.oldData.cost_standard_service;
+                }
+                if(this.oldData.uom_id !=null) {
+                    this.project.uom_id=this.oldData.uom_id;
+                }
+                if(this.oldData.min !=null) {
+                    this.project.min=this.oldData.min;
+                }
+                if(this.oldData.max !=null) {
+                    this.project.max=this.oldData.max;
+                }
+                if(this.oldData.weight !=null) {
+                    this.project.weight=this.oldData.weight;
+                }
+                if(this.oldData.weight_uom_id !=null) {
+                    this.project.weight_uom_id=this.oldData.weight_uom_id;
+                }
+                if(this.oldData.height !=null) {
+                    this.project.height=this.oldData.height;
+                }
+                if(this.oldData.height_uom_id !=null) {
+                    this.project.height_uom_id=this.oldData.height_uom_id;
+                }
+                if(this.oldData.lengths !=null) {
+                    this.project.lengths=this.oldData.lengths;
+                }
+                if(this.oldData.length_uom_id !=null) {
+                    this.project.length_uom_id=this.oldData.length_uom_id;
+                }
+                if(this.oldData.width !=null) {
+                    this.project.width=this.oldData.width;
+                }
+                if(this.oldData.width_uom_id !=null) {
+                    this.project.width_uom_id=this.oldData.width_uom_id;
+                }
+                if(this.oldData.location_detail !=null) {
+                    this.project.location_detail=this.oldData.location_detail;
+                }
+            },
             watch:{
-                created: function() {
-                    if(this.oldData.description !=null) {
-                        this.project.description=this.oldData.description;
-                    }
-                    if(this.oldData.cost_standard_price !=null) {
-                        this.project.cost_standard_price=this.oldData.cost_standard_price;
-                    }
-                    if(this.oldData.cost_standard_service !=null) {
-                        this.project.cost_standard_service=this.oldData.cost_standard_service;
-                    }
-                    if(this.oldData.uom_id !=null) {
-                        this.project.uom_id=this.oldData.uom_id;
-                    }
-                    if(this.oldData.min !=null) {
-                        this.project.min=this.oldData.min;
-                    }
-                    if(this.oldData.max !=null) {
-                        this.project.max=this.oldData.max;
-                    }
-                    if(this.oldData.weight !=null) {
-                        this.project.weight=this.oldData.weight;
-                    }
-                    if(this.oldData.weight_uom_id !=null) {
-                        this.project.weight_uom_id=this.oldData.weight_uom_id;
-                    }
-                    if(this.oldData.height !=null) {
-                        this.project.height=this.oldData.height;
-                    }
-                    if(this.oldData.height_uom_id !=null) {
-                        this.project.height_uom_id=this.oldData.height_uom_id;
-                    }
-                    if(this.oldData.lengths !=null) {
-                        this.project.lengths=this.oldData.lengths;
-                    }
-                    if(this.oldData.length_uom_id !=null) {
-                        this.project.length_uom_id=this.oldData.length_uom_id;
-                    }
-                    if(this.oldData.width !=null) {
-                        this.project.width=this.oldData.width;
-                    }
-                    if(this.oldData.width_uom_id !=null) {
-                        this.project.width_uom_id=this.oldData.width_uom_id;
-                    }
-                },
-                description : @json(Request::old('description')),
-                cost_standard_price : @json(Request::old('cost_standard_price')),
-                cost_standard_service : @json(Request::old('cost_standard_service')),
-                uom_id : @json(Request::old('uom_id')),
-                min :@json(Request::old('min')),
-                max : @json(Request::old('max')),
-                weight : @json(Request::old('weight')),
-                weight_uom_id : @json(Request::old('weight_uom_id')),
-                height : @json(Request::old('height')),
-                height_uom_id : @json(Request::old('height_uom_id')),
-                lengths : @json(Request::old('lengths')),
-                length_uom_id : @json(Request::old('length_uom_id')),
-                width : @json(Request::old('width')),
-                width_uom_id : @json(Request::old('width_uom_id')),
-    
                 'submittedForm.cost_standard_service': function(newValue) {
                     var decimal = newValue.replace(/,/g, '').split('.');
                     if(decimal[1] != undefined){
@@ -561,21 +582,21 @@
                         this.submittedForm.width = (newValue+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                     }
                 },
-    
+
                 'submittedForm.cost_standard_price': function(newValue) {
                     if(newValue != ""){
-                        
+
                         this.submittedForm.cost_standard_price = (this.submittedForm.cost_standard_price+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    
+
                     }
                 },
-    
+
                 'submittedForm.min': function(newValue) {
                     if(newValue != ""){
-                        
+
                         this.submittedForm.min = (this.submittedForm.min+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                         this.submittedForm.max = (this.submittedForm.max+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    
+
                         if(parseInt((this.submittedForm.max+"").replace(/,/g , '')) < parseInt((this.submittedForm.min+"").replace(/,/g , ''))){
                             iziToast.warning({
                                 title: 'max value cannot exceed min value !',
@@ -587,12 +608,12 @@
                         this.submittedForm.max = 0;
                     }
                 },
-    
+
                 'submittedForm.max': function(newValue) {
                     if(newValue != ""){
-    
+
                         this.submittedForm.max = (this.submittedForm.max+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    
+
                         if(parseInt((this.submittedForm.max+"").replace(/,/g , '')) < parseInt((this.submittedForm.min+"").replace(/,/g , ''))){
                             iziToast.warning({
                                 title: 'max value cannot exceed min value !',
@@ -610,7 +631,7 @@
                         }
                     }
                 },
-                
+
                 'submittedForm.length_uom_id' : function(newValue) {
                     if(newValue != ""){
                         this.submittedForm.width_uom_id = newValue;
@@ -637,6 +658,45 @@
 
                     }
                 },
+                'submittedForm.dimension_type_id' : function(newValue) {
+                    if(newValue != ""){
+                        this.dimension_types.forEach(data => {
+                            if(data.id == newValue){
+                                this.selectedDimensionType = data.dimensions;
+                            }
+                        });
+                    }
+                },
+                selectedDimensionType:{
+                    handler: function(newValue) {
+                        newValue.forEach(dimension => {
+                            var uom_data = null;
+                            this.uoms.forEach(uom => {
+                                if(uom.id == dimension.uom_id){
+                                    uom_data = uom;
+                                }
+                            });
+                            var is_decimal = uom_data.is_decimal;
+                            if(is_decimal == 0){
+                                dimension.value = (dimension.value+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");  
+                            }else{
+                                var decimal = dimension.value.replace(/,/g, '').split('.');
+                                if(decimal[1] != undefined){
+                                    var maxDecimal = 2;
+                                    if((decimal[1]+"").length > maxDecimal){
+                                        dimension.value = (decimal[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimal[1]+"").substring(0,maxDecimal).replace(/\D/g, "");
+                                    }else{
+                                        dimension.value = (decimal[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimal[1]+"").replace(/\D/g, "");
+                                    }
+                                }else{
+                                    dimension.value = (dimension.value+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                }
+                            }
+                        });
+                    },
+                    deep: true
+                },
+
             },
         });
     });

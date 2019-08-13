@@ -81,8 +81,8 @@
                                                     <th style="width: 5%">No</th>
                                                     <th style="width: 20%">Material Number</th>
                                                     <th style="width: 40%">Material Description</th>
-                                                    <th style="width: 5%">Unit</th>
                                                     <th style="width: 15%">Avaiable Qty</th>
+                                                    <th style="width: 5%">Unit</th>
                                                     <th style="width: 15%">Transfer Qty</th>
                                                 </tr>
                                             </thead>
@@ -91,8 +91,8 @@
                                                     <td>{{ index + 1 }}</td>
                                                     <td class="tdEllipsis">{{ sld.material.code }}</td>
                                                     <td class="tdEllipsis">{{ sld.material.description }}</td>
-                                                    <td class="tdEllipsis">{{ sld.material.uom.unit }}</td>
                                                     <td class="tdEllipsis">{{ sld.quantity_rn }}</td>
+                                                    <td class="tdEllipsis">{{ sld.material.uom.unit }}</td>
                                                     <td class="no-padding">
                                                         <input class="form-control width100" v-model="sld.quantity" placeholder="Please Input Quantity">
                                                     </td>
@@ -102,16 +102,63 @@
                                     </div>
                                 </div>
                                 <div class="col-md-12">
-                                    <button @click.prevent="submitForm" class="btn btn-primary pull-right" :disabled="allOk">CREATE</button>
+                                    <button @click.prevent="showReview" class="btn btn-primary pull-right" :disabled="allOk">CREATE</button>
                                 </div>
                             </template>
+                            <div class="modal fade" id="show_review">
+                                <div class="modal-dialog modalFull">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">×</span>
+                                            </button>
+                                            <h4 class="modal-title">Goods Movement Review</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <p>You are about to move materials from :</p>
+                                                    <p>
+                                                        <b v-for="(warehouse, index) in modelWarehouseFrom" v-if="warehouse.id==dataHeader.warehouse_from_id">{{ warehouse.name }}</b>, <b v-for="(sloc, index) in modelSlocFrom" :value="sloc.id" v-if="sloc.id==dataHeader.sloc_from_id">{{ sloc.name }}</b>&nbsp;to
+                                                        <b v-for="(warehouse, index) in modelWarehouseTo" v-if="warehouse.id==dataHeader.warehouse_to_id">{{ warehouse.name }}</b>, <b v-for="(sloc, index) in modelSlocTo" :value="sloc.id" v-if="sloc.id==dataHeader.sloc_to_id">{{ sloc.name }}</b>
+                                                    </p>
+                                                    <p>Please review the following materials for goods movement.</p>
+                                                    <table class="table table-bordered showTable">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Material Number</th>
+                                                                <th>Material Description</th>
+                                                                <th>Available Qty</th>
+                                                                <th>Unity</th>
+                                                                <th>Transfer Qty</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr v-for="(sld,index) in dataSLD" v-if="sld.available > 0 && sld.quantity > 0">
+                                                                <td class="tdEllipsis">{{ sld.material.code }}</td>
+                                                                <td class="tdEllipsis">{{ sld.material.description }}</td>
+                                                                <td class="tdEllipsis">{{ sld.quantity_rn }}</td>
+                                                                <td class="tdEllipsis">{{ sld.material.uom.unit }}</td>
+                                                                <td class="tdEllipsis">{{ sld.quantity }}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-primary" data-dismiss="modal" @click.prevent="submitForm">CREATE</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    @endverbatim   
+                    @endverbatim
                 </form>
             </div>
             <div class="overlay">
                 <i class="fa fa-refresh fa-spin"></i>
-            </div>         
+            </div>
         </div> <!-- /.box -->
     </div> <!-- /.col-xs-12 -->
 </div> <!-- /.row -->
@@ -157,7 +204,7 @@
         computed : {
             allOk: function(){
                 let isOk = false;
-                
+
                 if(this.dataSLD.length < 1){
                     isOk = true;
                 }
@@ -213,7 +260,7 @@
                     }
                 }
                 this.submittedForm.dataHeader = this.dataHeader;
-                this.submittedForm.dataSLD = data;    
+                this.submittedForm.dataSLD = data;
 
                 let struturesElem = document.createElement('input');
                 struturesElem.setAttribute('type', 'hidden');
@@ -222,6 +269,9 @@
                 form.appendChild(struturesElem);
                 form.submit();
             },
+            showReview(){
+                $('#show_review').modal();
+            }
         },
         watch : {
             'dataHeader.sloc_to_id' : function(newValue){
@@ -230,7 +280,7 @@
                     $('#sld').DataTable({
                         'paging'      : true,
                         'lengthChange': false,
-                        'searching'   : false,
+                        'bFilter'     : true,
                         'ordering'    : false,
                         'info'        : true,
                         'autoWidth'   : false,

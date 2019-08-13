@@ -46,7 +46,26 @@
                                 <div class="col-xs-12 col-md-4">
                                     <div class="col-xs-5 no-padding">PR Number</div>
                                     <div class="col-xs-7 no-padding tdEllipsis"><b>: {{modelPR.number}}</b></div>
-                                    
+                                    <div class="col-xs-5 no-padding">PR Status</div>
+                                    @endverbatim <!--verbatim berhenti sementara untuk tampilan status-->
+                                    @if($modelPR->status == 0)
+                                        <div class="col-xs-7 no-padding tdEllipsis"><b>: ORDERED</b></div>
+                                    @elseif($modelPR->status == 1)
+                                        <div class="col-xs-7 no-padding tdEllipsis"><b>: OPEN</b></div>
+                                    @elseif($modelPR->status == 2)
+                                        <div class="col-xs-7 no-padding tdEllipsis"><b>: APPROVED</b></div>
+                                    @elseif($modelPR->status == 3)
+                                        <div class="col-xs-7 no-padding tdEllipsis"><b>: NEEDS REVISION</b></div>
+                                    @elseif($modelPR->status == 4)
+                                        <div class="col-xs-7 no-padding tdEllipsis"><b>: REVISED</b></div>
+                                    @elseif($modelPR->status == 5)
+                                        <div class="col-xs-7 no-padding tdEllipsis"><b>: REJECTED</b></div>
+                                    @elseif($modelPR->status == 6)
+                                        <div class="col-xs-7 no-padding tdEllipsis"><b>: CONSOLIDATED</b></div>
+                                    @elseif($modelPR->status == 7)
+                                        <div class="col-xs-7 no-padding tdEllipsis"><b>: ORDERED PARTIALLY</b></div>
+                                    @endif
+                                    @verbatim <!--lanjut verbatim-->
                                     <div class="col-sm-5 no-padding p-t-15">
                                         <label for="estimated_freight">Estimated Freight </label>
                                     </div>
@@ -62,18 +81,18 @@
                                     </div>
 
                                     <div class="col-sm-5 no-padding p-t-15">
-                                        <label for="">Currency</label>
+                                        <label for="">Currency *</label>
                                     </div>
                                     <div class="col-sm-7 p-t-13 p-l-0">
                                         <selectize :disabled="currencyOk" v-model="currency" :settings="currencySettings">
-                                            <option v-for="(data, index) in currencies" :value="data.name">{{ data.name }} - {{ data.unit }}</option>
+                                            <option v-for="(data, index) in currencies" :value="data.id">{{ data.name }} - {{ data.unit }}</option>
                                         </selectize>
                                     </div>
                                 </div>
                                 <div class="col-sm-4 col-md-4">
                                     <div class="row">
                                         <div class="col-sm-5 p-t-7">
-                                            <label for="">Vendor Name</label>
+                                            <label for="">Vendor Name *</label>
                                         </div>
                                         <div class="col-sm-7 p-l-0">
                                             <selectize v-model="vendor_id" :settings="vendorSettings">
@@ -86,7 +105,9 @@
                                             <label for="delivery_terms">Delivery Terms</label>
                                         </div>
                                         <div class="col-sm-7 p-t-13 p-l-0">
-                                            <input class="form-control" v-model="delivery_terms" placeholder="Delivery Terms">
+                                            <selectize v-model="delivery_term" :settings="dtSettings">
+                                                <option v-for="(delivery_term, index) in delivery_terms" :value="delivery_term.id">{{ delivery_term.name }}</option>
+                                            </selectize>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -94,7 +115,9 @@
                                             <label for="payment_terms">Payment Terms</label>
                                         </div>
                                         <div class="col-sm-7 p-t-13 p-l-0">
-                                            <input class="form-control" v-model="payment_terms" placeholder="Payment Terms">
+                                            <selectize v-model="payment_term" :settings="ptSettings">
+                                                <option v-for="(payment_term, index) in payment_terms" :value="payment_term.id">{{ payment_term.name }}</option>
+                                            </selectize>
                                         </div>
                                     </div>
                                     <div class="row" v-if="modelPR.type == 3">
@@ -107,6 +130,16 @@
                                     </div>
                                 </div>
                                 <div class="col-sm-4 col-md-4">
+                                    <div class="row">
+                                        <div class="col-sm-5 p-t-5">
+                                            <label for="projects">Project Number</label>
+                                        </div>
+                                        <div class="col-sm-7 p-t-0 p-l-0">
+                                            <selectize v-model="project_id" :settings="projectSettings">
+                                                <option v-for="(project, index) in projects" :value="project.id">{{ project.number }}</option>
+                                            </selectize>
+                                        </div>
+                                    </div>
                                     <div class="row">
                                         <div class="col-sm-12">
                                             <label for="">PO Description</label>
@@ -126,24 +159,24 @@
                         <div class="box-body p-t-0">
                             <div class="row">
                                 <div class="col sm-12 p-l-15 p-r-15 p-t-0">
-                                    <table class="table table-bordered tableFixed p-t-10 tableNonPagingVue" style="border-collapse:collapse;" v-if="modelPR.type != 3">
+                                    <table class="table table-bordered tableFixed" id="po-table" style="border-collapse:collapse;" v-if="modelPR.type != 3">
                                         <thead>
                                             <tr>
                                                 <th style="width: 5%">No</th>
                                                 <template v-if="modelPR.type == 1">
                                                     <th width="15%">Material Number</th>
-                                                    <th width="21%">Material Description</th>
+                                                    <th width="20%">Material Description</th>
                                                 </template>
                                                 <template v-else>
                                                     <th width="15%">Resource Number</th>
-                                                    <th width="21%">Resource Description</th>
+                                                    <th width="20%">Resource Description</th>
                                                 </template>
-                                                <th style="width: 9%">Qty</th>
-                                                <th style="width: 9%">Order</th>
+                                                <th style="width: 6%">Qty</th>
+                                                <th style="width: 6%">Order</th>
                                                 <th style="width: 6%">Unit</th>
-                                                <th style="width: 12%">Price / pcs ({{selectedCurrency}})</th>
-                                                <th style="width: 7%">Disc. (%)</th>
-                                                <th style="width: 10%">Delivery Date</th>
+                                                <th style="width: 14%">Price / pcs ({{selectedCurrency}})</th>
+                                                <th style="width: 10%">Disc. (%)</th>
+                                                <th style="width: 12%">Delivery Date</th>
                                                 <th style="width: 8%"></th>
                                             </tr>
                                         </thead>
@@ -182,7 +215,7 @@
                                             </tr>
                                         </tbody>
                                     </table>
-                                    <table class="table table-bordered tableFixed p-t-10 tableNonPagingVue" style="border-collapse:collapse;" v-if="modelPR.type == 3">
+                                    <table class="table table-bordered tableFixed" id="po-table" style="border-collapse:collapse;" v-if="modelPR.type == 3">
                                         <thead>
                                             <tr>
                                                 <th style="width: 5%">No</th>
@@ -312,44 +345,58 @@
     const form = document.querySelector('form#create-po');
 
     $(document).ready(function(){
-        $('.tableNonPagingVue thead tr').clone(true).appendTo( '.tableNonPagingVue thead' );
-        $('.tableNonPagingVue thead tr:eq(1) th').addClass('indexTable').each( function (i) {
-            var title = $(this).text();
-            if(title == 'No' || title == "Qty" || title == "Order" || title == "Price / pcs (Rp)" || title == "Disc. (%)"){
-                $(this).html( '<input disabled class="form-control width100" type="text"/>' );
-            }else{
-                $(this).html( '<input class="form-control width100" type="text" placeholder="Search '+title+'"/>' );
+        $('#po-table').DataTable({
+            'paging'      : true,
+            'lengthChange': false,
+            'ordering'    : true,
+            'info'        : true,
+            'autoWidth'   : false,
+            'searching'   : false,
+            'initComplete': function(){
+                $('div.overlay').hide();
             }
-
-            $( 'input', this ).on( 'keyup change', function () {
-                if ( tableNonPagingVue.column(i).search() !== this.value ) {
-                    tableNonPagingVue
-                        .column(i)
-                        .search( this.value )
-                        .draw();
-                }
-            });
         });
+        // $('.tableNonPagingVue thead tr').clone(true).appendTo( '.tableNonPagingVue thead' );
+        // $('.tableNonPagingVue thead tr:eq(1) th').addClass('indexTable').each( function (i) {
+        //     var title = $(this).text();
+        //     if(title == 'No' || title == "Qty" || title == "Order" || title == "Price / pcs (Rp)" || title == "Disc. (%)"){
+        //         $(this).html( '<input disabled class="form-control width100" type="text"/>' );
+        //     }else{
+        //         $(this).html( '<input class="form-control width100" type="text" placeholder="Search '+title+'"/>' );
+        //     }
 
-        var tableNonPagingVue = $('.tableNonPagingVue').DataTable( {
-            orderCellsTop   : true,
-            paging          : false,
-            autoWidth       : false,
-            lengthChange    : false,
-            info            : false,
-            ordering        : false,
-        });
+        //     $( 'input', this ).on( 'keyup change', function () {
+        //         if ( tableNonPagingVue.column(i).search() !== this.value ) {
+        //             tableNonPagingVue
+        //                 .column(i)
+        //                 .search( this.value )
+        //                 .draw();
+        //         }
+        //     });
+        // });
 
-        
-        
-        $('div.overlay').hide();
+        // var tableNonPagingVue = $('.tableNonPagingVue').DataTable( {
+        //     orderCellsTop   : true,
+        //     paging          : false,
+        //     autoWidth       : false,
+        //     lengthChange    : false,
+        //     info            : false,
+        //     ordering        : false,
+        // });
+
+        // $('div.overlay').hide();
     });
 
     var data = {
+        payment_terms : @json($payment_terms),
+        delivery_terms : @json($delivery_terms),
+        payment_term : null,
+        delivery_term : null,
         materials : @json($materials),
         modelPR : @json($modelPR),
         PRDetail : @json($modelPRD),
-        modelProject : @json($modelProject),
+        projects : @json($projects),
+        project_id : null,
         currencies : @json($currencies),
         modelVendor : [],
         vendorSettings: {
@@ -361,12 +408,19 @@
         materialSettings: {
             placeholder: 'Please Select Material'
         },
+        dtSettings: {
+            placeholder: 'Please Select Delivery Term'
+        },
+        ptSettings: {
+            placeholder: 'Please Select Payment Term'
+        },
+        projectSettings: {
+            placeholder: 'Please Select Project'
+        },
         selectedCurrency : "",
         currency : "",
         tax : "",
         estimated_freight : "",
-        delivery_terms : "",
-        payment_terms : "",
         vendor_id : "",
         delivery_date : "",
         delivery_date_subcon : "",
@@ -391,7 +445,7 @@
             });
             $(".delivery_date").datepicker().on(
                 "changeDate", () => {
-                    this.PRDetail.forEach(PRD => { 
+                    this.PRDetail.forEach(PRD => {
                         PRD.required_date = $('#datepicker'+PRD.id).val();
                     });
                 }
@@ -427,7 +481,7 @@
                 let isOk = false;
                 var currency_value = 1;
                 this.currencies.forEach(data => {
-                    if(this.currency == data.name && this.currency != "Rupiah"){
+                    if(this.currency == data.id && this.currency != 1){
                         currency_value = data.value;
                     }
                 });
@@ -447,7 +501,7 @@
                     }
                     if(parseFloat((PRD.old_price+"").replace(/,/g , '')) != ref.replace(/,/g, '')){
                         isOk = false;
-                    }   
+                    }
                 });
                 return isOk;
             },
@@ -475,7 +529,7 @@
                 })
             },
             openEditModal(PRD,index){
-               
+
                 this.editRemark.remark = PRD.remark;
                 this.editRemark.index = index;
             },
@@ -493,20 +547,20 @@
                 data = JSON.parse(data);
                 if(this.modelPR.type == 1){
                     data.forEach(PRD => {
-                        PRD.quantity = PRD.quantity.replace(/,/g , '');      
-                        PRD.material.cost_standard_price = PRD.material.cost_standard_price.replace(/,/g , '');      
+                        PRD.quantity = PRD.quantity.replace(/,/g , '');
+                        PRD.material.cost_standard_price = PRD.material.cost_standard_price.replace(/,/g , '');
                     });
                 }else if(this.modelPR.type == 2){
                     data.forEach(PRD => {
-                        PRD.quantity = PRD.quantity.replace(/,/g , '');      
-                        PRD.resource.cost_standard_price = PRD.resource.cost_standard_price.replace(/,/g , '');      
+                        PRD.quantity = PRD.quantity.replace(/,/g , '');
+                        PRD.resource.cost_standard_price = PRD.resource.cost_standard_price.replace(/,/g , '');
                     });
                 }else{
                     data.forEach(PRD => {
-                        PRD.price = PRD.price.replace(/,/g , '');      
-                    });  
+                        PRD.price = PRD.price.replace(/,/g , '');
+                    });
                 }
-                this.estimated_freight = this.estimated_freight.replace(/,/g , '');      
+                this.estimated_freight = this.estimated_freight.replace(/,/g , '');
 
                 this.submittedForm.PRD = data;
                 this.submittedForm.type = this.modelPR.type;
@@ -514,11 +568,11 @@
                 this.submittedForm.currency = this.currency;
                 this.submittedForm.description = this.description;
                 this.submittedForm.pr_id = this.modelPR.id;
-                this.submittedForm.currency = this.currency;
                 this.submittedForm.tax = this.tax;
                 this.submittedForm.estimated_freight = this.estimated_freight;
-                this.submittedForm.delivery_terms = this.delivery_terms;
-                this.submittedForm.payment_terms = this.payment_terms;
+                this.submittedForm.delivery_term = this.delivery_term;
+                this.submittedForm.payment_term = this.payment_term;
+                this.submittedForm.project_id = this.project_id;
                 this.submittedForm.delivery_date_subcon = this.delivery_date_subcon;
 
                 let struturesElem = document.createElement('input');
@@ -538,7 +592,7 @@
                         data.forEach(PRD => {
                             // quantity
                             if(PRD.material.uom.is_decimal == 0){
-                                PRD.quantity = (PRD.quantity+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","); 
+                                PRD.quantity = (PRD.quantity+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                             }else{
                                 var decimal = (PRD.quantity+"").replace(/,/g, '').split('.');
                                 if(decimal[1] != undefined){
@@ -550,7 +604,7 @@
                                     }
                                 }else{
                                     PRD.quantity = (PRD.quantity+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                                } 
+                                }
                             }
 
                             // cost standard price
@@ -564,7 +618,7 @@
                                 }
                             }else{
                                 PRD.material.cost_standard_price = (PRD.material.cost_standard_price+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                            }    
+                            }
 
                             // discount
                             var discount = parseInt((PRD.discount+"").replace(/,/g, ''));
@@ -599,7 +653,7 @@
                         });
                     }else if(this.modelPR.type == 2){
                         data.forEach(PRD => {
-                            PRD.quantity = (PRD.quantity+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");   
+                            PRD.quantity = (PRD.quantity+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                             var decimal = (PRD.resource.cost_standard_price+"").replace(/,/g, '').split('.');
                             if(decimal[1] != undefined){
                                 var maxDecimal = 2;
@@ -630,7 +684,7 @@
                                 }
                             }else{
                                 PRD.discount = (PRD.discount+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                            } 
+                            }
                             if(PRD.required_date == null || PRD.required_date == ""){
                                 this.delivery_date = "";
                                 status = 1;
@@ -641,7 +695,7 @@
                         });
                     }else{
                         data.forEach(PRD => {
-                        
+
                         // cost standard price
                         var decimal = (PRD.price+"").replace(/,/g, '').split('.');
                         if(decimal[1] != undefined){
@@ -653,7 +707,7 @@
                             }
                         }else{
                             PRD.price = (PRD.price+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                        }  
+                        }
 
                         // discount
                         var discount = parseInt((PRD.discount+"").replace(/,/g, ''));
@@ -718,10 +772,10 @@
             },
             'currency':function (newValue) {
                 if(newValue == ''){
-                    this.currency = this.currencies[0].name;
+                    this.currency = this.currencies[0].id;
                 }
                 this.currencies.forEach(data => {
-                    if(newValue == data.name){
+                    if(newValue == data.id){
                         this.selectedCurrency = data.unit;
                         if(this.modelPR.type == 1){
                             this.PRDetail.forEach(prd => {
@@ -769,6 +823,14 @@
                         data.price = (data.price+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                     }
                 })
+            },
+            'vendor_id':function(newValue){
+                this.modelVendor.forEach(vendor=>{
+                    if(vendor.id == newValue){
+                        this.delivery_term = vendor.delivery_term;
+                        this.payment_term = vendor.payment_term;
+                    }
+                })
             }
         },
         created: function() {
@@ -796,7 +858,7 @@
                         }
                     }
 
-                    PRD.material.cost_standard_price = (PRD.material.cost_standard_price+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");  
+                    PRD.material.cost_standard_price = (PRD.material.cost_standard_price+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                     PRD.required_date = (PRD.required_date != null) ? PRD.required_date.split("-").reverse().join("-") : null;
 
                     if(PRD.required_date == null || PRD.required_date == ""){
@@ -813,7 +875,7 @@
                     PRD.sugQuantity = PRD.quantity;
                     PRD.quantity = (PRD.quantity+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                     PRD.sugQuantity = (PRD.sugQuantity+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                    PRD.resource.cost_standard_price = (PRD.resource.cost_standard_price+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");  
+                    PRD.resource.cost_standard_price = (PRD.resource.cost_standard_price+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                     PRD.required_date = (PRD.required_date != null) ? PRD.required_date.split("-").reverse().join("-") : null;
 
                     if(PRD.required_date == null || PRD.required_date == ""){
@@ -826,18 +888,18 @@
                 });
             }else{
                 data.forEach(PRD => {
-                    PRD.price = (PRD.price+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");  
+                    PRD.price = (PRD.price+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 });
             }
             Vue.directive('tooltip', function(el, binding){
                 $(el).tooltip({
                     title: binding.value,
                     placement: binding.arg,
-                    trigger: 'hover'             
+                    trigger: 'hover'
                 })
             });
 
-            this.currency = this.currencies[0].name;
+            this.currency = this.currencies[0].id;
             this.selectedCurrency = this.currencies[0].unit;
 
             if(this.modelPR.type == 1){

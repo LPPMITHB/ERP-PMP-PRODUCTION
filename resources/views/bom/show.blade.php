@@ -93,8 +93,7 @@
 
                         <div class="col-md-2 col-xs-12 pull-right">
                             <template v-if="route == '/bom'">
-                                <a v-if="bom.status == 1" class="btn btn-sm btn-primary pull-right btn-block" :href="editBom(bom.id)">EDIT</a>
-                                <a v-else-if="bom.status == 0" class="btn btn-sm btn-primary pull-right btn-block" :href="editBom(bom.id)">ADD ADDITIONAL</a>
+                                <a class="btn btn-sm btn-primary pull-right btn-block" :href="editBom(bom.id)">EDIT</a>
                                 <a v-if="bom.status == 1" class="btn btn-sm btn-primary pull-right btn-block" @click="confirmBom(bom.id)">CONFIRM</a>
                             </template>
                             <template v-else-if="route == '/bom_repair'">
@@ -103,7 +102,7 @@
                         </div>    
                     </div>
                     <template v-if="route == '/bom'">
-                        <table class="table table-bordered tablePagingVue">
+                        <table class="table table-bordered tableFixed" id="bom-table">
                             <thead>
                                 <tr>
                                     <th width="5%">No</th>
@@ -127,7 +126,7 @@
                         </table>
                     </template>
                     <template v-else-if="route == '/bom_repair'">
-                        <table class="table table-bordered tablePagingVue">
+                        <table class="table table-bordered tableFixed" id="bom-table">
                             <thead>
                                 <tr>
                                     <th width="5%">No</th>
@@ -165,33 +164,43 @@
 @push('script')
 <script>
     $(document).ready(function(){
-        $('.tablePagingVue thead tr').clone(true).appendTo( '.tablePagingVue thead' );
-        $('.tablePagingVue thead tr:eq(1) th').addClass('indexTable').each( function (i) {
-            var title = $(this).text();
-            if(title == 'Unit' || title == 'Quantity' || title == 'No' || title == ""){
-                $(this).html( '<input disabled class="form-control width100" type="text"/>' );
-            }else{
-                $(this).html( '<input class="form-control width100" type="text" placeholder="Search '+title+'"/>' );
+        // $('.tablePagingVue thead tr').clone(true).appendTo( '.tablePagingVue thead' );
+        // $('.tablePagingVue thead tr:eq(1) th').addClass('indexTable').each( function (i) {
+        //     var title = $(this).text();
+        //     if(title == 'Unit' || title == 'Quantity' || title == 'No' || title == ""){
+        //         $(this).html( '<input disabled class="form-control width100" type="text"/>' );
+        //     }else{
+        //         $(this).html( '<input class="form-control width100" type="text" placeholder="Search '+title+'"/>' );
+        //     }
+
+        //     $( 'input', this ).on( 'keyup change', function () {
+        //         if ( tablePagingVue.column(i).search() !== this.value ) {
+        //             tablePagingVue
+        //                 .column(i)
+        //                 .search( this.value )
+        //                 .draw();
+        //         }
+        //     });
+        // });
+
+        // var tablePagingVue = $('.tablePagingVue').DataTable( {
+        //     orderCellsTop   : true,
+        //     fixedHeader     : true,
+        //     paging          : true,
+        //     autoWidth       : false,
+        //     lengthChange    : false,
+        // });
+        // $('div.overlay').hide();
+        $('#bom-table').DataTable({
+            'paging'      : true,
+            'lengthChange': false,
+            'ordering'    : true,
+            'info'        : true,
+            'autoWidth'   : false,
+            'initComplete': function(){
+                $('div.overlay').hide();
             }
-
-            $( 'input', this ).on( 'keyup change', function () {
-                if ( tablePagingVue.column(i).search() !== this.value ) {
-                    tablePagingVue
-                        .column(i)
-                        .search( this.value )
-                        .draw();
-                }
-            });
         });
-
-        var tablePagingVue = $('.tablePagingVue').DataTable( {
-            orderCellsTop   : true,
-            fixedHeader     : true,
-            paging          : true,
-            autoWidth       : false,
-            lengthChange    : false,
-        });
-        $('div.overlay').hide();
     });
 
     var data = {

@@ -7,6 +7,7 @@ use Illuminate\Http\Response;
 use App\Models\MaterialRequisition;
 use App\Models\MaterialRequisitionDetail;
 use App\Models\Branch;
+use DateTime;
 use App\Models\Material;
 use App\Models\WBS;
 use App\Models\Bom;
@@ -30,7 +31,7 @@ class MaterialRequisitionController extends Controller
             $modelProject = Project::where('business_unit_id',1)->pluck('id')->toArray();
         }
 
-        $modelMRs = MaterialRequisition::whereIn('project_id',$modelProject)->get();
+        $modelMRs = MaterialRequisition::whereIn('project_id',$modelProject)->orWhereNull('project_id')->get();
 
         return view('material_requisition.index', compact('modelMRs','menu'));
     }
@@ -43,7 +44,7 @@ class MaterialRequisitionController extends Controller
         }elseif($menu == "building"){
             $modelProject = Project::where('status',1)->where('business_unit_id',1)->pluck('id')->toArray();
         }
-        $modelMRs = MaterialRequisition::whereIn('status',[1,4])->whereIn('project_id',$modelProject)->get();
+        $modelMRs = MaterialRequisition::whereIn('status',[1,4])->whereIn('project_id',$modelProject)->orWhereNull('project_id')->get();
 
         return view('material_requisition.indexApprove', compact('modelMRs','menu'));
     }
@@ -61,7 +62,8 @@ class MaterialRequisitionController extends Controller
         foreach($stocks as $stock){
             $stock['available'] = $stock->quantity - $stock->reserved;
         }
-        return view('material_requisition.create', compact('modelProject','menu','stocks'));
+        $all_materials = Material::all();
+        return view('material_requisition.create', compact('modelProject','menu','stocks','all_materials'));
     }
 
     public function createRepair(Request $request)
@@ -90,15 +92,23 @@ class MaterialRequisitionController extends Controller
         try {
             $MR = new MaterialRequisition;
             $MR->number = $mr_number;
-            $MR->project_id = $datas->project_id;
+            if($datas->project_id != ""){
+                $MR->project_id = $datas->project_id;
+            }
+            
             $MR->description = $datas->description;
             $MR->status = 1;
             $MR->type = 0;
             $MR->user_id = Auth::user()->id;
             $MR->branch_id = Auth::user()->branch->id;
+            if($datas->delivery_date != ""){
+                $delivery_date = DateTime::createFromFormat('d-m-Y', $datas->delivery_date);
+                $MR->delivery_date = $delivery_date->format('Y-m-d');
+            }
             $MR->save();
 
             foreach($datas->materials as $data){
+                
                 $modelMRDs = MaterialRequisitionDetail::where('material_requisition_id',$MR->id)->get();
                 if(count($modelMRDs)>0){
                     $status = 0;
@@ -127,7 +137,9 @@ class MaterialRequisitionController extends Controller
                     $MRD->material_requisition_id = $MR->id;
                     $MRD->quantity = $data->quantityFloat;
                     $MRD->material_id = $data->material_id;
-                    $MRD->wbs_id = $data->wbs_id;
+                    if($datas->project_id != ""){
+                        $MRD->wbs_id = $data->wbs_id;
+                    }
                     $MRD->save();
 
                     $this->reserveStock($data->material_id, $data->quantityFloat);
@@ -206,51 +218,96 @@ class MaterialRequisitionController extends Controller
         if($menu == "repair"){
             $modelProject = $modelMR->project->with('ship','customer','wbss')->where('business_unit_id',2)->first()->jsonSerialize();
         }elseif($menu == "building"){
-            $modelProject = $modelMR->project->with('ship','customer','wbss')->where('business_unit_id',1)->first()->jsonSerialize();
-        }
-        $modelWBS = $modelMR->project->wbss; 
-        $modelMRD = Collection::make();
-        foreach($modelMR->MaterialRequisitionDetails as $mrd){
-            if($mrd->material->uom->is_decimal == 1){
-                $modelMRD->push([
-                    "mrd_id" => $mrd->id,
-                    "material_id" => $mrd->material_id,
-                    "material_code" => $mrd->material->code,
-                    "material_description" => $mrd->material->description,
-                    "planned_quantity" => number_format($mrd->wbs->bom->bomDetails->where('material_id', $mrd->material_id)->first()->quantity,2),
-                    "quantity" => number_format($mrd->quantity,2),
-                    "quantityFloat" => $mrd->quantity,
-                    "wbs_id" => $mrd->wbs_id,
-                    "wbs_number" => $mrd->wbs->number,
-                    "wbs_description" => $mrd->wbs->description,
-                    "availableStr" => "-",
-                    "is_decimal" => true,
-                    "unit" => $mrd->material->uom->unit,
-                ]);
+            if($modelMR->project != null){
+                $modelProject = $modelMR->project->with('ship','customer','wbss')->where('business_unit_id',1)->first()->jsonSerialize();
             }else{
-                $modelMRD->push([
-                    "mrd_id" => $mrd->id,
-                    "material_id" => $mrd->material_id,
-                    "material_code" => $mrd->material->code,
-                    "material_description" => $mrd->material->description,
-                    "planned_quantity" => number_format($mrd->wbs->bom->bomDetails->where('material_id', $mrd->material_id)->first()->quantity),
-                    "quantity" => number_format($mrd->quantity),
-                    "quantityFloat" => $mrd->quantity,
-                    "wbs_id" => $mrd->wbs_id,
-                    "wbs_number" => $mrd->wbs->number,
-                    "wbs_description" => $mrd->wbs->description,
-                    "availableStr" => "-",
-                    "is_decimal" => false,
-                    "unit" => $mrd->material->uom->unit,
-                ]);
+                $modelProject = null;
             }
         }
+        if($modelProject != null){
+            $modelWBS = $modelMR->project->wbss; 
+            $modelMRD = Collection::make();
+            foreach($modelMR->MaterialRequisitionDetails as $mrd){
+                if($mrd->material->uom->is_decimal == 1){
+                    $modelMRD->push([
+                        "mrd_id" => $mrd->id,
+                        "material_id" => $mrd->material_id,
+                        "material_code" => $mrd->material->code,
+                        "material_description" => $mrd->material->description,
+                        "planned_quantity" => number_format($mrd->wbs->bom->bomDetails->where('material_id', $mrd->material_id)->first()->quantity,2),
+                        "quantity" => number_format($mrd->quantity,2),
+                        "quantityFloat" => $mrd->quantity,
+                        "wbs_id" => $mrd->wbs_id,
+                        "wbs_number" => $mrd->wbs->number,
+                        "wbs_description" => $mrd->wbs->description,
+                        "availableStr" => "-",
+                        "is_decimal" => true,
+                        "unit" => $mrd->material->uom->unit,
+                    ]);
+                }else{
+                    $modelMRD->push([
+                        "mrd_id" => $mrd->id,
+                        "material_id" => $mrd->material_id,
+                        "material_code" => $mrd->material->code,
+                        "material_description" => $mrd->material->description,
+                        "planned_quantity" => number_format($mrd->wbs->bom->bomDetails->where('material_id', $mrd->material_id)->first()->quantity),
+                        "quantity" => number_format($mrd->quantity),
+                        "quantityFloat" => $mrd->quantity,
+                        "wbs_id" => $mrd->wbs_id,
+                        "wbs_number" => $mrd->wbs->number,
+                        "wbs_description" => $mrd->wbs->description,
+                        "availableStr" => "-",
+                        "is_decimal" => false,
+                        "unit" => $mrd->material->uom->unit,
+                    ]);
+                }
+            }
+        }else{
+            $modelWBS = null; 
+            $modelMRD = Collection::make();
+            foreach($modelMR->MaterialRequisitionDetails as $mrd){
+                if($mrd->material->uom->is_decimal == 1){
+                    $modelMRD->push([
+                        "mrd_id" => $mrd->id,
+                        "material_id" => $mrd->material_id,
+                        "material_code" => $mrd->material->code,
+                        "material_description" => $mrd->material->description,
+                        "planned_quantity" => null,
+                        "quantity" => number_format($mrd->quantity,2),
+                        "quantityFloat" => $mrd->quantity,
+                        "wbs_id" => null,
+                        "wbs_number" => null,
+                        "wbs_description" => null,
+                        "availableStr" => "-",
+                        "is_decimal" => true,
+                        "unit" => $mrd->material->uom->unit,
+                    ]);
+                }else{
+                    $modelMRD->push([
+                        "mrd_id" => $mrd->id,
+                        "material_id" => $mrd->material_id,
+                        "material_code" => $mrd->material->code,
+                        "material_description" => $mrd->material->description,
+                        "planned_quantity" => null,
+                        "quantity" => number_format($mrd->quantity),
+                        "quantityFloat" => $mrd->quantity,
+                        "wbs_id" => null,
+                        "wbs_number" => null,
+                        "wbs_description" => null,
+                        "availableStr" => "-",
+                        "is_decimal" => false,
+                        "unit" => $mrd->material->uom->unit,
+                    ]);
+                }
+            }
+        }
+        $all_materials = Material::all();
 
         $stocks = Stock::all();
         foreach($stocks as $stock){
             $stock['available'] = $stock->quantity - $stock->reserved;
         }
-        return view('material_requisition.edit', compact('menu','modelMR','modelMRD','modelMaterial','modelProject','modelWBS','stocks'));
+        return view('material_requisition.edit', compact('menu','modelMR','modelMRD','modelMaterial','modelProject','modelWBS','stocks','all_materials'));
     }
 
     public function editRepair($id, Request $request)
@@ -318,6 +375,10 @@ class MaterialRequisitionController extends Controller
                 $modelPRD->delete();
             }
             $MR->description = $datas->description;
+            if($datas->delivery_date != ""){
+                $delivery_date = DateTime::createFromFormat('d-m-Y', $datas->delivery_date);
+                $MR->delivery_date = $delivery_date->format('Y-m-d');
+            }
             if($MR->status == 3){
                 $MR->status = 4;
             }
@@ -329,7 +390,9 @@ class MaterialRequisitionController extends Controller
                     $this->updateReserveStock($data->material_id, $MRD->quantity ,$data->quantityFloat);
                     
                     $MRD->quantity = $data->quantityFloat;
-                    $MRD->wbs_id = $data->wbs_id;
+                    if($data->wbs_id != null){
+                        $MRD->wbs_id = $data->wbs_id;
+                    }
                     $MRD->update();
                 }else{
                     $modelMRDs = MaterialRequisitionDetail::where('material_requisition_id',$MR->id)->get();
@@ -350,7 +413,9 @@ class MaterialRequisitionController extends Controller
                             $MRD->material_requisition_id = $MR->id;
                             $MRD->quantity = $data->quantityFloat;
                             $MRD->material_id = $data->material_id;
-                            $MRD->wbs_id = $data->wbs_id;
+                            if($data->wbs_id != null){
+                                $MRD->wbs_id = $data->wbs_id;
+                            }
                             $MRD->save();
     
                             $this->reserveStock($data->material_id, $data->quantityFloat);
@@ -360,7 +425,9 @@ class MaterialRequisitionController extends Controller
                         $MRD->material_requisition_id = $MR->id;
                         $MRD->quantity = $data->quantityFloat;
                         $MRD->material_id = $data->material_id;
-                        $MRD->wbs_id = $data->wbs_id;
+                        if($data->wbs_id != null){
+                            $MRD->wbs_id = $data->wbs_id;
+                        }
                         $MRD->save();
     
                         $this->reserveStock($data->material_id, $data->quantityFloat);
@@ -407,6 +474,7 @@ class MaterialRequisitionController extends Controller
                 $modelMR->status = 3;
                 $modelMR->revision_description = $datas->desc;
                 $modelMR->approved_by = Auth::user()->id;
+                $modelMR->approval_date = Carbon::now();
                 $modelMR->update();
                 DB::commit();
                 if($route == "/material_requisition"){
@@ -568,8 +636,16 @@ class MaterialRequisitionController extends Controller
         $data['planned_quantity'] = $planned_quantity;
 
         return response($data, Response::HTTP_OK);
+    }
 
-        
+    public function getMaterialInfoWithoutProjectAPI($id)
+    {
+        $data = [];
+        $material = Material::where('id',$id)->first();
+        $data['is_decimal'] = $material->uom->is_decimal == 1 ? true:false;
+        $data['unit'] = $material->uom->unit;
+
+        return response($data, Response::HTTP_OK);
     }
 
     public function getMaterialInfoRepairAPI($id, $project_id)

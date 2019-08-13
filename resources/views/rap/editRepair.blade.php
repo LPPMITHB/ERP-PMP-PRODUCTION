@@ -40,7 +40,7 @@
                             <div class="col-xs-8 no-padding tdEllipsis" data-container="body" data-toggle="tooltip" title="{{$modelBOM->project->customer->name}}"><b>: {{$modelBOM->project->customer->name}}</b></div>
                         </div>
         
-                        {{-- <div class="col-xs-12 col-md-4">
+                        <div class="col-xs-12 col-md-4">
                             <div class="col-sm-12 no-padding"><b>WBS Information</b></div>
                         
                             <div class="col-xs-4 no-padding">Code</div>
@@ -57,7 +57,7 @@
         
                             <div class="col-xs-4 no-padding">Progress</div>
                             <div class="col-xs-8 no-padding tdEllipsis" data-container="body" data-toggle="tooltip" title="{{$modelBOM->wbs->progress}}%"><b>: {{$modelBOM->wbs->progress}}%</b></div>
-                        </div> --}}
+                        </div>
         
                         <div class="col-xs-12 col-md-3 p-b-10">
                             <div class="col-sm-12 no-padding"><b>BOM Information</b></div>

@@ -15,6 +15,8 @@ use App\Models\Resource;
 use App\Models\PurchaseRequisition;
 use App\Models\PurchaseRequisitionDetail;
 use App\Models\PurchasingInfoRecord;
+use App\Models\GoodsReceipt;
+use App\Models\GoodsReceiptDetail;
 use App\Models\Material;
 use DateTime;
 use Auth;
@@ -24,20 +26,70 @@ use Illuminate\Support\Carbon;
 
 class PurchaseOrderController extends Controller
 {
+    public function cancel(Request $request, $id){
+        $route = $request->route()->getPrefix();
+
+        DB::beginTransaction();
+        try {
+            $modelPO = PurchaseOrder::find($id);
+            $modelPO->status = 8;
+            $modelPO->update();
+            
+            DB::commit();
+            if($route == "/purchase_order"){
+                return redirect()->route('purchase_order.show',$id)->with('success', 'Purchase Order Canceled');
+            }elseif($route == "/purchase_order_repair"){
+                return redirect()->route('purchase_order_repair.show',$id)->with('success', 'Purchase Order Canceled');
+            }
+        } catch (\Exception $e) {
+            DB::rollback();
+            if($route == "/purchase_order"){
+                return redirect()->route('purchase_order.show',$id)->with('error', $e->getMessage());
+            }elseif($route == "/purchase_order_repair"){
+                return redirect()->route('purchase_order_repair.show',$id)->with('error', $e->getMessage());
+            }
+        }
+    }
+
+    public function cancelApproval(Request $request, $id){
+        $route = $request->route()->getPrefix();
+
+        DB::beginTransaction();
+        try {
+            $modelPO = PurchaseOrder::find($id);
+            $modelPO->status = 1;
+            $modelPO->approved_by = null;
+            $modelPO->approval_date = null;
+            $modelPO->update();
+            
+            DB::commit();
+            if($route == "/purchase_order"){
+                return redirect()->route('purchase_order.show',$id)->with('success', 'Approval Canceled');
+            }elseif($route == "/purchase_order_repair"){
+                return redirect()->route('purchase_order_repair.show',$id)->with('success', 'Approval Canceled');
+            }
+        } catch (\Exception $e) {
+            DB::rollback();
+            if($route == "/purchase_order"){
+                return redirect()->route('purchase_order.show',$id)->with('error', $e->getMessage());
+            }elseif($route == "/purchase_order_repair"){
+                return redirect()->route('purchase_order_repair.show',$id)->with('error', $e->getMessage());
+            }
+        }
+    }
+
     public function selectPR(Request $request)
     {
         $route = $request->route()->getPrefix();
         if($route == "/purchase_order"){
-            $business_unit_id = 1;
+            $modelPRs = PurchaseRequisition::whereIn('status',[2,7])->where('business_unit_id',1)->get();
         }elseif($route == "/purchase_order_repair"){
-            $business_unit_id = 2;
+            $modelPRs = PurchaseRequisition::whereIn('status',[2,7])->where('business_unit_id',2)->get();
         }
 
-        $modelPRs = PurchaseRequisition::whereIn('status',[2,7])->where('business_unit_id',$business_unit_id)->get();
-        
         return view('purchase_order.selectPR', compact('modelPRs','route'));
     }
-    
+
     public function index(Request $request)
     {
         $route = $request->route()->getPrefix();
@@ -62,7 +114,6 @@ class PurchaseOrderController extends Controller
         $modelPOs = PurchaseOrder::whereIn('status',[1,4])->whereIn('purchase_requisition_id',$modelPRs)->get();
 
         return view('purchase_order.indexApprove', compact('modelPOs','route'));
-    
     }
 
     public function create(Request $request)
@@ -70,6 +121,11 @@ class PurchaseOrderController extends Controller
         $route = $request->route()->getPrefix();
         $datas = json_decode($request->datas);
         $currencies = Configuration::get('currencies');
+        foreach($currencies as $key => $currency){
+            if($currency->status == 0){
+                array_splice($currencies, $key, 1);
+            }
+        }
         $modelPR = PurchaseRequisition::where('id',$datas->id)->with('project')->first();
         $modelPRD = PurchaseRequisitionDetail::whereIn('id',$datas->checkedPRD)->with('material','project','resource','material.uom','wbs')->get();
         $materials = Material::all();
@@ -93,22 +149,11 @@ class PurchaseOrderController extends Controller
                 }
             }
         }
-        // foreach($modelSRD as $key=>$SRD){
-        //     if($SRD->reserved >= $SRD->quantity){
-        //         $modelSRD->forget($key);
-        //     }else{
-        //         $SRD['discount'] = 0;
-        //         $SRD['old_price'] = $SRD->activityDetail->serviceDetail->cost_standard_price;
-        //         $SRD['remark'] = $SRD->remark;
-        //     }
-        // }
-        if($modelPR->project_id){
-            $modelProject = Project::where('id',$modelPR->project_id)->with('ship','customer')->first();
-        }else{
-            $modelProject = [];
-        }
+        $payment_terms = Configuration::get('payment_terms');
+        $delivery_terms = Configuration::get('delivery_terms');
+        $projects = Project::where('status',1)->get();
 
-        return view('purchase_order.create', compact('modelPR','modelPRD','modelProject','currencies','route','materials'));
+        return view('purchase_order.create', compact('modelPR','modelPRD','currencies','route','materials','payment_terms','delivery_terms','projects'));
     }
 
     public function selectPRD(Request $request, $id)
@@ -134,16 +179,15 @@ class PurchaseOrderController extends Controller
     {
         $route = $request->route()->getPrefix();
         $datas = json_decode($request->datas);
-        // print_r($datas);exit();
         $po_number = $this->generatePONumber();
         $value = "";
         $valueCurrency = Configuration::get('currencies');
         foreach ($valueCurrency as $data) {
-            if($data->name == $datas->currency){
+            if($data->id == $datas->currency){
                 $value = $data->value;
             }
         }
-        
+
         DB::beginTransaction();
         try {
             $PO = new PurchaseOrder;
@@ -161,8 +205,9 @@ class PurchaseOrderController extends Controller
             }else{
                 $PO->estimated_freight = $datas->estimated_freight * $value;
             }
-            $PO->delivery_terms = $datas->delivery_terms;
-            $PO->payment_terms = $datas->payment_terms;
+            $PO->delivery_term = ($datas->delivery_term != "") ? $datas->delivery_term : null;
+            $PO->payment_term =($datas->payment_term != "") ? $datas->payment_term : null;
+            $PO->project_id = ($datas->project_id != "") ? $datas->project_id : null;
             $PO->value = $value;
             $PO->description = $datas->description;
             if($datas->type == 3){
@@ -229,7 +274,7 @@ class PurchaseOrderController extends Controller
                 }
             }
             $PO->total_price = $total_price;
-            $PO->save(); 
+            $PO->save();
             $this->checkStatusPr($datas->pr_id,$status);
             DB::commit();
             if($route == "/purchase_order"){
@@ -263,6 +308,8 @@ class PurchaseOrderController extends Controller
             $statusPO = 'REJECTED';
         }elseif($modelPO->status == 0 || $modelPO->status == 7){
             $statusPO = 'RECEIVED';
+        }elseif($modelPO->status == 8){
+            $statusPO = 'CANCELED';
         }
 
         $datas = Collection::make();
@@ -270,8 +317,15 @@ class PurchaseOrderController extends Controller
         $unit = "";
         $unitCurrency = Configuration::get('currencies');
         foreach($unitCurrency as $data){
-            if($data->name == $modelPO->currency){
+            if($data->id == $modelPO->currency){
                 $unit = $data->unit;
+            }
+        }
+        $dterm_name = "";
+        $deliveryTerms = Configuration::get('delivery_terms');
+        foreach($deliveryTerms as $data){
+            if($data->id == $modelPO->delivery_term){
+                $dterm_name = $data->name;
             }
         }
 
@@ -285,8 +339,8 @@ class PurchaseOrderController extends Controller
                             $sub_total = $data['sub_total'] + $POD->total_price;
 
                             $datas->push([
-                                "id" => $POD->id, 
-                                "material_code" => $POD->material->code, 
+                                "id" => $POD->id,
+                                "material_code" => $POD->material->code,
                                 "material_name" => $POD->material->description,
                                 "quantity" => $quantity,
                                 "discount" => $POD->discount,
@@ -303,8 +357,8 @@ class PurchaseOrderController extends Controller
                     if($status == 0){
                         $total_discount += $POD->total_price * ($POD->discount/100);
                         $datas->push([
-                            "id" => $POD->id, 
-                            "material_code" => $POD->material->code , 
+                            "id" => $POD->id,
+                            "material_code" => $POD->material->code ,
                             "material_name" => $POD->material->description,
                             "quantity" => $POD->quantity,
                             "discount" => $POD->discount,
@@ -318,8 +372,8 @@ class PurchaseOrderController extends Controller
                 }else{
                     $total_discount += $POD->total_price * ($POD->discount/100);
                     $datas->push([
-                        "id" => $POD->id, 
-                        "material_code" => $POD->material->code , 
+                        "id" => $POD->id,
+                        "material_code" => $POD->material->code ,
                         "material_name" => $POD->material->description,
                         "quantity" => $POD->quantity,
                         "discount" => $POD->discount,
@@ -342,8 +396,8 @@ class PurchaseOrderController extends Controller
                             $sub_total = $data['sub_total'] + $POD->total_price;
 
                             $datas->push([
-                                "id" => $POD->id, 
-                                "resource_code" => $POD->resource->code , 
+                                "id" => $POD->id,
+                                "resource_code" => $POD->resource->code ,
                                 "resource_name" => $POD->resource->name,
                                 "quantity" => $quantity,
                                 "discount" => $POD->discount,
@@ -360,8 +414,8 @@ class PurchaseOrderController extends Controller
                     if($status == 0){
                         $total_discount += $POD->total_price * ($POD->discount/100);
                         $datas->push([
-                            "id" => $POD->id, 
-                            "resource_code" => $POD->resource->code , 
+                            "id" => $POD->id,
+                            "resource_code" => $POD->resource->code ,
                             "resource_name" => $POD->resource->name,
                             "quantity" => $POD->quantity,
                             "discount" => $POD->discount,
@@ -375,8 +429,8 @@ class PurchaseOrderController extends Controller
                 }else{
                     $total_discount += $POD->total_price * ($POD->discount/100);
                     $datas->push([
-                        "id" => $POD->id, 
-                        "resource_code" => $POD->resource->code , 
+                        "id" => $POD->id,
+                        "resource_code" => $POD->resource->code ,
                         "resource_name" => $POD->resource->name,
                         "quantity" => $POD->quantity,
                         "discount" => $POD->discount,
@@ -398,7 +452,7 @@ class PurchaseOrderController extends Controller
                             $sub_total = $data['sub_total'] + $POD->total_price;
 
                             $datas->push([
-                                "id" => $POD->id, 
+                                "id" => $POD->id,
                                 "job_order" => $POD->job_order,
                                 "quantity" => $quantity,
                                 "discount" => $POD->discount,
@@ -413,8 +467,8 @@ class PurchaseOrderController extends Controller
                     if($status == 0){
                         $total_discount += $POD->total_price * ($POD->discount/100);
                         $datas->push([
-                            "id" => $POD->id, 
-                            "job_order" => $POD->job_order,                            
+                            "id" => $POD->id,
+                            "job_order" => $POD->job_order,
                             "quantity" => $POD->quantity,
                             "discount" => $POD->discount,
                             "price" => $POD->total_price / $POD->quantity,
@@ -425,8 +479,8 @@ class PurchaseOrderController extends Controller
                 }else{
                     $total_discount += $POD->total_price * ($POD->discount/100);
                     $datas->push([
-                        "id" => $POD->id, 
-                        "job_order" => $POD->job_order,                        
+                        "id" => $POD->id,
+                        "job_order" => $POD->job_order,
                         "quantity" => $POD->quantity,
                         "discount" => $POD->discount,
                         "price" => $POD->total_price / $POD->quantity,
@@ -437,7 +491,13 @@ class PurchaseOrderController extends Controller
             }
         }
         $tax = ($datas->sum('sub_total') - $total_discount) * ($modelPO->tax/100);
-        return view('purchase_order.show', compact('modelPO','unit','route','datas','total_discount','tax','statusPO'));
+
+        $gr = true;
+        $modelGR = GoodsReceipt::where('purchase_order_id',$modelPO->id)->get();
+        if(count($modelGR) > 0 || $modelPO->status != 2){
+            $gr = false;
+        }
+        return view('purchase_order.show', compact('modelPO','unit','route','datas','total_discount','tax','statusPO','dterm_name','gr'));
     }
 
     public function showApprove(Request $request, $id)
@@ -463,7 +523,7 @@ class PurchaseOrderController extends Controller
         $unit = "";
         $unitCurrency = Configuration::get('currencies');
         foreach($unitCurrency as $data){
-            if($data->name == $modelPO->currency){
+            if($data->id == $modelPO->currency){
                 $unit = $data->unit;
             }
         }
@@ -478,8 +538,8 @@ class PurchaseOrderController extends Controller
                             $sub_total = $data['sub_total'] + $POD->total_price;
 
                             $datas->push([
-                                "id" => $POD->id, 
-                                "material_code" => $POD->material->code, 
+                                "id" => $POD->id,
+                                "material_code" => $POD->material->code,
                                 "material_name" => $POD->material->description,
                                 "quantity" => $quantity,
                                 "discount" => $POD->discount,
@@ -496,8 +556,8 @@ class PurchaseOrderController extends Controller
                     if($status == 0){
                         $total_discount += $POD->total_price * ($POD->discount/100);
                         $datas->push([
-                            "id" => $POD->id, 
-                            "material_code" => $POD->material->code , 
+                            "id" => $POD->id,
+                            "material_code" => $POD->material->code ,
                             "material_name" => $POD->material->description,
                             "quantity" => $POD->quantity,
                             "discount" => $POD->discount,
@@ -511,8 +571,8 @@ class PurchaseOrderController extends Controller
                 }else{
                     $total_discount += $POD->total_price * ($POD->discount/100);
                     $datas->push([
-                        "id" => $POD->id, 
-                        "material_code" => $POD->material->code , 
+                        "id" => $POD->id,
+                        "material_code" => $POD->material->code ,
                         "material_name" => $POD->material->description,
                         "quantity" => $POD->quantity,
                         "discount" => $POD->discount,
@@ -534,8 +594,8 @@ class PurchaseOrderController extends Controller
                             $sub_total = $data['sub_total'] + $POD->total_price;
 
                             $datas->push([
-                                "id" => $POD->id, 
-                                "resource_code" => $POD->resource->code , 
+                                "id" => $POD->id,
+                                "resource_code" => $POD->resource->code ,
                                 "resource_name" => $POD->resource->name,
                                 "quantity" => $quantity,
                                 "discount" => $POD->discount,
@@ -552,8 +612,8 @@ class PurchaseOrderController extends Controller
                     if($status == 0){
                         $total_discount += $POD->total_price * ($POD->discount/100);
                         $datas->push([
-                            "id" => $POD->id, 
-                            "resource_code" => $POD->resource->code , 
+                            "id" => $POD->id,
+                            "resource_code" => $POD->resource->code ,
                             "resource_name" => $POD->resource->name,
                             "quantity" => $POD->quantity,
                             "discount" => $POD->discount,
@@ -567,8 +627,8 @@ class PurchaseOrderController extends Controller
                 }else{
                     $total_discount += $POD->total_price * ($POD->discount/100);
                     $datas->push([
-                        "id" => $POD->id, 
-                        "resource_code" => $POD->resource->code , 
+                        "id" => $POD->id,
+                        "resource_code" => $POD->resource->code ,
                         "resource_name" => $POD->resource->name,
                         "quantity" => $POD->quantity,
                         "discount" => $POD->discount,
@@ -590,8 +650,8 @@ class PurchaseOrderController extends Controller
                             $sub_total = $data['sub_total'] + $POD->total_price;
 
                             $datas->push([
-                                "id" => $POD->id, 
-                                "service_code" => $POD->activityDetail->serviceDetail->service->name, 
+                                "id" => $POD->id,
+                                "service_code" => $POD->activityDetail->serviceDetail->service->name,
                                 "service_name" => $POD->activityDetail->serviceDetail->name,
                                 "quantity" => $quantity,
                                 "discount" => $POD->discount,
@@ -607,8 +667,8 @@ class PurchaseOrderController extends Controller
                     if($status == 0){
                         $total_discount += $POD->total_price * ($POD->discount/100);
                         $datas->push([
-                            "id" => $POD->id, 
-                            "service_code" => $POD->activityDetail->serviceDetail->service->name , 
+                            "id" => $POD->id,
+                            "service_code" => $POD->activityDetail->serviceDetail->service->name ,
                             "service_name" => $POD->activityDetail->serviceDetail->name,
                             "quantity" => $POD->quantity,
                             "discount" => $POD->discount,
@@ -622,8 +682,8 @@ class PurchaseOrderController extends Controller
 
                     $total_discount += $POD->total_price * ($POD->discount/100);
                     $datas->push([
-                        "id" => $POD->id, 
-                        "job_order" => $POD->job_order , 
+                        "id" => $POD->id,
+                        "job_order" => $POD->job_order ,
                         "quantity" => $POD->quantity,
                         "discount" => $POD->discount,
                         "price" => $POD->total_price / $POD->quantity,
@@ -642,12 +702,16 @@ class PurchaseOrderController extends Controller
         $route = $request->route()->getPrefix();
         $modelPO = PurchaseOrder::where('id',$id)->with('purchaseRequisition')->first();
         $modelPOD = PurchaseOrderDetail::where('purchase_order_id',$id)->with('material','purchaseRequisitionDetail.wbs','purchaseRequisitionDetail.project','wbs','resource','material.uom','purchaseRequisitionDetail.purchaseRequisition','activityDetail','activityDetail.areaUom','activityDetail.serviceDetail','activityDetail.serviceDetail.service')->get();
-        $modelProject = Project::where('id',$modelPO->purchaseRequisition->project_id)->with('ship','customer')->first();
         foreach($modelPOD as $POD){
             $POD['old_price'] = $POD->total_price / $POD->quantity;
         }
         $currencies = Configuration::get('currencies');
-        return view('purchase_order.edit', compact('modelPO','modelPOD','modelProject','route','currencies'));
+
+        $payment_terms = Configuration::get('payment_terms');
+        $delivery_terms = Configuration::get('delivery_terms');
+        $projects = Project::where('status',1)->get();
+
+        return view('purchase_order.edit', compact('modelPO','modelPOD','projects','route','currencies','payment_terms','delivery_terms'));
     }
 
     public function update(Request $request)
@@ -657,7 +721,7 @@ class PurchaseOrderController extends Controller
         $value = "";
         $valueCurrency = Configuration::get('currencies');
         foreach ($valueCurrency as $data) {
-            if($data->name == $datas->modelPO->currency){
+            if($data->id == $datas->modelPO->currency){
                 $value = $data->value;
             }
         }
@@ -702,8 +766,9 @@ class PurchaseOrderController extends Controller
             }else{
                 $PO->estimated_freight = $datas->modelPO->estimated_freight * $value;
             }
-            $PO->delivery_terms = $datas->modelPO->delivery_terms;
-            $PO->payment_terms = $datas->modelPO->payment_terms;
+            $PO->delivery_term = ($datas->modelPO->delivery_term != "") ? $datas->modelPO->delivery_term : null;
+            $PO->payment_term = ($datas->modelPO->payment_term != "") ? $datas->modelPO->payment_term : null;
+            $PO->project_id = ($datas->modelPO->project_id != "") ? $datas->modelPO->project_id : null;
             if($datas->type == 3){
                 $delivery_date_subcon = DateTime::createFromFormat('d-m-Y', $datas->delivery_date_subcon);
                 if($delivery_date_subcon){
@@ -713,7 +778,7 @@ class PurchaseOrderController extends Controller
                 }
                 $PO->delivery_date = $delivery_date_subcon;
             }
-            
+
             if($datas->modelPO->currency != $PO->currency){
                 $PO->value = $value;
             }
@@ -735,7 +800,7 @@ class PurchaseOrderController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             if($route == "/purchase_order"){
-                return redirect()->route('purchase_order.index')->with('error', $e->getMessage());
+                return redirect()->route('purchase_order.index')->with('error', $e->getMessage().json_encode($datas));
             }elseif($route == "/purchase_order_repair"){
                 return redirect()->route('purchase_order_repair.index')->with('error', $e->getMessage());
             }
@@ -817,7 +882,7 @@ class PurchaseOrderController extends Controller
     }
 
     public function printPdf($id, Request $request)
-    { 
+    {
         $branch = Auth::user()->branch;
         $modelPO = PurchaseOrder::find($id);
         $projectName = PurchaseRequisitionDetail::where('purchase_requisition_id',$modelPO->purchase_requisition_id)->first();
@@ -839,20 +904,20 @@ class PurchaseOrderController extends Controller
         $pdf->getDomPDF()->set_option("enable_php", true);
         if($modelPO->purchaseRequisition->type != 3){
             $pdf->loadView('purchase_order.pdf',['modelPO' => $modelPO,'words'=>$words,'branch'=>$branch, 'route'=> $route]);
-            
+
             $now = date("Y_m_d_H_i_s");
             return $pdf->stream('Purchase_Order_'.$now.'.pdf');
         }
         else{
             $pdf->loadView('purchase_order.pdf_PO_subcon',['modelPO' => $modelPO,'words'=>$words,'branch'=>$branch, 'route'=> $route, 'projectName'=>$projectName]);
-            
+
             $now = date("Y_m_d_H_i_s");
             return $pdf->stream('Purchase_Order_Subcon'.$now.'.pdf');
         }
     }
 
     public function printPdfJobOrder($id, Request $request)
-    { 
+    {
         $branch = Auth::user()->branch;
         $modelPO = PurchaseOrder::find($id);
         $projectName = PurchaseRequisitionDetail::where('purchase_requisition_id',$modelPO->purchase_requisition_id)->first();
@@ -874,7 +939,7 @@ class PurchaseOrderController extends Controller
         $pdf->getDomPDF()->set_option("enable_php", true);
         if($modelPO->purchaseRequisition->type == 3){
             $pdf->loadView('purchase_order.pdf_JO_subcon',['modelPO' => $modelPO,'branch'=>$branch, 'route'=> $route, 'projectName'=>$projectName]);
-            
+
             $now = date("Y_m_d_H_i_s");
             return $pdf->stream('Job_Order_'.$now.'.pdf');
         }
@@ -898,10 +963,10 @@ class PurchaseOrderController extends Controller
 
         $po_number = $year+$number;
         $po_number = 'PO-'.$po_number;
-        
+
         return $po_number;
     }
-    
+
     public function updatePR($prd_id,$quantity){
         $modelPRD = PurchaseRequisitionDetail::findOrFail($prd_id);
 
@@ -925,7 +990,7 @@ class PurchaseOrderController extends Controller
     }
 
     public function getVendorAPI(){
-        $vendor = Vendor::where('status',1)->select('id','name','code')->get()->jsonSerialize();
+        $vendor = Vendor::where('status',1)->select('id','name','code','delivery_term','payment_term')->get()->jsonSerialize();
 
         return response($vendor, Response::HTTP_OK);
     }
@@ -947,8 +1012,8 @@ class PurchaseOrderController extends Controller
                     if($data['vendor_id'] == $PIR->vendor_id){
                         if($data['created_at'] > $PIR->created_at){
                             $datas->push([
-                                "vendor_id" => $PIR->vendor->id, 
-                                "vendor_code" => $PIR->vendor->code, 
+                                "vendor_id" => $PIR->vendor->id,
+                                "vendor_code" => $PIR->vendor->code,
                                 "vendor_name" => $PIR->vendor->name,
                                 "count" => $data['count']+1,
                                 "created_at" => $PIR->created_at,
@@ -956,8 +1021,8 @@ class PurchaseOrderController extends Controller
                         ]);
                         }else{
                             $datas->push([
-                                "vendor_id" => $PIR->vendor->id, 
-                                "vendor_code" => $PIR->vendor->code, 
+                                "vendor_id" => $PIR->vendor->id,
+                                "vendor_code" => $PIR->vendor->code,
                                 "vendor_name" => $PIR->vendor->name,
                                 "count" => $data['count']+1,
                                 "created_at" => $data['created_at'],
@@ -970,8 +1035,8 @@ class PurchaseOrderController extends Controller
                 }
                 if($status){
                     $datas->push([
-                        "vendor_id" => $PIR->vendor->id, 
-                        "vendor_code" => $PIR->vendor->code, 
+                        "vendor_id" => $PIR->vendor->id,
+                        "vendor_code" => $PIR->vendor->code,
                         "vendor_name" => $PIR->vendor->name,
                         "count" => 1,
                         "created_at" => $PIR->created_at,
@@ -980,8 +1045,8 @@ class PurchaseOrderController extends Controller
                 }
             }else{
                 $datas->push([
-                    "vendor_id" => $PIR->vendor->id, 
-                    "vendor_code" => $PIR->vendor->code, 
+                    "vendor_id" => $PIR->vendor->id,
+                    "vendor_code" => $PIR->vendor->code,
                     "vendor_name" => $PIR->vendor->name,
                     "count" => 1,
                     "created_at" => $PIR->created_at,

@@ -17,9 +17,17 @@
 <div class="row">
     <div class="col-xs-12">
         @if($menu == "building")
-            <form id="approve-gr"class="form-horizontal" action="{{ route('goods_return.approval') }}">
+            @if($modelGRT->goods_issue_id != null && $modelGRT->goods_issue_id != "")
+                <form id="approve-gr"class="form-horizontal" action="{{ route('goods_return.approvalGI') }}">
+            @else
+                <form id="approve-gr"class="form-horizontal" action="{{ route('goods_return.approval') }}">
+            @endif
         @elseif($menu == "repair")
-            <form id="approve-gr"class="form-horizontal" action="{{ route('goods_return_repair.approval') }}">
+            @if($modelGRT->goods_issue_id != null && $modelGRT->goods_issue_id != "")
+                <form id="approve-gr"class="form-horizontal" action="{{ route('goods_return_repair.approvalGI') }}">
+            @else
+                <form id="approve-gr"class="form-horizontal" action="{{ route('goods_return_repair.approval') }}">
+            @endif
         @endif
         <div class="box box-blue">
             <div class="row">
@@ -43,6 +51,12 @@
                             : <b>{{ $status }}</b>
                         </div>
                         <div class="col-xs-4 col-md-4">
+                            Po Number
+                        </div>
+                        <div class="col-xs-8 col-md-8">
+                            : <b>{{ isset($modelGRT->purchase_order_id) ? $modelGRT->purchaseOrder->number :  '-'}}</b>
+                        </div>
+                        <div class="col-xs-4 col-md-4">
                             Created By
                         </div>
                         <div class="col-xs-8 col-md-8">
@@ -64,7 +78,7 @@
                 </div>
             </div>
             <div class="box-body p-t-0 p-b-0">
-                <table class="table table-bordered showTable tableFixed tableNonPagingVue">
+                <table class="table table-bordered tableFixed showTable" id="gr-table">
                     <thead>
                         <tr>
                             <th width="5%">No</th>
@@ -109,34 +123,44 @@
     const form = document.querySelector('form#approve-gr');
 
     $(document).ready(function(){
-        $('.tableNonPagingVue thead tr').clone(true).appendTo( '.tableNonPagingVue thead' );
-        $('.tableNonPagingVue thead tr:eq(1) th').addClass('indexTable').each( function (i) {
-            var title = $(this).text();
-            if(title == 'No' || title == "Cost per pcs" || title == "Sub Total Cost" || title == "Quantity"){
-                $(this).html( '<input disabled class="form-control width100" type="text"/>' );
-            }else{
-                $(this).html( '<input class="form-control width100" type="text" placeholder="Search '+title+'"/>' );
+        // $('.tableNonPagingVue thead tr').clone(true).appendTo( '.tableNonPagingVue thead' );
+        // $('.tableNonPagingVue thead tr:eq(1) th').addClass('indexTable').each( function (i) {
+        //     var title = $(this).text();
+        //     if(title == 'No' || title == "Cost per pcs" || title == "Sub Total Cost" || title == "Quantity"){
+        //         $(this).html( '<input disabled class="form-control width100" type="text"/>' );
+        //     }else{
+        //         $(this).html( '<input class="form-control width100" type="text" placeholder="Search '+title+'"/>' );
+        //     }
+
+        //     $( 'input', this ).on( 'keyup change', function () {
+        //         if ( table.column(i).search() !== this.value ) {
+        //             table
+        //             .column(i)
+        //             .search( this.value )
+        //             .draw();
+        //         }
+        //     });
+        // });
+
+        // var table = $('.tableNonPagingVue').DataTable( {
+        //     orderCellsTop   : true,
+        //     paging          : false,
+        //     autoWidth       : false,
+        //     lengthChange    : false,
+        //     info            : false,
+        // });
+
+        // $('div.overlay').hide();
+        $('#gr-table').DataTable({
+            'paging'      : true,
+            'lengthChange': false,
+            'ordering'    : true,
+            'info'        : true,
+            'autoWidth'   : false,
+            'initComplete': function(){
+                $('div.overlay').hide();
             }
-
-            $( 'input', this ).on( 'keyup change', function () {
-                if ( table.column(i).search() !== this.value ) {
-                    table
-                    .column(i)
-                    .search( this.value )
-                    .draw();
-                }
-            });
-        });
-
-        var table = $('.tableNonPagingVue').DataTable( {
-            orderCellsTop   : true,
-            paging          : false,
-            autoWidth       : false,
-            lengthChange    : false,
-            info            : false,
-        });
-
-        $('div.overlay').hide();
+        }); 
     });
 
     var data = {

@@ -3,7 +3,7 @@
 @section('content-header')
 @breadcrumb(
     [
-        'title' => 'Physical Inventory » '.$snapshot->code,
+        'title' => 'Stock Taking » '.$snapshot->code,
         'items' => [
             'Dashboard' => route('index'),
             'Show Snapshot' => "",
@@ -35,8 +35,8 @@
                             Status
                         </div>
                         <div class="col-md-3">
-                            : 
-                            <b> 
+                            :
+                            <b>
                                 @if($snapshot->status == 1)
                                     Open
                                 @elseif($snapshot->status == 0)
@@ -52,7 +52,7 @@
                             Created At
                         </div>
                         <div class="col-md-3">
-                            : 
+                            :
                             <b>{{$snapshot->created_at->format('d-m-Y H:i:s')}}</b>
                         </div>
                     </div>
@@ -88,6 +88,13 @@
                         @endforeach
                     </tbody>
                 </table>
+                <div class="col-md-12 m-b-10 p-r-0 p-t-10">
+                    @if($route == "/physical_inventory")
+                        <a class="col-xs-12 col-md-2 btn btn-primary pull-right" target="_blank" href="{{ route('physical_inventory.exportToExcel', ['id'=>$snapshot->id]) }}">EXPORT TO EXCEL</a>
+                    @elseif($route == "/physical_inventory_repair")
+                        <a class="col-xs-12 col-md-2 btn btn-primary pull-right" target="_blank" href="{{ route('physical_inventory_repair.exportToExcel', ['id'=>$snapshot->id]) }}">EXPORT TO EXCEL</a>
+                    @endif
+                </div>
             </div> <!-- /.box-body -->
             <div class="overlay">
                 <i class="fa fa-refresh fa-spin"></i>

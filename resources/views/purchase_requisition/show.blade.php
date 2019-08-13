@@ -57,6 +57,7 @@
                         <div class="col-xs-8 col-md-8">
                             : <b>{{ $status }}</b>
                         </div>
+                        
                         <div class="col-xs-4 col-md-4">
                             Created By
                         </div>
@@ -72,35 +73,59 @@
                     </div>
                 </div>
                 <div class="col-sm-4 col-md-4 m-t-10 m-l-10">
-                    <div class="col-xs-4 col-md-4">
+                    <div class="col-xs-5 col-md-5">
                         Description
                     </div>
-                    <div class="col-xs-8 col-md-8 tdEllipsis" data-container="body" data-toggle="tooltip" title="{{$modelPR->description}}">
+                    <div class="col-xs-7 col-md-7 tdEllipsis" data-container="body" data-toggle="tooltip" title="{{$modelPR->description}}">
                         : <b> {{ ($modelPR->description != "") ? $modelPR->description : '-' }} </b>
                     </div>
-                    @if($modelPR->status != 6 && $modelPR->status != 1)
+                    @if($modelPR->status != 6 && $modelPR->status != 1 && $modelPR->status != 8)
                         @if($modelPR->status == 2 || $modelPR->status == 0 || $modelPR->status == 7)
-                            <div class="col-xs-4 col-md-4">
+                            <div class="col-xs-5 col-md-5">
                                 Approved By
                             </div>
-                        @elseif($modelPR->status == 3 || $modelPR->status == 4)
-                            <div class="col-xs-4 col-md-4">
+                        @elseif($modelPR->status == 3 || $modelPR->status == 5)
+                            <div class="col-xs-5 col-md-5">
                                 Checked By
                             </div>
                         @elseif($modelPR->status == 5)
-                            <div class="col-xs-4 col-md-4">
+                            <div class="col-xs-5 col-md-5">
                                 Rejected By
                             </div>
                         @endif
-                        <div class="col-xs-8 col-md-8 tdEllipsis">
+                        <div class="col-xs-7 col-md-7 tdEllipsis">
                             : <b> {{ $modelPR->approvedBy->name }} </b>
+                        </div>
+                    @endif
+                    
+                    <?php
+                        $approval_date = "";
+                        if($modelPR->approval_date != NULL){
+                            $approval_date = DateTime::createFromFormat('Y-m-d', $modelPR->approval_date);
+                            $approval_date = $approval_date->format('d-m-Y');
+                        }
+                    ?>
+
+                    @if($modelPR->status == 2 || $modelPR->status == 0 || $modelPR->status == 7)
+                        <div class="col-xs-5 col-md-5">
+                            Approved Date
+                        </div>
+                        <div class="col-xs-7 col-md-7">
+                            : <b>{{ $approval_date }}</b>
+                        </div>
+                    @elseif($modelPR->status == 5)
+                        <div class="col-xs-5 col-md-5">
+                            Rejected Date
+                        </div>
+                        <div class="col-xs-7 col-md-7">
+                            : <b>{{ $approval_date }}</b>
                         </div>
                     @endif
                 </div>
             </div>
             <div class="box-body p-t-0 p-b-0">
                 @if($modelPR->type != 3)
-                    <table class="table table-bordered showTable tableFixed tableNonPagingVue">
+                    <table class="table table-bordered tableFixed showTable" id="pr-table">
                         <thead>
                             <tr>
                                 <th width="5%">No</th>
@@ -143,7 +168,7 @@
                         </tbody>
                     </table>
                 @elseif($modelPR->type == 3)
-                    <table class="table table-bordered showTable tableFixed tableNonPagingVue">
+                    <table class="table table-bordered tableFixed showTable" id="pr-table">
                         <thead>
                             <tr>
                                 <th width="5%">No</th>
@@ -166,9 +191,23 @@
                 @endif
                 <div class="col-md-12 m-b-10 p-r-0 p-t-10">
                     @if($route == "/purchase_requisition")
-                        <a class="col-xs-12 col-md-2 btn btn-primary pull-right" href="{{ route('purchase_requisition.print', ['id'=>$modelPR->id]) }}">DOWNLOAD</a>
+                        <a class="col-xs-12 col-md-2 btn btn-primary pull-right" target="_blank" href="{{ route('purchase_requisition.print', ['id'=>$modelPR->id]) }}">DOWNLOAD</a>
+                        @can('cancel-approval-purchase-requisition')
+                            @if($po)
+                                <a class="col-xs-12 col-md-2 btn btn-danger pull-right m-r-5" onclick="cancelApproval('{{$route}}')">CANCEL APPROVAL</a>
+                            @endif
+                        @endcan
                     @elseif($route == "/purchase_requisition_repair")
-                        <a class="col-xs-12 col-md-2 btn btn-primary pull-right" href="{{ route('purchase_requisition_repair.print', ['id'=>$modelPR->id]) }}">DOWNLOAD</a>
+                        <a class="col-xs-12 col-md-2 btn btn-primary pull-right" target="_blank" href="{{ route('purchase_requisition_repair.print', ['id'=>$modelPR->id]) }}">DOWNLOAD</a>
+                        @can('cancel-approval-purchase-requisition-repair')
+                            @if($po)
+                                <a class="col-xs-12 col-md-2 btn btn-danger pull-right m-r-5" onclick="cancelApproval('{{$route}}')">CANCEL APPROVAL</a>
+                            @endif
+                        @endcan
+                    @endif
+
+                    @if($modelPR->status == 1 || $modelPR->status == 3 || $modelPR->status == 4)
+                        <a class="col-xs-12 col-md-2 btn btn-danger pull-right m-r-5" onclick="cancel('{{$route}}')">CANCEL</a>
                     @endif
                 </div>
             </div> <!-- /.box-body -->
@@ -183,34 +222,81 @@
 @push('script')
 <script>
     $(document).ready(function(){
-        $('.tableNonPagingVue thead tr').clone(true).appendTo( '.tableNonPagingVue thead' );
-        $('.tableNonPagingVue thead tr:eq(1) th').addClass('indexTable').each( function (i) {
-            var title = $(this).text();
-            if(title == 'No' || title == "Cost per pcs" || title == "Sub Total Cost" || title == "Qty" || title == "Unit"){
-                $(this).html( '<input disabled class="form-control width100" type="text"/>' );
-            }else{
-                $(this).html( '<input class="form-control width100" type="text" placeholder="Search '+title+'"/>' );
+        $('#pr-table').DataTable({
+            'paging'      : true,
+            'lengthChange': false,
+            'ordering'    : true,
+            'info'        : true,
+            'autoWidth'   : false,
+            'initComplete': function(){
+                $('div.overlay').hide();
             }
-
-            $( 'input', this ).on( 'keyup change', function () {
-                if ( table.column(i).search() !== this.value ) {
-                    table
-                    .column(i)
-                    .search( this.value )
-                    .draw();
-                }
-            });
-        });
-
-        var table = $('.tableNonPagingVue').DataTable( {
-            orderCellsTop   : true,
-            paging          : false,
-            autoWidth       : false,
-            lengthChange    : false,
-            info            : false,
-        });
         
-        $('div.overlay').hide();
+        });
     });
+
+    function cancel(route){
+        iziToast.question({
+            close: false,
+            overlay: true,
+            timeout : 0,
+            displayMode: 'once',
+            id: 'question',
+            zindex: 9999,
+            title: 'Confirm',
+            message: 'Are you sure you want to cancel this document?',
+            position: 'center',
+            buttons: [
+                ['<button><b>YES</b></button>', function (instance, toast) {
+                    var url = "";
+                    if(route == "/purchase_requisition"){
+                        window.location.href = "{{ route('purchase_requisition.cancel', ['id'=>$modelPR->id]) }}";
+                    }else{
+                        window.location.href = "{{ route('purchase_requisition_repair.cancel', ['id'=>$modelPR->id]) }}";
+                    }
+
+                    instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
+        
+                }, true],
+                ['<button>NO</button>', function (instance, toast) {
+        
+                    instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
+        
+                }],
+            ],
+        });
+    }
+
+    function cancelApproval(route){
+        iziToast.question({
+            close: false,
+            overlay: true,
+            timeout : 0,
+            displayMode: 'once',
+            id: 'question',
+            zindex: 9999,
+            title: 'Confirm',
+            message: 'Are you sure you want to cancel this approval?',
+            position: 'center',
+            buttons: [
+                ['<button><b>YES</b></button>', function (instance, toast) {
+                    var url = "";
+                    if(route == "/purchase_requisition"){
+                        window.location.href = "{{ route('purchase_requisition.cancelApproval', ['id'=>$modelPR->id]) }}";
+                    }else{
+                        window.location.href = "{{ route('purchase_requisition_repair.cancelApproval', ['id'=>$modelPR->id]) }}";
+                    }
+
+                    instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
+        
+                }, true],
+                ['<button>NO</button>', function (instance, toast) {
+        
+                    instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
+        
+                }],
+            ],
+        });
+    }
 </script>
 @endpush

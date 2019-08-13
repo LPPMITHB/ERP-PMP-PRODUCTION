@@ -26,7 +26,7 @@
                 @csrf
                     @verbatim
                     <div id="prd">
-                        <table class="table table-bordered tableFixed tablePagingVue">
+                        <table class="table table-bordered tableFixed" id="pr-table">
                             <thead>
                                 <tr>
                                     <th width="5%">No</th>
@@ -53,6 +53,9 @@
                                     <td v-else-if="PRs.status == 3">NEED REVISION</td>
                                     <td v-else-if="PRs.status == 4">REVISED</td>
                                     <td v-else-if="PRs.status == 5">REJECTED</td>
+                                    <td v-else-if="PRs.status == 6">CONSOLIDATED</td>
+                                    <td v-else-if="PRs.status == 7">ORDER PARTIALLY</td>
+                                    <td v-else-if="PRs.status == 8">CANCELED</td>
                                     <td v-if="PRs.type == 2" class="no-padding p-t-2 p-b-2" align="center">
                                         <input type="checkbox" v-icheck="" v-model="checkedPR" :value="PRs.id" :disabled="materialOk">
                                     </td>
@@ -84,34 +87,44 @@
     const form = document.querySelector('form#select-pr');
 
     $(document).ready(function(){
-        $('.tablePagingVue thead tr').clone(true).appendTo( '.tablePagingVue thead' );
-        $('.tablePagingVue thead tr:eq(1) th').addClass('indexTable').each( function (i) {
-            var title = $(this).text();
-            if(title == '' || title == 'No' || title == "Quantity" || title == "Ordered" || title == "Remaining"){
-                $(this).html( '<input disabled class="form-control width100" type="text"/>' );
-            }else{
-                $(this).html( '<input class="form-control width100" type="text" placeholder="Search '+title+'"/>' );
+        $('#pr-table').DataTable({
+            'paging'      : true,
+            'lengthChange': false,
+            'ordering'    : true,
+            'info'        : true,
+            'autoWidth'   : false,
+            'initComplete': function(){
+                $('div.overlay').hide();
             }
-
-            $( 'input', this ).on( 'keyup change', function () {
-                if ( tablePagingVue.column(i).search() !== this.value ) {
-                    tablePagingVue
-                        .column(i)
-                        .search( this.value )
-                        .draw();
-                }
-            });
         });
+        // $('.tablePagingVue thead tr').clone(true).appendTo( '.tablePagingVue thead' );
+        // $('.tablePagingVue thead tr:eq(1) th').addClass('indexTable').each( function (i) {
+        //     var title = $(this).text();
+        //     if(title == '' || title == 'No' || title == "Quantity" || title == "Ordered" || title == "Remaining"){
+        //         $(this).html( '<input disabled class="form-control width100" type="text"/>' );
+        //     }else{
+        //         $(this).html( '<input class="form-control width100" type="text" placeholder="Search '+title+'"/>' );
+        //     }
 
-        var tablePagingVue = $('.tablePagingVue').DataTable( {
-            orderCellsTop   : true,
-            fixedHeader     : true,
-            paging          : true,
-            autoWidth       : false,
-            lengthChange    : false,
-        });
+        //     $( 'input', this ).on( 'keyup change', function () {
+        //         if ( tablePagingVue.column(i).search() !== this.value ) {
+        //             tablePagingVue
+        //                 .column(i)
+        //                 .search( this.value )
+        //                 .draw();
+        //         }
+        //     });
+        // });
 
-        $('div.overlay').hide();
+        // var tablePagingVue = $('.tablePagingVue').DataTable( {
+        //     orderCellsTop   : true,
+        //     fixedHeader     : true,
+        //     paging          : true,
+        //     autoWidth       : false,
+        //     lengthChange    : false,
+        // });
+
+        // $('div.overlay').hide();
     });
 
     var data = {

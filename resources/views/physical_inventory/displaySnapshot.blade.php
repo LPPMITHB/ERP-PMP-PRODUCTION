@@ -4,7 +4,7 @@
 @if($menu == "building")
     @breadcrumb(
         [
-            'title' => 'PHYSICAL INVENTORY » STOCK DETAILS',
+            'title' => 'STOCK TAKING » STOCK DETAILS',
             'items' => [
                 'Dashboard' => route('index'),
                 'Begin Snapshot' => route('physical_inventory.indexSnapshot'),
@@ -16,10 +16,10 @@
 @else
     @breadcrumb(
         [
-            'title' => 'PHYSICAL INVENTORY » STOCK DETAILS',
+            'title' => 'STOCK TAKING » STOCK DETAILS',
             'items' => [
                 'Dashboard' => route('index'),
-                'Begin Snapshot' => route('physical_inventory_repair.indexSnapshot'),
+                'Create Stock Take' => route('physical_inventory_repair.indexSnapshot'),
                 'Stock Details' => ''
             ]
         ]
@@ -33,15 +33,16 @@
     <div class="col-md-12">
         <div class="box box-solid">
             <div class="box-body">
-                <h4 class="box-title">Stock Snapshot <b>{{$piCode}}</b> </h4>
+                <h4 class="box-title">Stock Take Document <b>{{$piCode}}</b> </h4>
                 <table id="stock-table" class="table table-bordered showTable tableFixed" style="border-collapse:collapse;">
                     <thead>
                         <tr>
                             <th style="width: 5%">No</th>
-                            <th style="width: 20%">Material Number</th>
+                            <th style="width: 15%">Material Number</th>
                             <th style="width: 25%">Material Description</th>
-                            <th style="width: 5%">Unit</th>
-                            <th style="width: 35%">Storage Location</th>
+                            <th style="width: 7%">Unit</th>
+                            <th style="width: 19%">Storage Location</th>
+                            <th style="width: 29%">Location Detail</th>
                             <th style="width: 10%">Quantity</th>
                         </tr>
                     </thead>
@@ -51,9 +52,10 @@
                             <tr>
                                 <td class="p-l-10">{{ $counter++ }}</td>
                                 <td class="p-l-10">{{ $stock->material->code }}</td>
-                                <td class="p-l-10">{{ $stock->material->description }}</td>
+                                <td class="p-l-10 tdEllipsis" data-container="body" data-toggle="tooltip" title="{{ $stock->material->description }}">{{ $stock->material->description }}</td>
                                 <td class="p-l-10">{{ $stock->material->uom->unit }}</td>
                                 <td class="p-l-10">{{ $stock->storageLocation->name }}</td>
+                                <td class="p-l-10">{{ $stock->material->location_detail }}</td>
                                 <td class="p-l-10">{{ number_format($stock->quantity,2) }}</td>
                             </tr>
                         @endforeach
@@ -76,7 +78,7 @@
                 @endif
                     @csrf
                 </form>
-                <button id="btnSubmit" {{count($stocks)>0 ? '' : 'disabled'}} class="btn btn-primary col-sm-12">CREATE SNAPSHOT</button>
+                <button id="btnSubmit" {{count($stocks)>0 ? '' : 'disabled'}} class="btn btn-primary col-sm-12">CREATE STOCK TAKE</button>
             </div>
             <div class="overlay">
                 <i class="fa fa-refresh fa-spin"></i>
@@ -115,7 +117,7 @@
         struturesElemSloc.setAttribute('name', 'sloc');
         struturesElemSloc.setAttribute('value', sloc);
         form.appendChild(struturesElemSloc);
-        
+
         let struturesElemMaterial = document.createElement('input');
         struturesElemMaterial.setAttribute('type', 'hidden');
         struturesElemMaterial.setAttribute('name', 'material');
@@ -124,7 +126,7 @@
         form.submit();
     });
 
-    
-    
+
+
 </script>
 @endpush

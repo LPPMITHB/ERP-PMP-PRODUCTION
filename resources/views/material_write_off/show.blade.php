@@ -84,40 +84,100 @@
                                 @endif
                             </div>
                         </div>
-                    </div>
-                    <div class="col-sm-4 col-md-4 m-t-10">
                         <div class="row">
                             <div class="col-md-4 col-xs-4">
-                                    Description
-                                </div>
-                            <div class="col-md-8 tdEllipsis" data-container="body" data-toggle="tooltip" title="{{ $modelMWO->description}}">
-                                    : <b> {{ $modelMWO->description }} </b>
-                                </div>
+                                Created At
+                            </div>
+                            <div class="col-md-8">
+                                : <b> {{$modelMWO->created_at->format('d-m-Y H:i:s')}} </b>
+                            </div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-4 col-xs-4">
+                                Description
+                            </div>
+                            <div class="col-md-8 tdEllipsis" data-container="body" data-toggle="tooltip" title="{{ $modelMWO->description}}">
+                                : <b> {{ $modelMWO->description }} </b>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 col-md-4 m-t-10">
+                        @if($modelMWO->status != 6 && $modelMWO->status != 1)
+                            @if($modelMWO->status == 2 || $modelMWO->status == 0 || $modelMWO->status == 7)
+                                <div class="col-xs-5 col-md-5">
+                                    Approved By
+                                </div>
+                            @elseif($modelMWO->status == 3 || $modelMWO->status == 5)
+                                <div class="col-xs-5 col-md-5">
+                                    Checked By
+                                </div>
+                            @elseif($modelMWO->status == 5)
+                                <div class="col-xs-5 col-md-5">
+                                    Rejected By
+                                </div>
+                            @endif
+                            <div class="col-xs-7 col-md-7 tdEllipsis">
+                                : <b> {{ $modelMWO->approvedBy->name }} </b>
+                            </div>
+                        @endif
+                        @php
+                            $approval_date = "";
+                            if($modelMWO->approval_date != NULL){
+                                $approval_date = DateTime::createFromFormat('Y-m-d', $modelMWO->approval_date);
+                                $approval_date = $approval_date->format('d-m-Y');
+                            }
+                        @endphp
+                        @if($modelMWO->status == 2 || $modelMWO->status == 0 || $modelMWO->status == 7)
+                            <div class="col-xs-5 col-md-5">
+                                Approved Date
+                            </div>
+                            <div class="col-xs-7 col-md-7">
+                                : <b>{{ $approval_date }}</b>
+                            </div>
+                        @elseif($modelMWO->status == 5)
+                            <div class="col-xs-5 col-md-5">
+                                Rejected Date
+                            </div>
+                            <div class="col-xs-7 col-md-7">
+                                : <b>{{ $approval_date }}</b>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
             <div class="box-body">
-                <table class="table table-bordered showTable" id="gi-table">
+                <table class="table table-bordered showTable tableFixed" id="gi-table">
                     <thead>
                         <tr>
                             <th width="5%">No</th>
-                            <th width="20%">Material Number</th>
-                            <th width="30%">Material Description</th>
-                            <th width="10%">Quantity</th>
-                            <th width="10%">Unit</th>
-                            <th width="20%">Storage Location</th>
+                            <th width="12%">Warehouse</th>
+                            <th width="12%">S.Loc</th>
+                            <th width="15%">Material Number</th>
+                            <th width="15%">Material Description</th>
+                            @if($modelMWO->status == 1)
+                                <th width="8%">Available</th>
+                            @endif
+                            <th width="8%">Quantity</th>
+                            <th width="5%">Unit</th>
+                            <th width=10%>Amount / Unit</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($modelMWOD as $MWO)
                         <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $MWO->material->code }}</td>
-                            <td>{{ $MWO->material->description }}</td>
-                            <td>{{ number_format($MWO->quantity,2) }}</td>
-                            <td>{{ $MWO->material->uom->unit }}</td>
-                            <td>{{ $MWO->storageLocation != null ? $MWO->storageLocation->name : "-" }} </td>
+                            <td class="tdEllipsis">{{ $loop->iteration }}</td>
+                            <td class="tdEllipsis">{{ $MWO->storageLocation->name }} </td>
+                            <td class="tdEllipsis">{{ $MWO->storageLocation->warehouse->name }} </td>
+                            <td class="tdEllipsis">{{ $MWO->material->code }}</td>
+                            <td class="tdEllipsis">{{ $MWO->material->description }}</td>
+                            @if($modelMWO->status == 1)
+                                <td class="tdEllipsis">
+                                    {{ number_format($MWO->storageLocation->storageLocationDetails->where('material_id',$MWO->material_id)->sum('quantity'),2) }}
+                                </td>
+                            @endif
+                            <td class="tdEllipsis">{{ number_format($MWO->quantity,2) }}</td>
+                            <td class="tdEllipsis">{{ $MWO->material->uom->unit }}</td>
+                            <td class="tdEllipsis">Rp.{{ number_format($MWO->amount) }}</td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -144,12 +204,11 @@
         $('#gi-table').DataTable({
             'paging'      : true,
             'lengthChange': false,
-            'searching'   : false,
             'ordering'    : true,
             'info'        : true,
             'autoWidth'   : false,
             'initComplete': function(){
-                $('div.overlay').remove();
+                $('div.overlay').hide();
             }
         });
     });

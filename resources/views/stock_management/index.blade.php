@@ -28,7 +28,7 @@
                                         <label for="">Warehouse</label>
                                         <selectize v-model="warehouse_id" :settings="warehouseSettings">
                                             <option v-for="(warehouse, index) in warehouses" :value="warehouse.id">{{warehouse.name}}</option>
-                                        </selectize>  
+                                        </selectize>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -36,7 +36,7 @@
                                         <label for="">Storage Location</label>
                                         <selectize v-model="sloc_id" :settings="slocSettings">
                                             <option v-for="(storageLocation, index) in storageLocations" :value="storageLocation.id">{{storageLocation.name}}</option>
-                                        </selectize>  
+                                        </selectize>
                                     </div>
                                 </div>
                             </div>
@@ -45,16 +45,20 @@
                                     <label for="">Stock Information</label>
                                 </div>
                                 <div class="row">
-                                    <div class="col-sm-5">Total Inventory Value</div>
-                                    <div class="col-sm-7">: {{stockValue}}</div>
+                                    <div class="col-sm-6">Total Inventory Value</div>
+                                    <div class="col-sm-6">: {{stockValue}}</div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-sm-5">Total Inventory Quantity</div>
-                                    <div class="col-sm-7">: {{stockQuantity}}</div>
+                                    <div class="col-sm-6">Total Inventory Quantity</div>
+                                    <div class="col-sm-6">: {{stockQuantity}}</div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-sm-5">Total Reserved Quantity</div>
-                                    <div class="col-sm-7">: {{reservedStockQuantity}}</div>
+                                    <div class="col-sm-6">Total Reserved Quantity</div>
+                                    <div class="col-sm-6">: {{reservedStockQuantity}}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">Total Available Quantity</div>
+                                    <div class="col-sm-6">: {{availableQuantity}}</div>
                                 </div>
                             </div>
                             <div class="col-sm-4">
@@ -63,12 +67,12 @@
                                         <label for="">Warehouse Information</label>
                                     </div>
                                     <div class="row">
-                                        <div class="col-sm-5">Total Inventory Value</div>
-                                        <div class="col-sm-7">: {{warehouseValue}}</div>
+                                        <div class="col-sm-6">Total Inventory Value</div>
+                                        <div class="col-sm-6">: {{warehouseValue}}</div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-sm-5">Total Inventory Quantity</div>
-                                        <div class="col-sm-7">: {{warehouseQuantity}}</div>
+                                        <div class="col-sm-6">Total Inventory Quantity</div>
+                                        <div class="col-sm-6">: {{warehouseQuantity}}</div>
                                     </div>
                                 </template>
 
@@ -77,12 +81,12 @@
                                         <label for="">Storage Location Information</label>
                                     </div>
                                     <div class="row">
-                                        <div class="col-sm-5">Total Inventory Value</div>
-                                        <div class="col-sm-7">: {{slocValue}}</div>
+                                        <div class="col-sm-6">Total Inventory Value</div>
+                                        <div class="col-sm-6">: {{slocValue}}</div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-sm-5">Total Inventory Quantity</div>
-                                        <div class="col-sm-7">: {{slocQuantity}}</div>
+                                        <div class="col-sm-6">Total Inventory Quantity</div>
+                                        <div class="col-sm-6">: {{slocQuantity}}</div>
                                     </div>
                                 </template>
                             </div>
@@ -95,9 +99,10 @@
                                             <th style="width: 5%">No</th>
                                             <th style="width: 15%">Material Number</th>
                                             <th style="width: 25%">Material Description</th>
+                                            <th style="width: 6.66%">Quantity</th>
+                                            <th style="width: 6.66%">Reserved</th>
+                                            <th style="width: 6.66%">Available</th>
                                             <th style="width: 5%">Unit</th>
-                                            <th style="width: 10%">Quantity</th>
-                                            <th style="width: 10%">Reserved</th>
                                             <th style="width: 15%">Total Value</th>
                                         </thead>
                                         <tbody>
@@ -105,9 +110,10 @@
                                                 <td>{{ index + 1 }}</td>
                                                 <td class="tdEllipsis">{{ stock.material.code }}</td>
                                                 <td class="tdEllipsis">{{ stock.material.description }}</td>
-                                                <td class="tdEllipsis">{{ stock.material.uom.unit }}</td>
                                                 <td class="tdEllipsis">{{ stock.quantity }}</td>
                                                 <td class="tdEllipsis">{{ stock.reserved }}</td>
+                                                <td class="tdEllipsis">{{ stock.quantity-stock.reserved }}</td>
+                                                <td class="tdEllipsis">{{ stock.material.uom.unit }}</td>
                                                 <td class="tdEllipsis">Rp {{ (stock.material.cost_standard_price * stock.quantity+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</td>
                                             </tr>
                                         </tbody>
@@ -156,36 +162,22 @@
 <script>
     const form = document.querySelector('form#view-stock');
 
-    $(document).ready(function(){        
-        $('.tablePagingVue thead tr').clone(true).appendTo( '.tablePagingVue thead' );
-        $('.tablePagingVue thead tr:eq(1) th').addClass('indexTable').each( function (i) {
-            var title = $(this).text();
-            if(title != 'Material Number' && title != 'Material Description'){
-                $(this).html( '<input disabled class="form-control width100" type="text"/>' );
-            }else{
-                $(this).html( '<input class="form-control width100 search" type="text" placeholder="Search '+title+'"/>' );
-            }
-
-            $( 'input', this ).on( 'keyup change', function () {
-                if ( tablePagingVue.column(i).search() !== this.value ) {
-                    tablePagingVue
-                        .column(i)
-                        .search( this.value )
-                        .draw();
-                }
-            });
-        });
+    $(document).ready(function(){
 
         var tablePagingVue = $('.tablePagingVue').DataTable( {
-            orderCellsTop   : true,
-            fixedHeader     : true,
-            paging          : true,
-            autoWidth       : true,
-            lengthChange    : false,
+            'paging'      : true,
+            'lengthChange': false,
+            'ordering'    : true,
+            'info'        : true,
+            'autoWidth'   : false,
+            'bFilter'     : true,
+            'initComplete': function(){
+                $('div.overlay').hide();
+            }
         });
 
     });
-    
+
     var data = {
         materials : @json($materials),
         warehouses : @json($warehouses),
@@ -204,6 +196,7 @@
         stockValue : "",
         stockQuantity : "",
         reservedStockQuantity : "",
+        availableQuantity : "",
         warehouseValue : "",
         warehouseQuantity : "",
         slocValue : "",
@@ -236,8 +229,8 @@
                                 }
                             }else{
                                 slocDetail.quantity = (slocDetail.quantity+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                            }  
-                            
+                            }
+
                             slocDetail.totalValue = (slocDetail.material.cost_standard_price * slocDetail.quantity+"");
                             var decimalQty = (slocDetail.totalValue+"").replace(/,/g, '').split('.');
                             if(decimalQty[1] != undefined){
@@ -253,39 +246,20 @@
                         });
 
                         $('#tablePagingVue2').DataTable().destroy();
-                        var elements = document.getElementsByClassName("indexTable2");
-
-                        elements[0].parentNode.parentNode.removeChild(elements[0].parentNode);
                         this.$nextTick(function() {
-                            $('#tablePagingVue2 thead tr').clone(true).appendTo( '#tablePagingVue2 thead' );
-                            $('#tablePagingVue2 thead tr:eq(1) th').addClass('indexTable2').each( function (i) {
-                                var title = $(this).text();
-                                if(title != 'Material Number' && title != 'Material Description'){
-                                    $(this).html( '<input disabled class="form-control width100" type="text"/>' );
-                                }else{
-                                    $(this).html( '<input class="form-control width100 search" type="text" placeholder="Search '+title+'"/>' );
-                                }
-
-                                $( 'input', this ).on( 'keyup change', function () {
-                                    if ( tablePagingVue2.column(i).search() !== this.value ) {
-                                        tablePagingVue2
-                                            .column(i)
-                                            .search( this.value )
-                                            .draw();
-                                    }
-                                });
-                            });
-
                             var tablePagingVue2 = $('#tablePagingVue2').DataTable( {
-                                orderCellsTop   : true,
-                                fixedHeader     : true,
-                                paging          : true,
-                                autoWidth       : true,
-                                lengthChange    : false,
+                                'paging'      : true,
+                                'lengthChange': false,
+                                'ordering'    : true,
+                                'info'        : true,
+                                'autoWidth'   : false,
+                                'bFilter'     : true,
+                                'initComplete': function(){
+                                    $('div.overlay').hide();
+                                }
                             });
                         })
 
-                        $('div.overlay').hide();
                     })
                     .catch((error) => {
                         iziToast.warning({
@@ -299,7 +273,7 @@
                     this.selectedSloc = [];
                     $('div.overlay').show();
                     if(this.warehouse_id != ""){
-                        window.axios.get('/api/getWarehouseStockSM/'+this.warehouse_id).then(({ data }) => {   
+                        window.axios.get('/api/getWarehouseStockSM/'+this.warehouse_id).then(({ data }) => {
                             this.selectedSlocDetail = data;
 
                             var data = this.selectedSlocDetail;
@@ -314,8 +288,8 @@
                                 }
                             }else{
                                 slocDetail.quantity = (slocDetail.quantity+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                            }  
-                            
+                            }
+
                             slocDetail.totalValue = (slocDetail.material.cost_standard_price * slocDetail.quantity+"");
                             var decimalQty = (slocDetail.totalValue+"").replace(/,/g, '').split('.');
                             if(decimalQty[1] != undefined){
@@ -327,42 +301,23 @@
                                 }
                             }else{
                                 slocDetail.totalValue = (slocDetail.totalValue+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                            }            
+                            }
                             });
 
                             $('#tablePagingVue2').DataTable().destroy();
-                            var elements = document.getElementsByClassName("indexTable2");
-
-                            elements[0].parentNode.parentNode.removeChild(elements[0].parentNode);
                             this.$nextTick(function() {
-                                $('#tablePagingVue2 thead tr').clone(true).appendTo( '#tablePagingVue2 thead' );
-                                $('#tablePagingVue2 thead tr:eq(1) th').addClass('indexTable2').each( function (i) {
-                                    var title = $(this).text();
-                                    if(title != 'Material Number' && title != 'Material Description'){
-                                        $(this).html( '<input disabled class="form-control width100" type="text"/>' );
-                                    }else{
-                                        $(this).html( '<input class="form-control width100 search" type="text" placeholder="Search '+title+'"/>' );
-                                    }
-
-                                    $( 'input', this ).on( 'keyup change', function () {
-                                        if ( tablePagingVue2.column(i).search() !== this.value ) {
-                                            tablePagingVue2
-                                                .column(i)
-                                                .search( this.value )
-                                                .draw();
-                                        }
-                                    });
-                                });
-
                                 var tablePagingVue2 = $('#tablePagingVue2').DataTable( {
-                                    orderCellsTop   : true,
-                                    fixedHeader     : true,
-                                    paging          : true,
-                                    autoWidth       : true,
-                                    lengthChange    : false,
+                                    'paging'      : true,
+                                    'lengthChange': false,
+                                    'ordering'    : true,
+                                    'info'        : true,
+                                    'autoWidth'   : false,
+                                    'bFilter'     : true,
+                                    'initComplete': function(){
+                                        $('div.overlay').hide();
+                                    }
                                 });
                             })
-                            $('div.overlay').hide();
                         })
                         .catch((error) => {
                             iziToast.warning({
@@ -372,14 +327,14 @@
                             });
                             $('div.overlay').hide();
                         })
-                    }   
+                    }
                     $('div.overlay').hide();
                 }
             },
             warehouse_id : function (newValue){
                 this.sloc_id = "";
                 $('div.overlay').show();
-                    
+
                 var searchField = document.getElementsByClassName("search");
                 var i;
                 for (i = 0; i < searchField.length; i++) {
@@ -387,7 +342,7 @@
                     searchField[i].dispatchEvent(new Event('change'));
                 }
                 if(this.sloc_id == "" && this.warehouse_id != ""){
-                    window.axios.get('/api/getWarehouseStockSM/'+newValue).then(({ data }) => {   
+                    window.axios.get('/api/getWarehouseStockSM/'+newValue).then(({ data }) => {
                         this.selectedSlocDetail = data;
 
                         var data = this.selectedSlocDetail;
@@ -402,8 +357,8 @@
                                 }
                             }else{
                                 slocDetail.quantity = (slocDetail.quantity+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                            }  
-                            
+                            }
+
                             slocDetail.totalValue = (slocDetail.material.cost_standard_price * slocDetail.quantity+"");
                             var decimalQty = (slocDetail.totalValue+"").replace(/,/g, '').split('.');
                             if(decimalQty[1] != undefined){
@@ -415,74 +370,23 @@
                                 }
                             }else{
                                 slocDetail.totalValue = (slocDetail.totalValue+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                            }            
+                            }
                         });
 
                         $('#tablePagingVue2').DataTable().destroy();
-                        var elements = document.getElementsByClassName("indexTable2");
-                        if(elements.length == 0){
-                            this.$nextTick(function() {
-                                $('#tablePagingVue2 thead tr').clone(true).appendTo( '#tablePagingVue2 thead' );
-                                $('#tablePagingVue2 thead tr:eq(1) th').addClass('indexTable2').each( function (i) {
-                                    var title = $(this).text();
-                                    if(title != 'Material Number' && title != 'Material Description'){
-                                        $(this).html( '<input disabled class="form-control width100" type="text"/>' );
-                                    }else{
-                                        $(this).html( '<input class="form-control width100 search" type="text" placeholder="Search '+title+'"/>' );
-                                    }
-    
-                                    $( 'input', this ).on( 'keyup change', function () {
-                                        if ( tablePagingVue2.column(i).search() !== this.value ) {
-                                            tablePagingVue2
-                                                .column(i)
-                                                .search( this.value )
-                                                .draw();
-                                        }
-                                    });
-                                });
-    
-                                var tablePagingVue2 = $('#tablePagingVue2').DataTable( {
-                                    orderCellsTop   : true,
-                                    fixedHeader     : true,
-                                    paging          : true,
-                                    autoWidth       : true,
-                                    lengthChange    : false,
-                                });
-                            })
-                            $('div.overlay').hide();
-                        }else{
-                            elements[0].parentNode.parentNode.removeChild(elements[0].parentNode);
-                            this.$nextTick(function() {
-                                $('#tablePagingVue2 thead tr').clone(true).appendTo( '#tablePagingVue2 thead' );
-                                $('#tablePagingVue2 thead tr:eq(1) th').addClass('indexTable2').each( function (i) {
-                                    var title = $(this).text();
-                                    if(title != 'Material Number' && title != 'Material Description'){
-                                        $(this).html( '<input disabled class="form-control width100" type="text"/>' );
-                                    }else{
-                                        $(this).html( '<input class="form-control width100 search" type="text" placeholder="Search '+title+'"/>' );
-                                    }
-    
-                                    $( 'input', this ).on( 'keyup change', function () {
-                                        if ( tablePagingVue2.column(i).search() !== this.value ) {
-                                            tablePagingVue2
-                                                .column(i)
-                                                .search( this.value )
-                                                .draw();
-                                        }
-                                    });
-                                });
-
-                                var tablePagingVue2 = $('#tablePagingVue2').DataTable( {
-                                    orderCellsTop   : true,
-                                    fixedHeader     : true,
-                                    paging          : true,
-                                    autoWidth       : true,
-                                    lengthChange    : false,
-                                });
-                            })
-                            $('div.overlay').hide();
-                        }
-
+                        this.$nextTick(function() {
+                            var tablePagingVue2 = $('#tablePagingVue2').DataTable( {
+                                'paging'      : true,
+                                'lengthChange': false,
+                                'ordering'    : true,
+                                'info'        : true,
+                                'autoWidth'   : false,
+                                'bFilter'     : true,
+                                'initComplete': function(){
+                                    $('div.overlay').hide();
+                                }
+                            });
+                        })
                     })
                     .catch((error) => {
                         iziToast.warning({
@@ -505,21 +409,22 @@
                         });
                         $('div.overlay').hide();
                     })
-                    
+
                 }else{
                     this.storageLocations = "";
                     $('div.overlay').hide();
                 }
-                
+
             }
-            
+
         },
         created: function(){
             window.axios.get('/api/getStockInfoSM/').then(({ data }) => {
                     this.stockValue = "Rp "+data.stockValue;
                     this.stockQuantity = data.stockQuantity;
                     this.reservedStockQuantity = data.reservedStockQuantity;
-                    
+                    this.availableQuantity = data.availableQuantity;
+
                     $('div.overlay').hide();
             })
             .catch((error) => {
@@ -529,7 +434,7 @@
                     displayMode: 'replace'
                 });
                 $('div.overlay').hide();
-            }) 
+            })
         }
     });
 </script>

@@ -68,6 +68,9 @@
                         <div class="col-md-4 col-xs-6 no-padding">Ship Type</div>
                         <div class="col-md-8 col-xs-6 no-padding"><b>: {{$project->ship->type}}</b></div>
 
+                        <div class="col-md-4 col-xs-6 no-padding">Hull Number</div>
+                        <div class="col-md-8 col-xs-6 no-padding"><b>: {{$project->hull_number}}</b></div>
+
                         <div class="col-md-4 col-xs-6 no-padding">Customer Name</div>
                         <div class="col-md-8 col-xs-6 no-padding tdEllipsis" data-container="body" data-toggle="tooltip" title="{{$project->customer->name}}"><b>: {{$project->customer->name}}</b></div>
 
@@ -770,9 +773,53 @@
     });
     jQuery('.dataTable').wrap('<div class="dataTables_scroll" />');
 
-    var costCanvas = $('#cost').get(0).getContext('2d');
+    var costCanvas = document.getElementById("cost").getContext("2d");
     var progressCanvas = $('#progress').get(0).getContext('2d');
+    var horizonalLinePlugin = {
+        afterDraw: function(chartInstance) {
+            var yScale = chartInstance.scales["y-axis-0"];
+            var canvas = chartInstance.chart;
+            var ctx = canvas.ctx;
+            var index;
+            var line;
+            var style;
 
+            if (chartInstance.options.horizontalLine) {
+            for (index = 0; index < chartInstance.options.horizontalLine.length; index++) {
+                line = chartInstance.options.horizontalLine[index];
+
+                if (!line.style) {
+                    style = "rgba(169,169,169, .6)";
+                } else {
+                    style = line.style;
+                }
+
+                if (line.y) {
+                    yValue = yScale.getPixelForValue(line.y);
+                } else {
+                    yValue = 0;
+                }
+
+                ctx.lineWidth = 3;
+
+                if (yValue) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, yValue);
+                    ctx.lineTo(canvas.width, yValue);
+                    ctx.strokeStyle = style;
+                    ctx.stroke();
+                }
+
+                if (line.text) {
+                    ctx.fillStyle = style;
+                    ctx.fillText(line.text, 0, yValue + ctx.lineWidth + 10);
+                }
+            }
+            return;
+            };
+        }
+    };
+    Chart.pluginService.register(horizonalLinePlugin);
     var configCost = {
         type: 'line',
         data: {
@@ -792,10 +839,15 @@
                     label: "Actual Cost",
                     borderColor: "green",
                     data: @json($dataActualCost),
-                }
+                },
             ]
         },
         options: {
+            "horizontalLine": [{
+                "y": @json($project->budget_value/1000000),
+                "style": "rgba(255, 0, 0, .4)",
+                "text": "Budget Value"
+            }],
             elements: { 
                 point: { 
                     radius: 4, 
@@ -836,14 +888,15 @@
                             } else {
                                return 'Rp' + value;
                             }
-                       }    
+                       },
+                       suggestedMax : @json($project->budget_value/1000000),
                     },
                     scaleLabel: {
                         display: true,
                         labelString: 'in million'
                     }
                 }]
-            } 
+            },
         }
     };
 

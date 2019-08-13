@@ -3,10 +3,11 @@
 @section('content-header')
 @breadcrumb(
     [
-        'title' => 'View Material Requisition » '.$modelMR->project->name,
+        'title' => 'Approve Material Requisition',
         'items' => [
             'Dashboard' => route('index'),
-            'View Material Requisition' => route('purchase_requisition.show',$modelMR->id),
+            'Select Material Requisition' => route('material_requisition.indexApprove'),
+            'Approve Material Requisition' => route('material_requisition.show',$modelMR->id),
         ]
     ]
 )
@@ -57,22 +58,64 @@
                             : <b> {{ $modelMR->created_at->format('d-m-Y H:i:s') }} </b>
                         </div>
                         <div class="col-xs-4 col-md-4">
+                            Last Update At
+                        </div>
+                        <div class="col-xs-8 col-md-8">
+                            : <b> {{ $modelMR->updated_at->format('d-m-Y H:i:s') }} </b>
+                        </div>
+                        <div class="col-xs-4 col-md-4">
                             Description
                         </div>
                         <div class="col-xs-8 col-md-8 tdEllipsis" data-container="body" data-toggle="tooltip" title="{{$modelMR->description}}">
                             : <b> {{ $modelMR->description }} </b>
+                        </div>
+                        @if($modelMR->delivery_date != null)
+                        <div class="col-xs-5 col-md-4">
+                            Delivery Date
+                        </div>
+                        <div class="col-xs-5 col-md-8">
+                            : <b> {{ date('d-m-Y', strtotime($modelMR->delivery_date)) }} </b>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 col-lg-4 m-t-10 m-l-10">
+                    <div class="row">
+                        <div class="col-xs-4 col-md-4">
+                            Project Number
+                        </div>
+                        <div class="col-xs-8 col-md-8">
+                            : <b>{{ $modelMR->project->number }}</b>
+                        </div>
+                        <div class="col-xs-4 col-md-4">
+                            Project Name
+                        </div>
+                        <div class="col-xs-8 col-md-8">
+                            : <b>{{ $modelMR->project->name }}</b>
+                        </div>
+                        <div class="col-xs-4 col-md-4">
+                            Customer Name
+                        </div>
+                        <div class="col-xs-8 col-md-8">
+                            : <b>{{ $modelMR->project->customer->name }}</b>
+                        </div>
+                        <div class="col-xs-4 col-md-4">
+                            Ship Type
+                        </div>
+                        <div class="col-xs-8 col-md-8">
+                            : <b>{{ $modelMR->project->ship->type }}</b>
                         </div>
                     </div>
                 </div>
                 <div class="col-xs-12 col-md-4 m-t-10">
                     <div class="col-xs-12 no-padding"><b>Revision Description</b></div>
                     <div class="col-xs-12 no-padding">
-                        <textarea class="form-control" rows="3" id="rev_desc"></textarea>  
+                        <textarea class="form-control" rows="3" id="rev_desc"></textarea>
                     </div>
                 </div>
             </div>
             <div class="box-body p-t-0 p-b-0">
-                <table class="table table-bordered showTable tableFixed tableNonPagingVue">
+                <table class="table table-bordered showTable" id="mr-table">
                     <thead>
                         <tr>
                             <th width="5%">No</th>
@@ -120,35 +163,45 @@
 <script>
     const form = document.querySelector('form#approve-mr');
     $(document).ready(function(){
-
-        $('.tableNonPagingVue thead tr').clone(true).appendTo( '.tableNonPagingVue thead' );
-        $('.tableNonPagingVue thead tr:eq(1) th').addClass('indexTable').each( function (i) {
-            var title = $(this).text();
-            if(title == 'No' || title == "Cost per pcs" || title == "Sub Total Cost" || title == "Quantity" || title == "Planned Qty" || title == "Issued Qty" || title == "Unit"){
-                $(this).html( '<input disabled class="form-control width100" type="text"/>' );
-            }else{
-                $(this).html( '<input class="form-control width100" type="text" placeholder="Search '+title+'"/>' );
+        $('#mr-table').DataTable({
+            'paging'      : true,
+            'lengthChange': false,
+            'searching'   : false,
+            'ordering'    : true,
+            'info'        : true,
+            'autoWidth'   : false,
+            'initComplete': function(){
+                $('div.overlay').hide();
             }
-
-            $( 'input', this ).on( 'keyup change', function () {
-                if ( table.column(i).search() !== this.value ) {
-                    table
-                    .column(i)
-                    .search( this.value )
-                    .draw();
-                }
-            });
         });
+        // $('.tableNonPagingVue thead tr').clone(true).appendTo( '.tableNonPagingVue thead' );
+        // $('.tableNonPagingVue thead tr:eq(1) th').addClass('indexTable').each( function (i) {
+        //     var title = $(this).text();
+        //     if(title == 'No' || title == "Cost per pcs" || title == "Sub Total Cost" || title == "Quantity" || title == "Planned Qty" || title == "Issued Qty" || title == "Unit"){
+        //         $(this).html( '<input disabled class="form-control width100" type="text"/>' );
+        //     }else{
+        //         $(this).html( '<input class="form-control width100" type="text" placeholder="Search '+title+'"/>' );
+        //     }
 
-        var table = $('.tableNonPagingVue').DataTable( {
-            orderCellsTop   : true,
-            paging          : false,
-            autoWidth       : false,
-            lengthChange    : false,
-            info            : false,
-        });
+        //     $( 'input', this ).on( 'keyup change', function () {
+        //         if ( table.column(i).search() !== this.value ) {
+        //             table
+        //             .column(i)
+        //             .search( this.value )
+        //             .draw();
+        //         }
+        //     });
+        // });
 
-        $('div.overlay').hide();
+        // var table = $('.tableNonPagingVue').DataTable( {
+        //     orderCellsTop   : true,
+        //     paging          : false,
+        //     autoWidth       : false,
+        //     lengthChange    : false,
+        //     info            : false,
+        // });
+
+        // $('div.overlay').hide();
     });
 
     var data = {
@@ -168,7 +221,7 @@
                 $('div.overlay').show();
                 this.dataSubmit.desc = document.getElementById('rev_desc').value;
                 this.dataSubmit.status = status;
-                
+
                 let struturesElem = document.createElement('input');
                 struturesElem.setAttribute('type', 'hidden');
                 struturesElem.setAttribute('name', 'datas');

@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use App\Models\Material;
 
 class MstMaterialTableSeeder extends Seeder
 {
@@ -87784,11 +87783,6 @@ class MstMaterialTableSeeder extends Seeder
             ),
         ));
         
-        $materials = Material::all();
-        foreach($materials as $material){
-            $material->cost_standard_price = rand(100000,10000000);
-            $material->cost_standard_price_service = rand(100000,10000000);
-            $material->update();
-        }   
+        
     }
 }

@@ -33,21 +33,21 @@
                             <div class="col-xs-12 col-md-4">
                                 <div class="col-xs-5 no-padding">MR Number</div>
                                 <div class="col-xs-7 no-padding tdEllipsis"><b>: {{modelMR.number}}</b></div>
-        
+
                                 <div class="col-xs-5 no-padding">Project Number</div>
-                                <div class="col-xs-7 no-padding tdEllipsis"><b>: {{modelProject.number}}</b></div>
-                                
+                                <div class="col-xs-7 no-padding tdEllipsis"><b>: {{modelProject != null ? modelProject.number : "-"}}</b></div>
+
                                 <div class="col-xs-5 no-padding">Ship Type</div>
-                                <div class="col-xs-7 no-padding tdEllipsis"><b>: {{modelProject.ship.type}}</b></div>
-        
+                                <div class="col-xs-7 no-padding tdEllipsis"><b>: {{modelProject != null ? modelProject.ship.type : "-"}}</b></div>
+
                                 <div class="col-xs-5 no-padding">Customer</div>
-                                <div class="col-xs-7 no-padding tdEllipsis" v-tooltip:top="modelProject.customer.name"><b>: {{modelProject.customer.name}}</b></div>
+                                <div class="col-xs-7 no-padding tdEllipsis" v-tooltip:top="modelProject != null ? modelProject.customer.name : '-'"><b>: {{modelProject != null ? modelProject.customer.name : "-"}}</b></div>
 
                                 <div class="col-xs-5 no-padding">Start Date</div>
-                                <div class="col-xs-7 no-padding tdEllipsis"><b>: {{modelProject.planned_start_date}}</b></div>
+                                <div class="col-xs-7 no-padding tdEllipsis"><b>: {{modelProject != null ? modelProject.planned_start_date : "-"}}</b></div>
 
                                 <div class="col-xs-5 no-padding">End Date</div>
-                                <div class="col-xs-7 no-padding tdEllipsis"><b>: {{modelProject.planned_end_date}}</b></div>
+                                <div class="col-xs-7 no-padding tdEllipsis"><b>: {{modelProject != null ? modelProject.planned_end_date : "-"}}</b></div>
                             </div>
                             <div class="col-sm-4 col-md-4 no-padding">
                                 <div class="col-md-3 no-padding">
@@ -69,14 +69,14 @@
                     </div>
                     <div class="col-sm-12">
                         <div class="row">
-                            <table class="table table-bordered tableFixed p-t-10 tableNonPagingVue" id="mrd-table">
+                            <table class="table table-bordered tableFixed p-t-10" id="mrd-table">
                                 <thead>
                                     <tr>
                                         <th width="5%">No</th>
                                         <th width="13%">Material Number</th>
                                         <th width="25%">Material Description</th>
                                         <th width="10%">Type</th>
-                                        <th width="13%">Quantity</th>
+                                        <th width="13%">Req. Quantity</th>
                                         <th width="13%">Issued</th>
                                         <th width="14%">Manage Picking</th>
                                     </tr>
@@ -86,9 +86,9 @@
                                         <td>{{ index+1 }}</td>
                                         <td>{{ MRD.material.code }}</td>
                                         <td class="tdEllipsis" data-container="body" v-tooltip:top="tooltipText(MRD.material.description)">{{ MRD.material.description }}</td>
-                                        <td v-if="MRD.material.type == 3">Bulk Part</td>
-                                        <td v-else-if="MRD.material.type == 2">Component</td>
-                                        <td v-else-if="MRD.material.type == 1">Consumable</td>
+                                        <td v-if="MRD.type == 3">Bulk Part</td>
+                                        <td v-else-if="MRD.type == 2">Component</td>
+                                        <td v-else-if="MRD.type == 1">Consumable</td>
                                         <td v-else>-</td>
                                         <td>{{ MRD.quantity - MRD.already_issued }}</td>
                                         <td>{{ total[index] }}</td>
@@ -152,7 +152,7 @@
                                                 </div>
                                             </template>
                                         </td>
-                                        
+
                                     </tr>
                                 </tbody>
                             </table>
@@ -179,42 +179,52 @@
     const form = document.querySelector('form#create-gi');
 
     $(document).ready(function(){
-        $('.tableNonPagingVue thead tr').clone(true).appendTo( '.tableNonPagingVue thead' );
-        $('.tableNonPagingVue thead tr:eq(1) th').addClass('indexTable').each( function (i) {
-            var title = $(this).text();
-            if(title != 'Material'){
-                $(this).html( '<input disabled class="form-control width100" type="text"/>' );
-            }else{
-                $(this).html( '<input class="form-control width100" type="text" placeholder="Search '+title+'"/>' );
+        $('#mrd-table').DataTable({
+            'paging'      : true,
+            'lengthChange': false,
+            'ordering'    : true,
+            'info'        : true,
+            'autoWidth'   : false,
+            'initComplete': function(){
+                $('div.overlay').hide();
             }
-
-            $( 'input', this ).on( 'keyup change', function () {
-                if ( tableNonPagingVue.column(i).search() !== this.value ) {
-                    tableNonPagingVue
-                        .column(i)
-                        .search( this.value )
-                        .draw();
-                }
-            });
         });
+        // $('.tableNonPagingVue thead tr').clone(true).appendTo( '.tableNonPagingVue thead' );
+        // $('.tableNonPagingVue thead tr:eq(1) th').addClass('indexTable').each( function (i) {
+        //     var title = $(this).text();
+        //     if(title != 'Material'){
+        //         $(this).html( '<input disabled class="form-control width100" type="text"/>' );
+        //     }else{
+        //         $(this).html( '<input class="form-control width100" type="text" placeholder="Search '+title+'"/>' );
+        //     }
 
-        var tableNonPagingVue = $('.tableNonPagingVue').DataTable( {
-            orderCellsTop   : true,
-            paging          : false,
-            autoWidth       : false,
-            lengthChange    : false,
-            info            : false,
-            ordering        : false,
-        });
+        //     $( 'input', this ).on( 'keyup change', function () {
+        //         if ( tableNonPagingVue.column(i).search() !== this.value ) {
+        //             tableNonPagingVue
+        //                 .column(i)
+        //                 .search( this.value )
+        //                 .draw();
+        //         }
+        //     });
+        // });
 
-        $('div.overlay').hide();
+        // var tableNonPagingVue = $('.tableNonPagingVue').DataTable( {
+        //     orderCellsTop   : true,
+        //     paging          : false,
+        //     autoWidth       : false,
+        //     lengthChange    : false,
+        //     info            : false,
+        //     ordering        : false,
+        // });
+
+        // $('div.overlay').hide();
     });
 
     Vue.directive('tooltip', function(el, binding){
         $(el).tooltip({
             title: binding.value,
             placement: binding.arg,
-            trigger: 'hover'             
+            trigger: 'hover'
         })
     })
 
@@ -276,7 +286,7 @@
                 data.forEach(MRD => {
                     MRD.modelGI.forEach(modelGI => {
                         modelGI.issued = parseFloat((modelGI.issued+"").replace(/,/g , ''));
-                    });  
+                    });
                 });
 
                 this.submittedForm.MRD = data;
@@ -322,7 +332,9 @@
                                             position: 'topRight',
                                             displayMode: 'replace'
                                         });
-                                        modelGI.issued = "";
+                                        activeMRD.modelGI.forEach(function (modelGI, index) {
+                                            modelGI.issued = "";
+                                        });
                                     }
                                 }
 
@@ -351,7 +363,7 @@
                                 }
                             });
                             arrTot.push(total);
-                            
+
                         }
                     });
                     this.total = arrTot;
@@ -389,7 +401,7 @@
                 $(el).tooltip({
                     title: binding.value,
                     placement: binding.arg,
-                    trigger: 'hover'             
+                    trigger: 'hover'
                 })
             })
         }

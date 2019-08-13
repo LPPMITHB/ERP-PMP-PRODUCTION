@@ -3,7 +3,7 @@
 @section('content-header')
 @breadcrumb(
     [
-        'title' => 'View Material Requisition » '.$modelMR->project->name,
+        'title' => 'View Material Requisition',
         'items' => [
             'Dashboard' => route('index'),
             'View Material Requisition' => route('material_requisition.show',$modelMR->id),
@@ -35,15 +35,15 @@
                             Project Number
                         </div>
                         <div class="col-xs-7 col-md-7">
-                            : <b> {{ $modelMR->project->number }} </b>
+                            : <b> {{ $modelMR->project != null ? $modelMR->project->number : "-" }} </b>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-xs-5 col-md-5">
-                            Ship Name
+                            Customer Name
                         </div>
                         <div class="col-xs-7 col-md-7">
-                            : <b> {{ $modelMR->project->name }} </b>
+                            : <b> {{ $modelMR->project != null ? $modelMR->project->name : "-" }} </b>
                         </div>
                     </div>
                     <div class="row">
@@ -51,18 +51,22 @@
                             Ship Type
                         </div>
                         <div class="col-xs-7 col-md-7">
-                            : <b> {{ $modelMR->project->ship->type }} </b>
+                            : <b> {{ $modelMR->project != null ? $modelMR->project->ship->type : "-" }} </b>
                         </div>
                     </div>
-                </div>
-                <div class="col-sm-4 col-md-4 m-t-10 m-l-10">
                     <div class="row">
                         <div class="col-xs-5 col-md-5">
                             Customer Name
                         </div>
-                        <div class="col-xs-7 col-md-7 tdEllipsis" data-container="body" data-toggle="tooltip" title="{{ $modelMR->project->customer->name}}">
-                            : <b> {{ $modelMR->project->customer->name }} </b>
-                        </div>
+                        @if ($modelMR->project != null)
+                            <div class="col-xs-7 col-md-7 tdEllipsis" data-container="body" data-toggle="tooltip" title="{{ $modelMR->project->customer->name}}">
+                                : <b> {{ $modelMR->project->customer->name }} </b>
+                            </div>
+                        @else
+                            <div class="col-xs-7 col-md-7 tdEllipsis">
+                                : <b>-</b>
+                            </div>
+                        @endif
                         <div class="col-xs-5 col-md-5">
                             Status
                         </div>
@@ -91,6 +95,10 @@
                                 : <b>ISSUED</b>
                             </div>
                         @endif
+                    </div>
+                </div>
+                <div class="col-sm-4 col-md-4 m-t-10 m-l-10">
+                    <div class="row">
                         <div class="col-xs-5 col-md-5">
                             Created By
                         </div>
@@ -101,13 +109,61 @@
                             Created At
                         </div>
                         <div class="col-xs-7 col-md-7">
-                            : <b> {{ $modelMR->created_at }} </b>
+                            : <b> {{ $modelMR->created_at->format('d-m-Y H:i:s') }} </b>
                         </div>
+                        @if($modelMR->delivery_date != null)
+                        <div class="col-xs-5 col-md-5">
+                            Delivery Date
+                        </div>
+                        <div class="col-xs-5 col-md-5">
+                            : <b> {{ date('d-m-Y', strtotime($modelMR->delivery_date)) }} </b>
+                        </div>
+                        @endif
+                        @if($modelMR->status != 6 && $modelMR->status != 1)
+                            @if($modelMR->status == 2 || $modelMR->status == 0 || $modelMR->status == 7)
+                                <div class="col-xs-5 col-md-5">
+                                    Approved By
+                                </div>
+                            @elseif($modelMR->status == 3 || $modelMR->status == 5)
+                                <div class="col-xs-5 col-md-5">
+                                    Checked By
+                                </div>
+                            @elseif($modelMR->status == 5)
+                                <div class="col-xs-5 col-md-5">
+                                    Rejected By
+                                </div>
+                            @endif
+                            <div class="col-xs-7 col-md-7 tdEllipsis">
+                                : <b> {{ $modelMR->approvedBy->name }} </b>
+                            </div>
+                        @endif
+                        @php
+                            $approval_date = "";
+                            if($modelMR->approval_date != NULL){
+                                $approval_date = DateTime::createFromFormat('Y-m-d', $modelMR->approval_date);
+                                $approval_date = $approval_date->format('d-m-Y');
+                            }
+                        @endphp
+                        @if($modelMR->status == 2 || $modelMR->status == 0 || $modelMR->status == 7)
+                            <div class="col-xs-5 col-md-5">
+                                Approved Date
+                            </div>
+                            <div class="col-xs-7 col-md-7">
+                                : <b>{{ $approval_date }}</b>
+                            </div>
+                        @elseif($modelMR->status == 5)
+                            <div class="col-xs-5 col-md-5">
+                                Rejected Date
+                            </div>
+                            <div class="col-xs-7 col-md-7">
+                                : <b>{{ $approval_date }}</b>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div> 
             <div class="box-body p-t-0 p-b-0">
-                <table class="table table-bordered showTable" id="details-table">
+                <table class="table table-bordered showTable tableFixed" id="details-table">
                     <thead>
                         <tr>
                             <th width="5%">No</th>
@@ -149,12 +205,11 @@
         $('#details-table').DataTable({
             'paging'      : true,
             'lengthChange': false,
-            'searching'   : false,
             'ordering'    : true,
             'info'        : true,
             'autoWidth'   : false,
             'initComplete': function(){
-                $('div.overlay').remove();
+                $('div.overlay').hide();
             }
         });
     });

@@ -28,21 +28,28 @@
                                     <div class="panel box box-primary">
                                         <div class="box-header with-border">
                                             <h4 class="box-title pull-right">
-                                                <a data-toggle="collapse" data-parent="#accordion" href="#new_currency">
+                                                <a data-toggle="collapse" data-parent="#accordion" href="#new_density">
                                                     ADD NEW DENSITY
                                                 </a>
                                             </h4>
                                         </div>
-                                        <div id="new_currency" class="panel-collapse collapse">
+                                        <div id="new_density" class="panel-collapse collapse">
                                             <div class="box-body">
-                                                <div class="col-sm-6">
+                                                <div class="col-sm-4">
                                                     <input v-model="input.id" type="hidden" class="form-control">
                                                     <label for="name">Density Name</label>
                                                     <input v-model="input.name" type="text" class="form-control" placeholder="Please insert density name">
                                                 </div>
-                                                <div class="col-sm-6">
+                                                <div class="col-sm-4">
                                                     <label for="value">Density Value</label>
                                                     <input v-model="input.value" type="text" class="form-control" placeholder="Please insert density value">
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <label for="value">Status</label>
+                                                    <select v-model="input.status" class="form-control">
+                                                        <option value="0">Non Active</option>
+                                                        <option value="1">Active</option>
+                                                    </select>
                                                 </div>
                                                 <div class="col-xs-12 p-t-10">
                                                     <button type="submit" class="btn btn-primary pull-right" @click.prevent="add()">CREATE</button>
@@ -53,19 +60,20 @@
                                     <div class="panel box box-primary">
                                         <div class="box-header with-border">
                                             <h4 class="box-title pull-right">
-                                                <a data-toggle="collapse" data-parent="#accordion" href="#current_currency">
+                                                <a data-toggle="collapse" data-parent="#accordion" href="#current_density">
                                                     MANAGE CURRENT DENSITY
                                                 </a>
                                             </h4>
                                         </div>
-                                        <div id="current_currency" class="panel-collapse collapse in">
+                                        <div id="current_density" class="panel-collapse collapse in">
                                             <div class="box-body">
                                                 <table class="table table-bordered tableFixed">
                                                     <thead>
                                                         <tr>
                                                             <th width="5%">No</th>
-                                                            <th width="45%">Density Name</th>
+                                                            <th width="40%">Density Name</th>
                                                             <th width="40%">Density Value</th>
+                                                            <th width="10%">Status</th>
                                                             <th width="10%"></th>
                                                         </tr>
                                                     </thead>
@@ -74,6 +82,12 @@
                                                             <td>{{ index+1 }}</td>
                                                             <td class="no-padding"><input v-model="data.name" type="text" class="form-control"></td>
                                                             <td class="no-padding"><input v-model="data.value" type="text" class="form-control"></td>
+                                                            <td class="no-padding">
+                                                                <select v-model="data.status" class="form-control">
+                                                                    <option value="0">Non Active</option>
+                                                                    <option value="1">Active</option>
+                                                                </select>
+                                                            </td>
                                                             <td class="p-l-0" align="center">
                                                                 <a @click.prevent="save()" class="btn btn-primary btn-xs" href="#">
                                                                     <div class="btn-group">
@@ -116,7 +130,9 @@
             id : @json($id),
             name : "",
             value: "",
-        }
+            status : 1,
+        },
+        max_id : 1,
     }
 
     var vm = new Vue({
@@ -127,9 +143,11 @@
                 this.input.id = "";
                 this.input.name = "";
                 this.input.value = "";
+                this.input.status = 1;
             },
             add(){
                 $('div.overlay').show();
+                this.input.id = this.max_id + 1;
                 var input = JSON.stringify(this.input);
                 input = JSON.parse(input);
 
@@ -146,8 +164,8 @@
                         displayMode: 'replace'
                     });
                     this.clearData();
-                    $('#current_currency').collapse();
-                    $('#new_currency').collapse("hide");
+                    $('#current_density').collapse("show");
+                    $('#new_density').collapse("hide");
                 })
                 .catch((error) => {
                     iziToast.warning({
@@ -220,6 +238,9 @@
         created:function(){
             var modelDensity = this.density;
             modelDensity.forEach(data => {
+                if(data.id > this.max_id){
+                    this.max_id = data.id;
+                }
                 var decimal = (data.value+"").replace(/,/g, '').split('.');
                 if(decimal[1] != undefined){
                     var maxDecimal = 2;

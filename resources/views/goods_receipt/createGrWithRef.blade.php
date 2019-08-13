@@ -43,14 +43,22 @@
                     <div id="pod">
                         <div class="col-sm-12 no-padding">
                             <div class="box-header no-padding">
-                                <div class="col-xs-12 col-md-4 no-padding">    
+                                <div class="col-xs-12 col-md-4 no-padding">
                                     <div class="box-body no-padding col-md-10">
                                         <div class="col-md-5 col-xs-4 no-padding">PO Number</div>
                                         <div class="col-md-6 col-xs-8 no-padding"><b>: {{ modelPO.number }}</b></div>
-                                        
+
+                                        <div class="col-md-5 col-xs-4 no-padding">PO Description</div>
+                                        <div class="col-md-6 col-xs-8 no-padding tdEllipsis" data-container="body" v-tooltip:top="tooltipText(modelPO.description)"><b>: {{ modelPO.description }}</b></div>
+
                                         <div class="col-md-5 col-xs-4 no-padding">Vendor</div>
                                         <div class="col-md-6 col-xs-8 no-padding tdEllipsis" data-container="body" v-tooltip:top="tooltipText(modelPO.vendor.name)"><b>: {{ modelPO.vendor.name }}</b></div>
-                
+
+                                        <div class="col-md-5 col-xs-4 no-padding">Project Number</div>
+                                        <div v-if="modelPO.project != null" class="col-md-6 col-xs-8 no-padding tdEllipsis" data-container="body" v-tooltip:top="tooltipText(modelPO.project.number)"><b>: {{ modelPO.project.number }}</b></div>
+
+                                        <div v-else class="col-md-6 col-xs-8 no-padding tdEllipsis"><b>: -</b></div>
+
                                         <div class="col-md-5 col-xs-4 no-padding">Address</div>
                                         <div class="col-md-6 col-xs-8 no-padding tdEllipsis" data-container="body" v-tooltip:top="tooltipText(modelPO.vendor.address)"><b>: {{ modelPO.vendor.address }}</b></div>
 
@@ -77,7 +85,7 @@
                             </div>
                             <div class="col-sm-12">
                                 <div class="row">
-                                    <table class="table table-bordered tablePagingVue tableFixed">
+                                    <table class="table table-bordered tableFixed" id="gr-table">
                                         <thead>
                                             <tr>
                                                 <th width="4%">No</th>
@@ -104,10 +112,10 @@
                                                 <td class="no-padding">
                                                     <selectize v-model="POD.sloc_id" :settings="slocSettings">
                                                         <option v-for="(storageLocation, index) in modelSloc" :value="storageLocation.id">{{storageLocation.code}} - {{storageLocation.name}}</option>
-                                                    </selectize>  
+                                                    </selectize>
                                                 </td>
                                                 <td class="no-padding textLeft">
-                                                    <input v-model="POD.received_date" required autocomplete="off" type="text" class="form-control datepicker width100 received_date" name="input_received_date" :id="makeId(POD.id)" placeholder="Received Date">  
+                                                    <input v-model="POD.received_date" required autocomplete="off" type="text" class="form-control datepicker width100 received_date" name="input_received_date" :id="makeId(POD.id)" placeholder="Received Date">
                                                 </td>
                                                 <td class="no-padding p-t-1 p-b-1" align="center">
                                                     <input type="checkbox" v-icheck="" v-model="checkedPOD" :value="POD.id">
@@ -139,33 +147,16 @@
     const form = document.querySelector('form#create-gr');
 
     $(document).ready(function(){
-        $('div.overlay').hide();
-
-        $('.tablePagingVue thead tr').clone(true).appendTo( '.tablePagingVue thead' );
-        $('.tablePagingVue thead tr:eq(1) th').addClass('indexTable').each( function (i) {
-            var title = $(this).text();
-            if(title == 'Material Name' || title == 'Storage Location'){
-                $(this).html( '<input class="form-control width100" type="text" placeholder="Search '+title+'"/>' );
-            }else{
-                $(this).html( '<input disabled class="form-control width100" type="text"/>' );
+        $('#gr-table').DataTable({
+            'paging'      : true,
+            'lengthChange': false,
+            'ordering'    : true,
+            'info'        : true,
+            'autoWidth'   : false,
+            'searching'   : false,
+            'initComplete': function(){
+                $('div.overlay').hide();
             }
-
-            $( 'input', this ).on( 'keyup change', function () {
-                if ( tablePagingVue.column(i).search() !== this.value ) {
-                    tablePagingVue
-                        .column(i)
-                        .search( this.value )
-                        .draw();
-                }
-            });
-        });
-
-        var tablePagingVue = $('.tablePagingVue').DataTable( {
-            orderCellsTop   : true,
-            paging          : false,
-            autoWidth       : false,
-            lengthChange    : false,
-            info            : false,
         });
     });
 
@@ -174,7 +165,6 @@
         modelPO :   @json($modelPO),
         modelSloc : @json($modelSloc),
         checkedPOD :[],
-
         slocSettings: {
             placeholder: 'Please Select Storage Location'
         },
@@ -187,7 +177,7 @@
         $(el).tooltip({
             title: binding.value,
             placement: binding.arg,
-            trigger: 'hover'             
+            trigger: 'hover'
         })
     })
     var app = new Vue({
@@ -206,7 +196,7 @@
             $(".received_date").datepicker().on(
                 "changeDate", () => {
 
-                    this.modelPOD.forEach(POD => { 
+                    this.modelPOD.forEach(POD => {
                         POD.received_date = $('#datepicker'+POD.id).val();
                     });
                 }
@@ -236,23 +226,23 @@
             changeText(){
                 if(document.getElementsByClassName('tooltip-inner')[0]!= undefined){
                     if(document.getElementsByClassName('tooltip-inner')[0].innerHTML != modelPO.vendor.address ){
-                        document.getElementsByClassName('tooltip-inner')[0].innerHTML= modelPO.vendor.address;    
+                        document.getElementsByClassName('tooltip-inner')[0].innerHTML= modelPO.vendor.address;
                     }
                 }
-            }, 
+            },
             submitForm(){
                 var data = this.modelPOD;
                 data = JSON.stringify(data)
                 data = JSON.parse(data)
-                
+
                 var pod = this.checkedPOD;
                 var jsonPod = JSON.stringify(pod);
                 jsonPod = JSON.parse(jsonPod);
                 var isOk = false;
 
                 data.forEach(POD => {
-                    POD.quantity = POD.quantity.replace(/,/g , ''); 
-                    POD.received = parseFloat(POD.received);   
+                    POD.quantity = POD.quantity.replace(/,/g , '');
+                    POD.received = parseFloat(POD.received);
                     if(POD.sloc_id != ""){
                         if(this.checkedPOD.indexOf(POD.id+"") == -1){
                             isOk = true;
@@ -264,7 +254,7 @@
                         }
                     }
                 });
-                if(isOk){ 
+                if(isOk){
                     iziToast.warning({
                         title: 'Please Check the Material\'s Quality and check the ItemOk Checkbox',
                         position: 'topRight',
@@ -273,11 +263,11 @@
                 }
                 else{
                     this.submittedForm.POD = data;
-                    this.submittedForm.checkedPOD = jsonPod;            
+                    this.submittedForm.checkedPOD = jsonPod;
                     this.submittedForm.purchase_order_id = this.modelPO.id;
                     this.submittedForm.description = this.description;
                     this.submittedForm.ship_date = this.ship_date;
-                    
+
                     let struturesElem = document.createElement('input');
                     struturesElem.setAttribute('type', 'hidden');
                     struturesElem.setAttribute('name', 'datas');
@@ -344,8 +334,8 @@
                                 POD.received = (POD.received+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                             }
                         }else{
-                            POD.received = (POD.received+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");            
-                        }            
+                            POD.received = (POD.received+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                        }
                     });
                 },
                 deep: true
@@ -402,7 +392,7 @@
                     }
                 }else{
                     POD.quantity = ((POD.quantity+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","));
-                    POD.received = (POD.received+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");            
+                    POD.received = (POD.received+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 }
             });
         },

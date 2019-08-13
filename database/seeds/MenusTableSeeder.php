@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use App\Models\Menu; 
+use App\Models\Menu;
 
 class MenusTableSeeder extends Seeder
 {
@@ -11,7 +11,7 @@ class MenusTableSeeder extends Seeder
      * @return void
      */
     public function run()
-    {   
+    {
         DB::table('menus')->insert([
             'level' => 1,
             'name' => 'Dashboard',
@@ -34,6 +34,138 @@ class MenusTableSeeder extends Seeder
         ]);
 
         $building =  Menu::where('name','Ship Building')->select('id')->first()->id;
+        DB::table('menus')->insert([
+            'level' => 2,
+            'name' => 'Marketing & Sales',
+            'icon' => 'fa-money',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'menu_id'=> $building,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
+        ]);
+
+        $marketingSales =  Menu::where('name','Marketing & Sales')->where('menu_id', $building)->select('id')->first()->id;
+        DB::table('menus')->insert([
+            'level' => 3,
+            'name' => 'Configuration',
+            'icon' => 'fa-wrench',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'menu_id'=> $marketingSales,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+        
+        $configuration = Menu::where('name','Configuration')->where('menu_id', $marketingSales)->select('id')->first()->id;
+        DB::table('menus')->insert([
+            'level' => 4,
+            'name' => 'Master Estimate WBS',
+            'icon' => 'fa-wrench',
+            'route_name'=> 'estimator.index',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'menu_id'=> $configuration,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 4,
+            'name' => 'Cost Standard',
+            'icon' => 'fa-wrench',
+            'route_name'=> 'estimator.index',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'menu_id'=> $configuration,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 4,
+            'name' => 'Estimate Profile',
+            'icon' => 'fa-wrench',
+            'route_name'=> 'estimator.index',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'menu_id'=> $configuration,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 3,
+            'name' => 'Quotation',
+            'icon' => 'fa-wrench',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'menu_id'=> $marketingSales,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        $quotation = Menu::where('name','Quotation')->select('id')->first()->id;
+        DB::table('menus')->insert([
+            'level' => 4,
+            'name' => 'Create Quotation',
+            'icon' => 'fa-wrench',
+            'route_name'=> 'quotation.index',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'menu_id'=> $quotation,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 4,
+            'name' => 'View & Edit Quotation',
+            'icon' => 'fa-wrench',
+            'route_name'=> 'quotation.index',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'menu_id'=> $quotation,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 3,
+            'name' => 'Sales Order',
+            'icon' => 'fa-wrench',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'menu_id'=> $marketingSales,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        $sales_order = Menu::where('name','Sales Order')->select('id')->first()->id;
+        DB::table('menus')->insert([
+            'level' => 4,
+            'name' => 'Create Sales Order',
+            'icon' => 'fa-wrench',
+            'route_name'=> 'sales_order.index',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'menu_id'=> $sales_order,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 4,
+            'name' => 'View & Edit Sales Order',
+            'icon' => 'fa-wrench',
+            'route_name'=> 'sales_order.index',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'menu_id'=> $sales_order,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
         DB::table('menus')->insert([
             'level' => 2,
             'name' => 'Project Management',
@@ -81,7 +213,7 @@ class MenusTableSeeder extends Seeder
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
         ]);
-        
+
         DB::table('menus')->insert([
             'level' => 2,
             'name' => 'Bill Of Material',
@@ -151,11 +283,11 @@ class MenusTableSeeder extends Seeder
             'menu_id'=>$costPlan,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
-        ]);  
+        ]);
 
         DB::table('menus')->insert([
             'level' => 3,
-            'name' => 'Create Other Cost',
+            'name' => 'Manage Other Cost',
             'icon' => 'fa-file-text-o',
             'route_name'=> 'rap.selectProjectCost',
             'is_active' => true,
@@ -167,7 +299,7 @@ class MenusTableSeeder extends Seeder
 
         DB::table('menus')->insert([
             'level' => 3,
-            'name' => 'Input Actual Other Cost',
+            'name' => 'Manage Actual Other Cost',
             'icon' => 'fa-file-text-o',
             'route_name'=> 'rap.selectProjectActualOtherCost',
             'is_active' => true,
@@ -282,7 +414,7 @@ class MenusTableSeeder extends Seeder
             'icon' => 'fa-file-text-o',
             'route_name'=> 'purchase_requisition.indexConsolidation',
             'is_active' => true,
-            'roles' => 'ADMIN,PMP,PAMI',
+            'roles' => 'ADMIN,PMP',
             'menu_id'=>$purchaseRequisition,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
@@ -395,7 +527,7 @@ class MenusTableSeeder extends Seeder
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
         ]);
-        
+
         $goodsReturn =  Menu::where('name','Goods Return')->select('id')->first()->id;
         DB::table('menus')->insert([
             'level' => 3,
@@ -423,9 +555,9 @@ class MenusTableSeeder extends Seeder
 
         DB::table('menus')->insert([
             'level' => 3,
-            'name' => 'View & Edit Goods Return',
+            'name' => 'Based On Goods Issue',
             'icon' => 'fa-file-text-o',
-            'route_name'=> 'goods_return.index',
+            'route_name'=> 'goods_return.selectGI',
             'is_active' => true,
             'roles' => 'ADMIN,PMP,PAMI',
             'menu_id'=>$goodsReturn,
@@ -438,6 +570,18 @@ class MenusTableSeeder extends Seeder
             'name' => 'Approve Goods Return',
             'icon' => 'fa-file-text-o',
             'route_name'=> 'goods_return.indexApprove',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'menu_id'=>$goodsReturn,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 3,
+            'name' => 'View & Edit Goods Return',
+            'icon' => 'fa-file-text-o',
+            'route_name'=> 'goods_return.index',
             'is_active' => true,
             'roles' => 'ADMIN,PMP,PAMI',
             'menu_id'=>$goodsReturn,
@@ -534,7 +678,7 @@ class MenusTableSeeder extends Seeder
 
         DB::table('menus')->insert([
             'level' => 3,
-            'name' => 'Physical Inventory',
+            'name' => 'Stock Taking',
             'icon' => 'fa-file-text-o',
             'is_active' => true,
             'roles' => 'ADMIN,PMP,PAMI',
@@ -544,10 +688,10 @@ class MenusTableSeeder extends Seeder
         ]);
 
 
-        $physicalInventory =  Menu::where('name','Physical Inventory')->select('id')->first()->id;
+        $physicalInventory =  Menu::where('name','Stock Taking')->select('id')->first()->id;
         DB::table('menus')->insert([
             'level' => 3,
-            'name' => 'Snapshot',
+            'name' => 'Create Stock Take',
             'icon' => 'fa-file-text-o',
             'route_name'=> 'physical_inventory.indexSnapshot',
             'is_active' => true,
@@ -582,7 +726,7 @@ class MenusTableSeeder extends Seeder
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
         ]);
-        
+
         DB::table('menus')->insert([
             'level' => 3,
             'name' => 'View Adjustment History',
@@ -616,9 +760,9 @@ class MenusTableSeeder extends Seeder
             'menu_id'=>$materialManagement,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
-        ]); 
+        ]);
 
-        $materialWriteOff =  Menu::where('name','Material Write Off')->where('menu_id',$materialManagement)->select('id')->first()->id;        
+        $materialWriteOff =  Menu::where('name','Material Write Off')->where('menu_id',$materialManagement)->select('id')->first()->id;
         DB::table('menus')->insert([
             'level' => 3,
             'name' => 'Create Material Write Off',
@@ -629,7 +773,7 @@ class MenusTableSeeder extends Seeder
             'menu_id'=>$materialWriteOff,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
-        ]); 
+        ]);
 
         DB::table('menus')->insert([
             'level' => 4,
@@ -691,7 +835,7 @@ class MenusTableSeeder extends Seeder
             'updated_at' => date('Y-m-d')
         ]);
 
-        
+
         DB::table('menus')->insert([
             'level' => 2,
             'name' => 'WIP',
@@ -702,7 +846,7 @@ class MenusTableSeeder extends Seeder
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
         ]);
-        
+
         $wip = Menu::where('name','WIP')->select('id')->first()->id;
         DB::table('menus')->insert([
             'level' => 3,
@@ -802,6 +946,54 @@ class MenusTableSeeder extends Seeder
 
         DB::table('menus')->insert([
             'level' => 2,
+            'name' => 'Reverse Transaction',
+            'icon' => 'fa-file-text-o',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'menu_id'=>$materialManagement,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        $reverseTransaction =  Menu::where('name','Reverse Transaction')->where('menu_id',$materialManagement)->select('id')->first()->id;
+        DB::table('menus')->insert([
+            'level' => 3,
+            'name' => 'Create Reverse Transaction',
+            'icon' => 'fa-file-text-o',
+            'route_name'=> 'reverse_transaction.selectDocument',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'menu_id'=>$reverseTransaction,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 4,
+            'name' => 'Approve Reverse Transaction',
+            'icon' => 'fa-file-text-o',
+            'route_name'=> 'reverse_transaction.indexApprove',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'menu_id'=>$reverseTransaction,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 3,
+            'name' => 'View & Edit Reverse Transaction',
+            'icon' => 'fa-file-text-o',
+            'route_name'=> 'reverse_transaction.index',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'menu_id'=>$reverseTransaction,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 2,
             'name' => 'Resource Management',
             'icon' => 'fa-database',
             'is_active' => true,
@@ -810,7 +1002,7 @@ class MenusTableSeeder extends Seeder
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
         ]);
-        
+
         $resourcemanagement = Menu::where('name','Resource Management')->select('id')->first()->id;
         DB::table('menus')->insert([
             'level' => 3,
@@ -974,7 +1166,7 @@ class MenusTableSeeder extends Seeder
             'icon' => 'fa-wrench',
             'route_name'=> 'yard_plan.index',
             'is_active' => true,
-            'roles' => 'ADMIN',
+            'roles' => 'ADMIN, PMP, PAMI',
             'menu_id'=>$PPE,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
@@ -1062,7 +1254,7 @@ class MenusTableSeeder extends Seeder
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
         ]);
-        
+
         // DB::table('menus')->insert([
         //     'level' => 3,
         //     'name' => 'Manage BOM',
@@ -1109,7 +1301,7 @@ class MenusTableSeeder extends Seeder
             'menu_id'=>$costPlan,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
-        ]);  
+        ]);
 
         DB::table('menus')->insert([
             'level' => 3,
@@ -1158,7 +1350,7 @@ class MenusTableSeeder extends Seeder
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
         ]);
-        
+
         DB::table('menus')->insert([
             'level' => 2,
             'name' => 'Material Management',
@@ -1169,7 +1361,7 @@ class MenusTableSeeder extends Seeder
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d'),
         ]);
-        
+
         $materialManagement =  Menu::where('name','Material Management')->where('menu_id',$repair)->select('id')->first()->id;
         DB::table('menus')->insert([
             'level' => 3,
@@ -1225,7 +1417,7 @@ class MenusTableSeeder extends Seeder
             'icon' => 'fa-file-text-o',
             'route_name'=> 'purchase_requisition_repair.indexConsolidation',
             'is_active' => true,
-            'roles' => 'ADMIN,PAMI',
+            'roles' => 'ADMIN',
             'menu_id'=>$purchaseRequisition,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
@@ -1366,9 +1558,9 @@ class MenusTableSeeder extends Seeder
 
         DB::table('menus')->insert([
             'level' => 3,
-            'name' => 'View & Edit Goods Return',
+            'name' => 'Approve Goods Return',
             'icon' => 'fa-file-text-o',
-            'route_name'=> 'goods_return_repair.index',
+            'route_name'=> 'goods_return_repair.indexApprove',
             'is_active' => true,
             'roles' => 'ADMIN,PAMI',
             'menu_id'=>$goodsReturn,
@@ -1378,9 +1570,9 @@ class MenusTableSeeder extends Seeder
 
         DB::table('menus')->insert([
             'level' => 3,
-            'name' => 'Approve Goods Return',
+            'name' => 'View & Edit Goods Return',
             'icon' => 'fa-file-text-o',
-            'route_name'=> 'goods_return_repair.indexApprove',
+            'route_name'=> 'goods_return_repair.index',
             'is_active' => true,
             'roles' => 'ADMIN,PAMI',
             'menu_id'=>$goodsReturn,
@@ -1510,7 +1702,7 @@ class MenusTableSeeder extends Seeder
 
         DB::table('menus')->insert([
             'level' => 3,
-            'name' => 'Physical Inventory',
+            'name' => 'Stock Taking',
             'icon' => 'fa-file-text-o',
             'is_active' => true,
             'roles' => 'ADMIN,PAMI',
@@ -1520,10 +1712,10 @@ class MenusTableSeeder extends Seeder
         ]);
 
 
-        $physicalInventory =  Menu::where('name','Physical Inventory')->where('menu_id',$materialManagement)->select('id')->first()->id;
+        $physicalInventory =  Menu::where('name','Stock Taking')->where('menu_id',$materialManagement)->select('id')->first()->id;
         DB::table('menus')->insert([
             'level' => 3,
-            'name' => 'Snapshot',
+            'name' => 'Create Stock Take',
             'icon' => 'fa-file-text-o',
             'route_name'=> 'physical_inventory_repair.indexSnapshot',
             'is_active' => true,
@@ -1592,9 +1784,9 @@ class MenusTableSeeder extends Seeder
             'menu_id'=>$materialManagement,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
-        ]); 
+        ]);
 
-        $materialWriteOff =  Menu::where('name','Material Write Off')->where('menu_id',$materialManagement)->select('id')->first()->id;        
+        $materialWriteOff =  Menu::where('name','Material Write Off')->where('menu_id',$materialManagement)->select('id')->first()->id;
         DB::table('menus')->insert([
             'level' => 3,
             'name' => 'Create Material Write Off',
@@ -1605,7 +1797,7 @@ class MenusTableSeeder extends Seeder
             'menu_id'=>$materialWriteOff,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
-        ]); 
+        ]);
 
         DB::table('menus')->insert([
             'level' => 4,
@@ -1641,7 +1833,7 @@ class MenusTableSeeder extends Seeder
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
         ]);
-        
+
         $wipRepair = Menu::where('name','WIP')->where('menu_id',$repair)->select('id')->first()->id;
         DB::table('menus')->insert([
             'level' => 3,
@@ -1749,7 +1941,7 @@ class MenusTableSeeder extends Seeder
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
         ]);
-        
+
         $resourcemanagementRepair = Menu::where('name','Resource Management')->where('menu_id',$repair)->select('id')->first()->id;
         DB::table('menus')->insert([
             'level' => 3,
@@ -2072,7 +2264,7 @@ class MenusTableSeeder extends Seeder
             'updated_at' => date('Y-m-d')
         ]);
 
-        $configuration =  Menu::where('name','Configuration')->select('id')->first()->id;
+        $configuration =  Menu::where('name','Configuration')->where('level',1)->select('id')->first()->id;
         DB::table('menus')->insert([
             'level' => 2,
             'name' => 'Menus',
@@ -2146,6 +2338,90 @@ class MenusTableSeeder extends Seeder
         ]);
 
         DB::table('menus')->insert([
+            'level' => 2,
+            'name' => 'Cost Type',
+            'icon' => 'fa-wrench',
+            'route_name'=> 'cost_type.index',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'menu_id'=>$configuration,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 2,
+            'name' => 'Payment Terms',
+            'icon' => 'fa-wrench',
+            'route_name'=> 'payment_terms.index',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'menu_id'=>$configuration,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 2,
+            'name' => 'Delivery Terms',
+            'icon' => 'fa-wrench',
+            'route_name'=> 'delivery_terms.index',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'menu_id'=>$configuration,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 2,
+            'name' => 'Weather Configuration',
+            'icon' => 'fa-wrench',
+            'route_name'=> 'weather.index',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'menu_id'=>$configuration,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 2,
+            'name' => 'Tidal Configuration',
+            'icon' => 'fa-wrench',
+            'route_name'=> 'tidal.index',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'menu_id'=>$configuration,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 2,
+            'name' => 'Dimension Type Configuration',
+            'icon' => 'fa-wrench',
+            'route_name'=> 'dimension_type.index',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'menu_id'=>$configuration,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 2,
+            'name' => 'Approval Configuration',
+            'icon' => 'fa-wrench',
+            'route_name'=> 'approval.index',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'menu_id'=>$configuration,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
             'level' => 1,
             'name' => 'User Management',
             'icon' => 'fa-users',
@@ -2176,6 +2452,89 @@ class MenusTableSeeder extends Seeder
             'roles' => 'ADMIN,PMP,PAMI',
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d'),
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 1,
+            'name' => 'Input Daily Information',
+            'icon' => 'fa-calendar',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
+        ]);
+
+        $daily_info =  Menu::where('name','Input Daily Information')->select('id')->first()->id;
+        DB::table('menus')->insert([
+            'level' => 2,
+            'name' => 'Daily Man Hour',
+            'icon' => 'fa-calendar',
+            'route_name'=> 'daily_man_hour.selectProject',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'menu_id'=>$daily_info,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 2,
+            'name' => 'Weather',
+            'icon' => 'fa-calendar',
+            'route_name'=> 'daily_weather.index',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'menu_id'=>$daily_info,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 2,
+            'name' => 'Tidal',
+            'icon' => 'fa-calendar',
+            'route_name'=> 'daily_tidal.index',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'menu_id'=>$daily_info,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 1,
+            'name' => 'PICA',
+            'icon' => 'fa-calendar',
+            'is_active' => true,
+            'route_name'=> 'pica.index',
+            'roles' => 'ADMIN,PMP,PAMI',
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
+        ]);
+
+        $pica =  Menu::where('name','PICA')->select('id')->first()->id;
+        DB::table('menus')->insert([
+            'level' => 4,
+            'name' => 'Create PICA',
+            'icon' => 'fa-file-text-o',
+            'route_name'=> 'pica.create',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'menu_id'=>$pica,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        DB::table('menus')->insert([
+            'level' => 4,
+            'name' => 'View & Edit PICA',
+            'icon' => 'fa-file-text-o',
+            'route_name'=> 'pica.index',
+            'is_active' => true,
+            'roles' => 'ADMIN,PMP,PAMI',
+            'menu_id'=>$pica,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
         ]);
     }
 }

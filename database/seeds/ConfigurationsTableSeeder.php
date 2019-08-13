@@ -40,22 +40,28 @@ class ConfigurationsTableSeeder extends Seeder
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
         ]);
-        
+
         $currencies = array(
             0 => array(
+                'id' => 1,
                 'name' => 'Rupiah',
                 'unit' => 'IDR',
-                'value' => 1
+                'value' => 1,
+                'status' => 1,
             ),
             1 => array(
+                'id' => 2,
                 'name' => 'Singapore Dollar',
                 'unit' => 'SGD',
-                'value' => 10552.3
+                'value' => 10552.3,
+                'status' => 1,
             ),
             2 => array(
+                'id' => 3,
                 'name' => 'US Dollar',
                 'unit' => 'USD',
-                'value' => 14015.5
+                'value' => 14015.5,
+                'status' => 0,
             ),
         );
 
@@ -69,7 +75,7 @@ class ConfigurationsTableSeeder extends Seeder
         ]);
 
         $resource_category = array(
-            
+
             0 => array(
                 'id' => 1,
                 'name' => 'Subcon',
@@ -122,7 +128,6 @@ class ConfigurationsTableSeeder extends Seeder
         ]);
 
         $vendor_category = array(
-            
             0 => array(
                 'id' => 0,
                 'name' => 'Subcon',
@@ -147,25 +152,49 @@ class ConfigurationsTableSeeder extends Seeder
         ]);
 
         $project_type = array(
+            // UNTUK PAMI
+
+            // 0 => array(
+            //     'id' => 1,
+            //     'name' => 'Special Service',
+            // ),
+            // 1 => array(
+            //     'id' => 2,
+            //     'name' => 'Intermediate',
+            // ),
+            // 2 => array(
+            //     'id' => 3,
+            //     'name' => 'Occasional',
+            // ),
+            // 3 => array(
+            //     'id' => 4,
+            //     'name' => 'Onboard',
+            // ),
+            // 4 => array(
+            //     'id' => 5,
+            //     'name' => 'Spot',
+            // ),
+
+            // UNTUK PMP
             0 => array(
                 'id' => 1,
-                'name' => 'Special Service',
+                'name' => 'New Building',
+                'business_unit_id' => 1,
             ),
             1 => array(
                 'id' => 2,
-                'name' => 'Intermediate',
+                'name' => 'Marine Services',
+                'business_unit_id' => 1,
             ),
             2 => array(
                 'id' => 3,
-                'name' => 'Occasional',
+                'name' => 'Fabrication',
+                'business_unit_id' => 1,
             ),
             3 => array(
                 'id' => 4,
-                'name' => 'Onboard',
-            ),
-            4 => array(
-                'id' => 5,
-                'name' => 'Spot',
+                'name' => 'Emergency Repair',
+                'business_unit_id' => 2,
             ),
         );
 
@@ -198,10 +227,12 @@ class ConfigurationsTableSeeder extends Seeder
             0 => array(
                 'id' => 1,
                 'name' => 'Plate',
+                'status' => 1,
             ),
             1 => array(
                 'id' => 2,
                 'name' => 'Bar',
+                'status' => 1,
             ),
         );
 
@@ -219,6 +250,7 @@ class ConfigurationsTableSeeder extends Seeder
                 'id' => 1,
                 'name' => 'Iron',
                 'value' => 7.85,
+                'status' => 1,
             ),
         );
 
@@ -226,6 +258,266 @@ class ConfigurationsTableSeeder extends Seeder
             'slug' => 'density',
             'title' => 'Density',
             'value' => json_encode($density),
+            'is_active' => true,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        $cost_type = array(
+            0 => array(
+                'id' => 1,
+                'name' => 'Direct Labour',
+            ),
+            1 => array(
+                'id' => 2,
+                'name' => 'Direct Labour Welfare',
+            ),
+            2 => array(
+                'id' => 3,
+                'name' => 'DL Overtime',
+            ),
+            3 => array(
+                'id' => 4,
+                'name' => 'Subcontractors',
+            ),
+            4 => array(
+                'id' => 5,
+                'name' => 'Indirect Labour',
+            ),
+            5 => array(
+                'id' => 6,
+                'name' => 'Indirect Labour Welfare',
+            ),
+            6 => array(
+                'id' => 7,
+                'name' => 'Indirect Labour Overtime',
+            ),
+            7 => array(
+                'id' => 8,
+                'name' => 'Consumables',
+            ),
+            8 => array(
+                'id' => 9,
+                'name' => 'Shipping Cost',
+            ),
+            9 => array(
+                'id' => 10,
+                'name' => 'Security',
+            ),
+            10 => array(
+                'id' => 11,
+                'name' => 'Depreciation',
+            ),
+            11 => array(
+                'id' => 12,
+                'name' => 'Uniform & Safety',
+            ),
+            12 => array(
+                'id' => 13,
+                'name' => 'Utilities',
+            ),
+            13 => array(
+                'id' => 14,
+                'name' => 'Repairs and Maintanance',
+            ),
+            14 => array(
+                'id' => 15,
+                'name' => 'Profressional Fee',
+            ),
+            15 => array(
+                'id' => 16,
+                'name' => 'Rent',
+            ),
+            16 => array(
+                'id' => 17,
+                'name' => 'Travelling',
+            ),
+            17 => array(
+                'id' => 18,
+                'name' => 'Insurance',
+            ),
+            18 => array(
+                'id' => 19,
+                'name' => 'Stationary',
+            ),
+            19 => array(
+                'id' => 20,
+                'name' => 'After Sales Service',
+            ),
+            20 => array(
+                'id' => 21,
+                'name' => 'Communication',
+            ),
+            21 => array(
+                'id' => 22,
+                'name' => 'Classification',
+            ),
+            22 => array(
+                'id' => 23,
+                'name' => 'Others',
+            ),
+        );
+
+        DB::table('mst_configuration')->insert([
+            'slug' => 'cost_type',
+            'title' => 'Cost Type',
+            'value' => json_encode($cost_type),
+            'is_active' => true,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        $payment_terms = array(
+            0 => array(
+                'id' => "1",
+                'name' => "Term 1",
+                'description' => 'Term 1',
+                'status' => 1,
+            ),
+        );
+
+        DB::table('mst_configuration')->insert([
+            'slug' => 'payment_terms',
+            'title' => 'Payment Terms',
+            'value' => json_encode($payment_terms),
+            'is_active' => true,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        $delivery_terms = array(
+            0 => array(
+                'id' => "1",
+                'name' => "Term 1",
+                'description' => 'Term 1',
+                'status' => 1,
+            ),
+        );
+
+        DB::table('mst_configuration')->insert([
+            'slug' => 'delivery_terms',
+            'title' => 'Delivery Terms',
+            'value' => json_encode($delivery_terms),
+            'is_active' => true,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        $weather = array(
+            0 => array(
+                'id' => "1",
+                'name' => "Weather 1",
+                'description' => 'Weather 1',
+                'status' => 1,
+            ),
+        );
+
+        DB::table('mst_configuration')->insert([
+            'slug' => 'weather',
+            'title' => 'Weather',
+            'value' => json_encode($weather),
+            'is_active' => true,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        $tidal = array(
+            0 => array(
+                'id' => "1",
+                'name' => "Tidal 1",
+                'description' => 'Tidal 1',
+                'status' => 1,
+            ),
+        );
+
+        DB::table('mst_configuration')->insert([
+            'slug' => 'tidal',
+            'title' => 'Tidal',
+            'value' => json_encode($tidal),
+            'is_active' => true,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        $dimension_type = array(
+            0 => array(
+                'id' => "1",
+                'name' => "Block",
+                'dimensions' => array(
+                    0 => array(
+                        'name' => "Panjang",
+                        'uom_id' => 1
+                    ),
+                    1 => array(
+                        'name' => "Lebar",
+                        'uom_id' => 1
+                    ),
+                    2 => array(
+                        'name' => "Tinggi",
+                        'uom_id' => 1
+                    ),
+                ),
+                'status' => 1,
+            ),
+        );
+
+        DB::table('mst_configuration')->insert([
+            'slug' => 'dimension_type',
+            'title' => 'Dimension Type',
+            'value' => json_encode($dimension_type),
+            'is_active' => true,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        $approval_pr = array(
+            0 => array(
+                'type' => "1 Stage",
+                'level_1' => array(
+                    0 => array(
+                        'minimum' => 0,
+                        'maximum' => 1000000,
+                        'role_id' => 1,
+                    ),
+                    1 => array(
+                        'minimum' => 0,
+                        'maximum' => 1000000,
+                        'role_id' => 1,
+                    ),
+                ),
+            ),
+        );
+
+        DB::table('mst_configuration')->insert([
+            'slug' => 'approval-pr',
+            'title' => 'Approval PR',
+            'value' => json_encode($approval_pr),
+            'is_active' => true,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+
+
+        $standar_price = array(
+            0 => array(
+                'id' => 1,
+                'value' => 'last_price',
+            ),
+            1 => array(
+                'id' => 2,
+                'value' => 'fifo',
+            ),
+            2 => array(
+                'id' => 3,
+                'value' => 'average',
+                'moving_range' => 'null',
+            ),
+        );
+        DB::table('mst_configuration')->insert([
+            'slug' => 'standar-price',
+            'title' => 'Standar Price',
+            'value' =>  json_encode($standar_price),
             'is_active' => true,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')

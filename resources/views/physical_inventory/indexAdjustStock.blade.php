@@ -3,7 +3,7 @@
 @section('content-header')
 @breadcrumb(
     [
-        'title' => 'Physical Inventory » Confirm Adjusted Stock',
+        'title' => 'Stock Taking » Confirm Adjusted Stock',
         'items' => [
             'Dashboard' => route('index'),
             'Confirm Adjusted Stock' =>"",
@@ -43,6 +43,10 @@
                                         Closed
                                     @elseif($snapshot->status == 2)
                                         Counted
+                                    @elseif($snapshot->status == 3)
+                                        Approved
+                                    @elseif($snapshot->status == 5)
+                                        Revised
                                     @endif
                                 </td>
                                 <td class="p-l-10">{{ count($snapshot->snapshotDetails) }}</td>

@@ -17,19 +17,19 @@
 <div class="row">
     <div class="col-xs-12">
         <div class="box">
-            <div class="box-header">
-                <div class="box-tools pull-right">
-                    <a href="{{ route('ship.create') }}" class="btn btn-primary btn-sm">CREATE</a>
+            <div class="box-body">
+                <div class="col-sm-6 p-l-0">
+                    <div class="box-tools pull-left">
+                        <a href="{{ route('ship.create') }}" class="btn btn-primary btn-sm">CREATE</a>
+                    </div>
                 </div>
-            </div> <!-- /.box-header -->
-            <div class="box-body p-b-0 p-t-15">
-                <table class="table table-bordered tableFixed" id="ship-table">
+                <table id="ship-table" class="table table-bordered tableFixed">
                     <thead>
                         <tr>
                             <th style="width: 5%">No</th>
                             <th style="width: 25%">Type</th>
-                            <th style="width: 30%">Hull Number</th>
-                            <th style="width: 40%">Description</th>
+                            <th style="width: 30%">Description</th>
+                            <th style="width: 25%">Status</th>
                             <th style="width: 10%"></th>
                         </tr>
                     </thead>
@@ -39,16 +39,12 @@
                             <tr>
                                 <td>{{ $counter++ }}</td>
                                 <td class="tdEllipsis" data-container="body" data-toggle="tooltip" title="{{$ship->type}}">{{ $ship->type }}</td>
-                                @if($ship->hull_number != '')
-                                    <td class="tdEllipsis" data-container="body" data-toggle="tooltip" title="{{$ship->hull_number}}">{{ $ship->hull_number }}</td>
-                                @else
-                                    <td>-</td>
-                                @endif
                                 @if($ship->description != '')
                                     <td class="tdEllipsis" data-container="body" data-toggle="tooltip" title="{{$ship->description}}">{{ $ship->description }}</td>
                                 @else
                                     <td>-</td>
                                 @endif
+                                <td> {{ $ship->status == "1" ? "Active": "Non Active" }}</td>
                                 <td class="p-l-0 p-r-0" align="center">
                                     <a href="{{ route('ship.show', ['id'=>$ship->id]) }}" class="btn btn-primary btn-xs">VIEW</a>
                                     <a href="{{ route('ship.edit', ['id'=>$ship->id]) }}" class="btn btn-primary btn-xs">EDIT</a>
@@ -72,12 +68,12 @@
         $('#ship-table').DataTable({
             'paging'      : true,
             'lengthChange': false,
-            'searching'   : false,
             'ordering'    : true,
             'info'        : true,
             'autoWidth'   : false,
+            'bFilter'     : true,
             'initComplete': function(){
-                $('div.overlay').remove();
+                $('div.overlay').hide();
             }
         });
     });

@@ -741,6 +741,17 @@ class SidenavsTableSeeder extends Seeder
             'route_name' => 'goods_return.createGoodsReturnPO',
         ]);
 
+        $selectGI = Menu::where('route_name','goods_return.selectGI')->select('id')->first()->id;
+        DB::table('sidenav')->insert([
+            'menu_id' => $selectGI,
+            'route_name' => 'goods_return.selectGI',
+        ]);
+
+        DB::table('sidenav')->insert([
+            'menu_id' => $selectGI,
+            'route_name' => 'goods_return.createGoodsReturnGI',
+        ]);
+
         $viewReturn = Menu::where('route_name','goods_return.index')->select('id')->first()->id;
         DB::table('sidenav')->insert([
             'menu_id' => $viewReturn,
@@ -783,6 +794,17 @@ class SidenavsTableSeeder extends Seeder
         DB::table('sidenav')->insert([
             'menu_id' => $selectPORepair,
             'route_name' => 'goods_return_repair.createGoodsReturnPO',
+        ]);
+
+        $selectGIRepair = Menu::where('route_name','goods_return_repair.selectGI')->select('id')->first();
+        DB::table('sidenav')->insert([
+            'menu_id' => $selectGIRepair,
+            'route_name' => 'goods_return_repair.selectGI',
+        ]);
+
+        DB::table('sidenav')->insert([
+            'menu_id' => $selectGIRepair,
+            'route_name' => 'goods_return_repair.createGoodsReturnGI',
         ]);
 
         $viewReturnRepair = Menu::where('route_name','goods_return_repair.index')->select('id')->first()->id;
@@ -1555,6 +1577,58 @@ class SidenavsTableSeeder extends Seeder
             'route_name' => 'material_family.index',
         ]);
 
+        $paymentTerms = Menu::where('route_name','payment_terms.index')->select('id')->first()->id;
+        DB::table('sidenav')->insert([
+            'menu_id' => $paymentTerms,
+            'route_name' => 'payment_terms.index',
+        ]);
+
+        $deliveryTerms = Menu::where('route_name','delivery_terms.index')->select('id')->first()->id;
+        DB::table('sidenav')->insert([
+            'menu_id' => $deliveryTerms,
+            'route_name' => 'delivery_terms.index',
+        ]);
+
+        $dailyManHour = Menu::where('route_name','daily_man_hour.selectProject')->select('id')->first()->id;
+        DB::table('sidenav')->insert([
+            'menu_id' => $dailyManHour,
+            'route_name' => 'daily_man_hour.selectProject',
+        ]);
+        DB::table('sidenav')->insert([
+            'menu_id' => $dailyManHour,
+            'route_name' => 'daily_man_hour.create',
+        ]);
+
+        $weather = Menu::where('route_name','weather.index')->select('id')->first()->id;
+        DB::table('sidenav')->insert([
+            'menu_id' => $weather,
+            'route_name' => 'weather.index',
+        ]);
+        
+        $tidal = Menu::where('route_name','tidal.index')->select('id')->first()->id;
+        DB::table('sidenav')->insert([
+            'menu_id' => $tidal,
+            'route_name' => 'tidal.index',
+        ]);
+
+        $dimension_type = Menu::where('route_name','dimension_type.index')->select('id')->first()->id;
+        DB::table('sidenav')->insert([
+            'menu_id' => $dimension_type,
+            'route_name' => 'dimension_type.index',
+        ]);
+
+        $daily_weather = Menu::where('route_name','daily_weather.index')->select('id')->first()->id;
+        DB::table('sidenav')->insert([
+            'menu_id' => $daily_weather,
+            'route_name' => 'daily_weather.index',
+        ]);
+
+        $daily_tidal = Menu::where('route_name','daily_tidal.index')->select('id')->first()->id;
+        DB::table('sidenav')->insert([
+            'menu_id' => $daily_tidal,
+            'route_name' => 'daily_tidal.index',
+        ]);
+
         $user = Menu::where('route_name','user.index')->select('id')->first()->id;
         DB::table('sidenav')->insert([
             'menu_id' => $user,
@@ -1792,5 +1866,35 @@ class SidenavsTableSeeder extends Seeder
             'menu_id' => $currencies,
             'route_name' => 'currencies.edit',
         ]);
+
+        // Reverse Transaction
+        $createReverse = Menu::where('route_name','reverse_transaction.selectDocument')->select('id')->first()->id;
+        DB::table('sidenav')->insert([
+            'menu_id' => $createReverse,
+            'route_name' => 'reverse_transaction.selectDocument',
+        ]);
+
+        DB::table('sidenav')->insert([
+            'menu_id' => $createReverse,
+            'route_name' => 'reverse_transaction.create',
+        ]);
+
+        $approveReverse = Menu::where('route_name','reverse_transaction.indexApprove')->select('id')->first()->id;
+        DB::table('sidenav')->insert([
+            'menu_id' => $approveReverse,
+            'route_name' => 'reverse_transaction.indexApprove',
+        ]);
+
+        DB::table('sidenav')->insert([
+            'menu_id' => $approveReverse,
+            'route_name' => 'reverse_transaction.showApprove',
+        ]);
+
+        $indexReverse = Menu::where('route_name','reverse_transaction.index')->select('id')->first()->id;
+        DB::table('sidenav')->insert([
+            'menu_id' => $indexReverse,
+            'route_name' => 'reverse_transaction.index',
+        ]);
+
     }
 }

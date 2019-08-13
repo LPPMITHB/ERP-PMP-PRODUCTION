@@ -25,20 +25,88 @@ use App\Models\MaterialRequisitionDetail;
 use App\Models\Configuration;
 use App\Models\GoodsReceipt;
 use App\Models\GoodsReceiptDetail;
+use App\Models\GoodsIssue;
+use App\Models\GoodsIssueDetail;
+use App\Models\GoodsReturn;
+use App\Models\GoodsReturnDetail;
 use App\Models\StorageLocation;
 use App\Models\StorageLocationDetail;
 use App\Models\BomPrep;
+use App\Models\ProductionOrderUpload;
 use Auth;
 use DateTime;
 use DB;
+use File;
 
 class ProductionOrderController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    public function deleteImage(Request $request, $id)
+    {
+        DB::beginTransaction();
+        try {
+            $pou = ProductionOrderUpload::findOrFail($id);
+
+            $image_path = public_path("app/documents/production_order/".$pou->picture); 
+            if(File::exists($image_path)) {
+                File::delete($image_path);
+            }
+
+            $pou->delete();
+            DB::commit();
+            return response(["response"=>"Success to delete image"],Response::HTTP_OK);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response(["error"=> $e->getMessage()],Response::HTTP_OK);
+        }
+    }
+
+    public function upload(Request $request){
+        $route = $request->route()->getPrefix();
+        $this->validate($request, [
+            'image' => 'mimes:jpeg,jpg,png,gif|required|max:10000'
+        ]);
+
+        DB::beginTransaction();
+        try{
+            if($request->hasFile('image')){
+                // Get filename with the extension
+                $fileNameWithExt = $request->file('image')->getClientOriginalName();
+                // Get just file name
+                $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+                // Get just ext
+                $extension = $request->file('image')->getClientOriginalExtension();
+                // File name to store
+                $fileNameToStore = $fileName.'_'.time().'.'.$extension;
+                // Upload image
+                $path = $request->file('image')->storeAs('documents/production_order',$fileNameToStore);
+            }else{
+                $fileNameToStore =  null;
+            }
+    
+            $POU = new ProductionOrderUpload;
+            $POU->picture = $fileNameToStore;
+            $POU->production_order_id = $request->prod_id;
+            $POU->description = $request->description;
+            $POU->user_id = Auth::user()->id;
+            $POU->branch_id = Auth::user()->branch->id;
+            $POU->save();
+
+            DB::commit();
+            if($route == "/production_order"){
+                return redirect()->route('production_order.confirm', ['id' => $request->prod_id])->with('success', 'Upload Success!');
+            }elseif($route == "/production_order_repair"){
+                return redirect()->route('production_order_repair.confirm', ['id' => $request->prod_id])->with('success', 'Upload Success!');
+            }
+        } catch (\Exception $e) {
+            DB::rollback();
+            if($route == "/production_order"){
+                return redirect()->route('production_order.confirm', ['id' => $request->prod_id])->with( 'error',$e->getMessage());
+            }elseif($route == "/production_order_repair"){
+                return redirect()->route('production_order_repair.confirm', ['id' => $request->prod_id])->with( 'error',$e->getMessage());
+            }
+        }
+    }
+
     public function selectProject(Request $request){
         $route = $request->route()->getPrefix();
         if($route == "/production_order"){
@@ -375,11 +443,45 @@ class ProductionOrderController extends Controller
     public function confirm(Request $request,$id){
         $route = $request->route()->getPrefix();
         $modelPrO = ProductionOrder::where('id',$id)->with('project')->first();
-        $modelPrOD = ProductionOrderDetail::where('production_order_id',$modelPrO->id)->with('material','material.uom','resource','service','productionOrder','resourceDetail')->get()->jsonSerialize();
+        $modelPrOD = ProductionOrderDetail::where('production_order_id',$modelPrO->id)->with('material','material.uom','resource','service','productionOrder','resourceDetail')->get();
         $project = Project::where('id',$modelPrO->project_id)->with('customer','ship')->first();
         $uoms = Uom::all()->jsonSerialize();
-
-        return view('production_order.confirm', compact('modelPrO','project','modelPrOD','route','uoms'));
+        $POU = ProductionOrderUpload::where('production_order_id',$modelPrO->id)->with('user')->get();
+        $materials = Collection::make();
+        foreach($modelPrOD as $prod){
+            $modelMRD = MaterialRequisitionDetail::where('wbs_id',$prod->productionOrder->wbs_id)->select('material_requisition_id')->get();
+            $modelGI = GoodsIssue::whereIn('material_requisition_id',$modelMRD)->get();
+            $actual = 0;
+            $return = 0;
+            foreach($modelGI as $gi){
+                foreach($gi->goodsIssueDetails as $gid){
+                    if($gid->material_id == $prod->material_id){
+                        $actual += $gid->quantity;
+                    }
+                }
+                $modelGRT = GoodsReturn::where('goods_issue_id',$gi->id)->get();
+                if($modelGRT){
+                    foreach($modelGRT as $grt){
+                        if($grt->status == 2){
+                            foreach($grt->goodsReturnDetails as $grd){
+                                if($grd->material_id == $prod->material_id){
+                                    $return += $grd->quantity;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            $materials->push([
+               "material_code" => $prod->material->code,
+               "material_description" => $prod->material->description,
+               "quantity" => $prod->quantity,
+               "actual" => $actual - $return,
+               "remaining" => $prod->quantity - $actual + $return,
+               "unit" => $prod->material->uom->unit
+            ]);
+        }
+        return view('production_order.confirm', compact('modelPrO','project','modelPrOD','route','uoms','POU','materials'));
     }
 
     public function confirmRepair(Request $request,$id){
@@ -1601,5 +1703,10 @@ class ProductionOrderController extends Controller
 		$mr_number = $year+$number;
         $mr_number = 'MR-'.$mr_number;
 		return $mr_number;
+    }
+
+    public function getPouAPI($id){
+
+        return response(ProductionOrderUpload::where('production_order_id',$id)->with('user')->get()->jsonSerialize(), Response::HTTP_OK);
     }
 }

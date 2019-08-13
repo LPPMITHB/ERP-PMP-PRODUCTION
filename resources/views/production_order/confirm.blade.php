@@ -118,7 +118,53 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="col-sm-4 p-r-0">
+                    <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#upload_modal">UPLOAD IMAGE</button>
+                </div>
             </div>
+            <form id="upload" class="form-horizontal" method="POST" action="{{ route('production_order.upload') }}" enctype="multipart/form-data">
+                @csrf
+                <div class="modal fade" id="upload_modal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                                <h4 class="modal-title">Upload Image</h4>
+                            </div>
+                            <div class="modal-body p-t-0">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <input type="hidden" name="prod_id" id="prod_id" value="{{$modelPrO->id}}">
+                                        <div class="col-sm-12 p-t-10 p-l-0">
+                                            <div class="input-group">
+                                                <label class="input-group-btn">
+                                                    <span class="btn btn-primary">
+                                                        Browse&hellip; <input type="file" style="display: none;" multiple id="image" name="image">
+                                                    </span>
+                                                </label>
+                                                <input type="text" class="form-control" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="progress">
+                                            <div class="bar"></div >
+                                            <div class="percent">0%</div >
+                                        </div>
+                                        <div class="col-sm-12 p-l-0">
+                                            <label for="type" class="control-label p-b-10">Description</label>
+                                            <textarea rows="3" class="form-control" placeholder="Please Input Description" id="description" name="description"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary" onclick="overlay()">SAVE</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
             @if($route == "/production_order")
                 <form id="confirm-wo" class="form-horizontal" method="POST" action="{{ route('production_order.storeConfirm') }}">
             @elseif($route == "/production_order_repair")
@@ -130,6 +176,7 @@
             <div id="production_order">
                 <div class="box-body p-t-0 p-b-5">
                     <h4>Activity</h4>
+                    
                     <table id="activity-table" class="table table-bordered tableFixed" >
                         <thead>
                             <tr>
@@ -309,7 +356,7 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <h4 class="box-title m-t-0">Material</h4>
-                            <table id="material-table" class="table table-bordered tableFixed">
+                            <table id="material-table" class="table table-bordered tableFixed showTable">
                                 <thead>
                                     <tr>
                                         <th width="4%">No</th>
@@ -318,20 +365,18 @@
                                         <th width="8%">Quantity</th>
                                         <th width="8%">Actual</th>
                                         <th width="8%">Remaining</th>
-                                        <th width="8%">Used</th>
+                                        <th width="8%">Unit</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr v-for="(data,index) in materials">
                                         <td>{{ index + 1 }}</td>
-                                        <td class="tdEllipsis">{{ data.material.code }}</td>
-                                        <td class="tdEllipsis">{{ data.material.description }}</td>
-                                        <td class="tdEllipsis">{{ data.used }}</td>
+                                        <td class="tdEllipsis">{{ data.material_code }}</td>
+                                        <td class="tdEllipsis">{{ data.material_description }}</td>
+                                        <td class="tdEllipsis">{{ data.quantity }}</td>
                                         <td class="tdEllipsis">{{ data.actual }}</td>
-                                        <td class="tdEllipsis">{{ data.sugQuantity }}</td>
-                                        <td class="tdEllipsis no-padding ">
-                                            <input class="form-control width100" v-model="data.quantity" placeholder="Please Input Quantity">
-                                        </td>
+                                        <td class="tdEllipsis">{{ data.remaining }}</td>
+                                        <td class="tdEllipsis">{{ data.unit }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -410,6 +455,39 @@
                                             <td v-if="data.status == 'UNACTUALIZED'" class="p-l-5" align="center"><a @click.prevent="" class="btn btn-primary btn-xs" disabled>INPUT ACTUAL</a>
                                             </td>
                                         </template>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h4 class="m-t-0">Images</h4>
+                            <table id="image_table" class="table table-bordered tableFixed">
+                                <thead>
+                                    <tr>
+                                        <th width="5%">No</th>
+                                        <th width="20%">Image</th>
+                                        <th width="40%">Description</th>
+                                        <th width="13%">Created At</th>
+                                        <th width="12%">Created By</th>
+                                        <th width="10%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(upload,index) in pou">
+                                        <td>{{ index + 1 }}</td>
+                                        <td class="tdEllipsis">{{ upload.picture }}</td>
+                                        <td class="tdEllipsis">{{ upload.description }}</td>
+                                        <td class="tdEllipsis">{{ upload.created_at }}</td>
+                                        <td class="tdEllipsis">{{ upload.user.name }}</td>
+                                        <td align="center">
+                                            <div class="parent-container no-padding">
+                                                <a class="btn btn-primary btn-xs" :href="view(upload)">VIEW</a>
+                                                <button type="button" class="btn btn-danger btn-xs" @click.prevent="deleteImage(upload.id)">DELETE</button>
+                                            </div>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -524,6 +602,7 @@
                                                 <label for="type" class="control-label p-b-10">Subject</label>
                                                 <input class="form-control" v-model="moraleNotes.subject" placeholder="Please Input Subject">
                                             </div>
+                                            
                                             <div class="col-sm-12 p-l-0">
                                                 <label for="type" class="control-label p-b-10">Notes</label>
                                                 <textarea rows="4" class="form-control" v-model="moraleNotes.notes" placeholder="Please Input Notes">
@@ -542,15 +621,11 @@
                         </div>
                     </div>
                     <div class="col-md-12 p-t-10 p-r-0">
-                        <button @click.prevent="submitForm" class="btn btn-primary pull-right" :disabled="createOk">CONFIRM</button>
                     </div>
                 </div>
             </div>
             @endverbatim
             </form>
-            <div class="overlay">
-                <i class="fa fa-refresh fa-spin"></i>
-            </div>
         </div>
     </div>
 </div>
@@ -559,12 +634,38 @@
 @push('script')
 <script>
     const form = document.querySelector('form#confirm-wo');
+    const formUpload = document.querySelector('form#upload');
+    
+    function overlay(){
+        $('div.overlayUpload').show();
+        $('#upload_modal').modal('hide');
+    }
 
     $(document).ready(function(){
         $('.datepicker').datepicker({
             autoclose : true,
         });
         $('div.overlay').hide();
+
+        $(document).on('change', ':file', function() {
+            var input = $(this),
+                numFiles = input.get(0).files ? input.get(0).files.length : 1,
+                label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+            input.trigger('fileselect', [numFiles, label]);
+        });
+
+        // We can watch for our custom `fileselect` event like this
+        $(document).ready( function() {
+            $(':file').on('fileselect', function(event, numFiles, label) {
+                var input = $(this).parents('.input-group').find(':text'),
+                    log = numFiles > 1 ? numFiles + ' files selected' : label;
+                if( input.length ) {
+                    input.val(log);
+                } else {
+                    if( log ) alert(log);
+                }
+            });
+        });
     });
 
     Vue.directive('tooltip', function(el, binding){
@@ -582,7 +683,7 @@
         uoms : @json($uoms),
         modelPrOD : @json($modelPrOD),
         activities : @json($modelPrO->wbs->activities),
-        materials : [],
+        // materials : [],
         resources : [],
         services : [],
         wbs_id: @json($modelPrO->wbs->id),
@@ -615,12 +716,24 @@
         uomSettings: {
             placeholder: 'Please Select Unit'
         },
+        upload:{
+            description : "",
+            prod_id :@json($modelPrO->id)
+        },
+        pou : @json($POU),
+        materials : @json($materials)
     };
 
     var vm = new Vue({
         el: '#production_order',
         data: data,
         mounted() {
+            $('.parent-container').magnificPopup({
+                delegate: 'a', // child items selector, by clicking on it popup will open
+                type: 'image'
+                // other options
+            });
+
             $('.datepicker').datepicker({
                 autoclose : true,
                 format: 'dd-mm-yyyy',
@@ -668,6 +781,79 @@
             }
         },
         methods: {
+            getImages(){
+                $('div.overlay').show();
+                window.axios.get('/api/getPou/'+this.upload.prod_id).then(({ data }) => {
+                    this.pou = [];
+                    this.pou = data;
+                    $('div.overlay').hide();
+                });
+            },
+            deleteImage(id){
+                iziToast.question({
+                    close: false,
+                    overlay: true,
+                    timeout : 0,
+                    displayMode: 'once',
+                    id: 'question',
+                    zindex: 9999,
+                    title: 'Confirm',
+                    message: 'Are you sure you want to delete this image?',
+                    position: 'center',
+                    buttons: [
+                        ['<button><b>YES</b></button>', function (instance, toast) {
+                            var url = "";
+                            if(vm.menu == "/production_order"){
+                                url = "/production_order/deleteImage/"+id;
+                            }else if(vm.route == "/production_order_repair"){
+                                url = "/production_order_repair/deleteImage/"+id;
+                            }
+                            $('div.overlay').show();            
+                            window.axios.delete(url).then((response) => {
+                                console.log(response);
+                                if(response.data.error != undefined){
+                                    console.log(response.data.error);
+                                    response.data.error.forEach(error => {
+                                        iziToast.warning({
+                                            displayMode: 'replace',
+                                            title: error,
+                                            position: 'topRight',
+                                        });
+                                    });
+                                    $('div.overlay').hide();
+                                }else{
+                                    iziToast.success({
+                                        displayMode: 'replace',
+                                        title: response.data.response,
+                                        position: 'topRight',
+                                    });
+                                    vm.getImages();
+                                    $('div.overlay').hide();
+                                }
+                            })
+                            .catch((error) => {
+                                iziToast.warning({
+                                    displayMode: 'replace',
+                                    title: "Please try again.. ",
+                                    position: 'topRight',
+                                });
+                                console.log(error);
+                                $('div.overlay').hide();            
+                            })
+                            instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
+                        }, true],
+                        ['<button>NO</button>', function (instance, toast) {
+                
+                            instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
+                        }],
+                    ],
+                });
+            },
+            view(data){
+                let path = '../../app/documents/production_order/'+data.picture;
+                
+                return path;
+            },
             clearEditInput(){
                 this.editInput.performance = "";
                 this.editInput.performance_uom_id = "";
@@ -968,14 +1154,14 @@
                 },
                 deep: true
             }, 
-            materials:{
-                handler: function(newValue) {
-                    this.materials.forEach(material => {
-                        material.quantity = (material.quantity+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");  
-                    });
-                },
-                deep: true
-            }, 
+            // materials:{
+            //     handler: function(newValue) {
+            //         this.materials.forEach(material => {
+            //             material.quantity = (material.quantity+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");  
+            //         });
+            //     },
+            //     deep: true
+            // }, 
             'confirmActivity.actual_start_date' :function(newValue){
                 if(newValue == ""){
                     $('#actual_end_date').datepicker('setDate', null);
@@ -1012,6 +1198,44 @@
 
             today = yyyy + '-' + mm + '-' + dd;
             this.today = today;
+            this.materials.forEach(material => {
+                // quantity
+                var decimal = (material.quantity+"").replace(/,/g, '').split('.');
+                if(decimal[1] != undefined){
+                    var maxDecimal = 2;
+                    if((decimal[1]+"").length > maxDecimal){
+                        material.quantity = (decimal[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimal[1]+"").substring(0,maxDecimal).replace(/\D/g, "");
+                    }else{
+                        material.quantity = (decimal[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimal[1]+"").replace(/\D/g, "");
+                    }
+                }else{
+                    material.quantity = (material.quantity+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                }
+                // actual
+                var decimal = (material.actual+"").replace(/,/g, '').split('.');
+                if(decimal[1] != undefined){
+                    var maxDecimal = 2;
+                    if((decimal[1]+"").length > maxDecimal){
+                        material.actual = (decimal[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimal[1]+"").substring(0,maxDecimal).replace(/\D/g, "");
+                    }else{
+                        material.actual = (decimal[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimal[1]+"").replace(/\D/g, "");
+                    }
+                }else{
+                    material.actual = (material.actual+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                }
+                // remaining
+                var decimal = (material.remaining+"").replace(/,/g, '').split('.');
+                if(decimal[1] != undefined){
+                    var maxDecimal = 2;
+                    if((decimal[1]+"").length > maxDecimal){
+                        material.remaining = (decimal[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimal[1]+"").substring(0,maxDecimal).replace(/\D/g, "");
+                    }else{
+                        material.remaining = (decimal[0]+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")+"."+(decimal[1]+"").replace(/\D/g, "");
+                    }
+                }else{
+                    material.remaining = (material.remaining+"").replace(/[^0-9.]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                }
+            })
             this.modelPrOD.forEach(POD => {
                 if(POD.material_id != null){
                     if(POD.actual == null){
@@ -1031,7 +1255,7 @@
                     POD.actual = (POD.actual+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");  
                     POD.sugQuantity = (POD.sugQuantity+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");  
                     POD.used = (POD.used+"").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");  
-                    this.materials.push(POD);
+                    // this.materials.push(POD);
                 }else if(POD.service_id != null){
                     if(POD.actual == null){
                         POD.actual = 0;
@@ -1060,6 +1284,10 @@
                     this.resources.push(POD);
                 }
             });
+            this.pou.forEach(image=>{
+                image.created_at = new Date(image.created_at);
+                image.created_at = image.created_at.toLocaleString();
+            })
         },
     });
     function parseDate(str) {

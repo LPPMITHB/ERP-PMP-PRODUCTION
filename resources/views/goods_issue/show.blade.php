@@ -36,15 +36,23 @@
                             Ship Name
                         </div>
                         <div class="col-md-8">
-                            : <b> {{ isset($modelGI->materialRequisition) ? $modelGI->materialRequisition->project->name : '-'}} </b>
+                            : <b> {{ isset($modelGI->materialRequisition->project) ? $modelGI->materialRequisition->project->name : '-'}} </b>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-4 col-xs-4">
-                            MR Code
+                            MR Number
                         </div>
                         <div class="col-md-8">
-                            : <b> {{ isset($modelGI->materialRequisition) ? $modelGI->materialRequisition->number : '-' }} </b>
+                            @if(isset($modelGI->materialRequisition))
+                                @if($route == "/goods_issue")
+                                    : <a href="{{ route('material_requisition.show', ['id'=>$modelGI->materialRequisition->id]) }}" class="text-primary"><b>{{$modelGI->materialRequisition->number}}</b></a>
+                                @else
+                                    : <a href="{{ route('material_requisition_repair.show', ['id'=>$modelGI->materialRequisition->id]) }}" class="text-primary"><b>{{$modelGI->materialRequisition->number}}</b></a>
+                                @endif
+                            @else
+                                -
+                            @endif
                         </div>
                     </div>
                     <div class="row">
@@ -69,7 +77,7 @@
                         <div class="col-md-4 col-xs-4">Issue Date</div>
                         <div class="col-md-6">: <b> {{ isset($modelGI->issue_date) ? date('d-m-Y', strtotime($modelGI->issue_date)) : '-'}} </b></div>
                     </div>
-                    
+
                 </div>
                 <div class="col-sm-4 col-md-4 m-t-10">
                     <div class="row">
@@ -90,8 +98,8 @@
                             <th width="5%">No</th>
                             <th width="15%">Material Number</th>
                             <th width="20%">Material Description</th>
+                            <th width="25%">Picked Quantity</th>
                             <th width="5%">Unit</th>
-                            <th width="25%">Quantity</th>
                             <th width="30%">Storage Location</th>
                         </tr>
                     </thead>
@@ -101,8 +109,8 @@
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $GID->material->code }}</td>
                             <td>{{ $GID->material->description }}</td>
-                            <td>{{ $GID->material->uom->unit }}</td>
                             <td>{{ number_format($GID->quantity,2) }}</td>
+                            <td>{{ $GID->material->uom->unit }}</td>
                             <td>{{ $GID->storageLocation != null ? $GID->storageLocation->name : "-" }} </td>
                         </tr>
                         @endforeach
@@ -138,12 +146,11 @@
         $('#gi-table').DataTable({
             'paging'      : true,
             'lengthChange': false,
-            'searching'   : false,
             'ordering'    : true,
             'info'        : true,
             'autoWidth'   : false,
             'initComplete': function(){
-                $('div.overlay').remove();
+                $('div.overlay').hide();
             }
         });
     });

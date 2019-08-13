@@ -30,7 +30,8 @@ class ProjectActivity extends Notification
      */
     public function via($notifiable)
     {
-        return ['database'];
+        //Custom DB
+        return [CustomDB::class];
     }
 
     /**
@@ -47,16 +48,25 @@ class ProjectActivity extends Notification
                     ->line('Thank you for using our application!');
     }
 
+    public function toDatabase($notifiable)
+    {
+        return [
+            'text' => ' until '.$this->activity->name.' for project '.$this->activity->wbs->project->name.' planned start date',
+            'title' => 'Activity',
+            'url' => '/activity/show/'.$this->activity->id,
+            'notification_date' => $this->activity->planned_start_date, //<-- send the id here
+        ];
+    }
     /**
      * Get the array representation of the notification.
      *
      * @param  mixed  $notifiable
      * @return array
      */
-    public function toArray($notifiable)
-    {
-        return [
-            'data' => $this->activity->name.' for project '.$this->activity->wbs->project->name.' planned start date is near'
-        ];
-    }
+    // public function toArray($notifiable)
+    // {
+    //     return [
+    //         'data' => $this->activity->name.' for project '.$this->activity->wbs->project->name.' planned start date is near'
+    //     ];
+    // }
 }

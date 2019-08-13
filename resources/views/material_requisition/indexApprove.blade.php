@@ -18,6 +18,13 @@
     <div class="col-xs-12">
         <div class="box">
             <div class="box-body">
+                <div class="col-sm-6 p-l-0">
+                    <div class="box-tools pull-left">
+                        <span id="date-label-from" class="date-label">From: </span><input class="date_range_filter datepicker" type="text" id="datepicker_from" />
+                        <span id="date-label-to" class="date-label">To: </span><input class="date_range_filter datepicker" type="text" id="datepicker_to" />
+                        <button id="btn-reset" class="btn btn-primary btn-sm">RESET</button>
+                    </div>
+                </div> 
                 <table class="table table-bordered tableFixed" id="mr-table">
                     <thead>
                         <tr>
@@ -34,7 +41,7 @@
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $modelMR->number }}</td>
                                 <td class="tdEllipsis" data-container="body" data-toggle="tooltip"  title="{{$modelMR->description}}">{{ $modelMR->description }}</td>
-                                <td>{{ $modelMR->project->name }}</td>
+                                <td>{{ $modelMR->project != null ? $modelMR->project->name : "-" }}</td>
                                 <td class="textCenter">
                                     @if($menu == "building")
                                         <a href="{{ route('material_requisition.showApprove', ['id'=>$modelMR->id]) }}" class="btn btn-primary btn-xs">SELECT</a>
@@ -58,17 +65,80 @@
 @push('script')
 <script>
     $(document).ready(function(){
-        $('#mr-table').DataTable({
+        var mr_table = $('#mr-table').DataTable({
             'paging'      : true,
             'lengthChange': false,
-            'searching'   : false,
             'ordering'    : true,
             'info'        : true,
             'autoWidth'   : false,
+            'bFilter'     : true,
             'initComplete': function(){
-                $('div.overlay').remove();
+                $('div.overlay').hide();
             }
         });
+
+        $("#datepicker_from").datepicker({
+            autoclose : true,
+            format : "dd-mm-yyyy"
+        }).keyup(function() {
+            var temp = this.value.split("-");
+            minDateFilter = new Date(temp[1]+"-"+temp[0]+"-"+temp[2]).getTime();
+            mr_table.draw();
+        }).change(function() {
+            var temp = this.value.split("-");
+            minDateFilter = new Date(temp[1]+"-"+temp[0]+"-"+temp[2]).getTime();
+            mr_table.draw();
+        });
+
+        $("#datepicker_to").datepicker({
+            autoclose : true,
+            format : "dd-mm-yyyy"
+        }).keyup(function() {
+            var temp = this.value.split("-");
+            maxDateFilter = new Date(temp[1]+"-"+temp[0]+"-"+temp[2]).getTime();
+            mr_table.draw();
+        }).change(function() {
+            var temp = this.value.split("-");
+            maxDateFilter = new Date(temp[1]+"-"+temp[0]+"-"+temp[2]).getTime();
+            mr_table.draw();
+        });
+
+        document.getElementById("btn-reset").addEventListener("click", reset);
+
+        function reset() {
+            $("#datepicker_from").val('');
+            $("#datepicker_to").val('');
+            maxDateFilter = "";
+            minDateFilter = "";
+            mr_table.draw();
+        }
+        
+        // Date range filter
+        minDateFilter = "";
+        maxDateFilter = "";
+
+        $.fn.dataTableExt.afnFiltering.push(
+            function(oSettings, aData, iDataIndex) {
+                if (typeof aData._date == 'undefined') {
+                    var temp = aData[4].split("-");                    
+                    aData._date = new Date(temp[1]+"-"+temp[0]+"-"+temp[2]).getTime();
+                }
+
+                if (minDateFilter && !isNaN(minDateFilter)) {
+                    if (aData._date < minDateFilter) {
+                        return false;
+                    }
+                }
+
+                if (maxDateFilter && !isNaN(maxDateFilter)) {
+                    if (aData._date > maxDateFilter) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        );    
     });
 </script>
 @endpush

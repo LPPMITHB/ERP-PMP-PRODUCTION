@@ -70,6 +70,18 @@
                         <div class="col-md-8 col-xs-8 tdEllipsis" data-container="body" data-toggle="tooltip" title="{{ $modelPO->description }}">
                             : <b> {{ ($modelPO->description != "") ? $modelPO->description : '-' }} </b>
                         </div>
+                        <div class="col-md-4 col-xs-4" >
+                            Delivery Term
+                        </div>
+                        <div class="col-md-8 col-xs-8 tdEllipsis" data-container="body" data-toggle="tooltip" title="{{ $dterm_name }}">
+                            : <b> {{ ($dterm_name != null) ? $dterm_name : '-' }} </b>
+                        </div>
+                        <div class="col-md-4 col-xs-4" >
+                            Project Number
+                        </div>
+                        <div class="col-md-8 col-xs-8 tdEllipsis" data-container="body" data-toggle="tooltip" title="{{ ($modelPO->project != null) ? $modelPO->project->number : '-' }}">
+                            : <b> {{ ($modelPO->project != null) ? $modelPO->project->number : '-' }} </b>
+                        </div>
                         @if($modelPO->purchaseRequisition->type == 3)
                             <div class="col-md-4 col-xs-4" >
                                 Delivery Date
@@ -100,7 +112,7 @@
                         <div class="col-md-8 col-xs-8">
                             : <b> {{ $modelPO->created_at->format('d-m-Y H:i:s') }} </b>
                         </div>
-                        @if($modelPO->status != 1)
+                        @if($modelPO->status != 1 && $modelPO->status != 8)
                             @if($modelPO->status == 2 || $modelPO->status == 0 || $modelPO->status == 7)
                                 <div class="col-xs-4 col-md-4">
                                     Approved By
@@ -118,6 +130,28 @@
                                 : <b> {{ $modelPO->approvedBy->name }} </b>
                             </div>
                         @endif
+                        @php
+                            $approval_date = "";
+                            if($modelPO->approval_date != NULL){
+                                $approval_date = DateTime::createFromFormat('Y-m-d', $modelPO->approval_date);
+                                $approval_date = $approval_date->format('d-m-Y');
+                            }
+                        @endphp
+                        @if($modelPO->status == 2)
+                            <div class="col-xs-4 col-md-4">
+                                Approved Date
+                            </div>
+                            <div class="col-xs-8 col-md-8">
+                                : <b>{{ $approval_date }}</b>
+                            </div>
+                        @elseif($modelPO->status == 5)
+                            <div class="col-xs-4 col-md-4">
+                                Rejected Date
+                            </div>
+                            <div class="col-xs-8 col-md-8">
+                                : <b>{{ $approval_date }}</b>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -132,14 +166,14 @@
                             @elseif($modelPO->purchaseRequisition->type == 2)
                                 <th width="14%">Resource Number</th>
                                 <th width="20%">Resource Description</th>
-                            @else 
+                            @else
                                 <th colspan="2" width="14%">Job Order</th>
                             @endif
                             <th width="6%">Qty</th>
                             <th width="5%">Disc.</th>
                             @if($modelPO->purchaseRequisition->type != 3)
                                 <th width="13%">Price / pcs ({{$unit}})</th>
-                            @else 
+                            @else
                                 <th width="13%">Price / service ({{$unit}})</th>
                             @endif
                             <th width="15%">Sub Total Price ({{$unit}})</th>
@@ -158,7 +192,7 @@
                                     @elseif($modelPO->purchaseRequisition->type == 2)
                                         <td class="tdEllipsis" data-container="body" data-toggle="tooltip" title="{{ $POD['resource_code'] }}">{{ $POD['resource_code'] }}</td>
                                         <td class="tdEllipsis" data-container="body" data-toggle="tooltip" title="{{ $POD['resource_name'] }}">{{ $POD['resource_name'] }}</td>
-                                    @else 
+                                    @else
                                         <td colspan ="2" class="tdEllipsis" data-container="body" data-toggle="tooltip" title="{{ $POD['job_order'] }}">{{ $POD['job_order'] }}</td>
                                     @endif
                                     <td class="tdEllipsis" data-container="body" data-toggle="tooltip" title="{{ number_format($POD['quantity'],2) }}">{{ number_format($POD['quantity'],2) }}</td>
@@ -167,7 +201,7 @@
                                     <td class="tdEllipsis" data-container="body" data-toggle="tooltip" title="{{ number_format($POD['sub_total'] / $modelPO['value'],2) }}">{{ number_format($POD['sub_total'] / $modelPO['value'],2) }}</td>
                                     <td>{{ isset($POD['delivery_date']) ? date('d-m-Y', strtotime($POD['delivery_date'])) : '-' }}</td>
                                     <td class="textCenter">
-                                        <a class="btn btn-primary btn-xs" data-toggle="modal" href="#show_remark" onClick="test({{$POD['id']}})">
+                                        <a class="btn btn-primary btn-xs" data-toggle="modal" href="#show_remark" onClick="remark({{$POD['id']}})">
                                             REMARK
                                         </a>
                                     </td>
@@ -203,15 +237,30 @@
                         </tr>
                     </tfoot>
                 </table>
-                
+
                 <div class="col-md-12 m-b-10 p-r-0 p-t-10">
                     @if($route == "/purchase_order_repair" && $modelPO->purchaseRequisition->type == 3)
-                    <a class="col-xs-12 col-md-2 btn btn-primary p-l-5 pull-right m-l-20" href="{{ route('purchase_order_repair.printJobOrder', ['id'=>$modelPO->id]) }}">DOWNLOAD JOB ORDER</a>
+                        <a class="col-xs-12 col-md-2 btn btn-primary p-l-5 pull-right m-l-20" target="_blank" href="{{ route('purchase_order_repair.printJobOrder', ['id'=>$modelPO->id]) }}">DOWNLOAD JOB ORDER</a>
                     @endif
+
                     @if($route == "/purchase_order")
-                        <a class="col-xs-12 col-md-2 btn btn-primary pull-right" href="{{ route('purchase_order.print', ['id'=>$modelPO->id]) }}">DOWNLOAD</a>
+                        <a class="col-xs-12 col-md-2 btn btn-primary pull-right" target="_blank" href="{{ route('purchase_order.print', ['id'=>$modelPO->id]) }}">DOWNLOAD</a>
+                        @can('cancel-approval-purchase-order')
+                            @if($gr)
+                                <a class="col-xs-12 col-md-2 btn btn-danger pull-right m-r-5" onclick="cancelApproval('{{$route}}')">CANCEL APPROVAL</a>
+                            @endif
+                        @endcan
                     @elseif($route == "/purchase_order_repair")
-                        <a class="col-xs-12 col-md-2 btn btn-primary pull-right" href="{{ route('purchase_order_repair.print', ['id'=>$modelPO->id]) }}">DOWNLOAD</a>
+                        <a class="col-xs-12 col-md-2 btn btn-primary pull-right" target="_blank" href="{{ route('purchase_order_repair.print', ['id'=>$modelPO->id]) }}">DOWNLOAD</a>
+                        @can('cancel-approval-purchase-order-repair')
+                            @if($gr)
+                                <a class="col-xs-12 col-md-2 btn btn-danger pull-right m-r-5" onclick="cancelApproval('{{$route}}')">CANCEL APPROVAL</a>
+                            @endif
+                        @endcan
+                    @endif
+
+                    @if($modelPO->status == 1 || $modelPO->status == 3 || $modelPO->status == 4)
+                        <a class="col-xs-12 col-md-2 btn btn-danger pull-right m-r-5" onclick="cancel('{{$route}}')">CANCEL</a>
                     @endif
                 </div>
 
@@ -238,7 +287,7 @@
                         </div>
                     </div>
                 </div>
-                
+
             </div> <!-- /.box-body -->
             <div class="overlay">
                 <i class="fa fa-refresh fa-spin"></i>
@@ -258,7 +307,7 @@
     var data = {
         modelPOD : @json($datas)
     }
-    function test(id){
+    function remark(id){
         var modelPOD = this.data.modelPOD;
         var remark = ""
         modelPOD.forEach(POD =>{
@@ -267,6 +316,70 @@
             }
         })
         document.getElementById("remark").value = remark;
+    }
+
+    function cancel(route){
+        iziToast.question({
+            close: false,
+            overlay: true,
+            timeout : 0,
+            displayMode: 'once',
+            id: 'question',
+            zindex: 9999,
+            title: 'Confirm',
+            message: 'Are you sure you want to cancel this document?',
+            position: 'center',
+            buttons: [
+                ['<button><b>YES</b></button>', function (instance, toast) {
+                    var url = "";
+                    if(route == "/purchase_order"){
+                        window.location.href = "{{ route('purchase_order.cancel', ['id'=>$modelPO->id]) }}";
+                    }else{
+                        window.location.href = "{{ route('purchase_order_repair.cancel', ['id'=>$modelPO->id]) }}";
+                    }
+
+                    instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
+
+                }, true],
+                ['<button>NO</button>', function (instance, toast) {
+
+                    instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
+
+                }],
+            ],
+        });
+    }
+
+    function cancelApproval(route){
+        iziToast.question({
+            close: false,
+            overlay: true,
+            timeout : 0,
+            displayMode: 'once',
+            id: 'question',
+            zindex: 9999,
+            title: 'Confirm',
+            message: 'Are you sure you want to cancel this approval?',
+            position: 'center',
+            buttons: [
+                ['<button><b>YES</b></button>', function (instance, toast) {
+                    var url = "";
+                    if(route == "/purchase_order"){
+                        window.location.href = "{{ route('purchase_order.cancelApproval', ['id'=>$modelPO->id]) }}";
+                    }else{
+                        window.location.href = "{{ route('purchase_order_repair.cancelApproval', ['id'=>$modelPO->id]) }}";
+                    }
+
+                    instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
+
+                }, true],
+                ['<button>NO</button>', function (instance, toast) {
+
+                    instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
+
+                }],
+            ],
+        });
     }
 </script>
 @endpush

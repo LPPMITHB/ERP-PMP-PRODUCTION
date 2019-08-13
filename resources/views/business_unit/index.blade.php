@@ -17,14 +17,13 @@
 <div class="row">
     <div class="col-xs-12">
         <div class="box">
-            <div class="box-header">
-                <div class="box-tools pull-right">
-                    <a href="{{ route('business_unit.create') }}" class="btn btn-primary btn-sm">CREATE</a>
+            <div class="box-body">
+                <div class="col-sm-6 p-l-0">
+                    <div class="box-tools pull-left">
+                        <a href="{{ route('business_unit.create') }}" class="btn btn-primary btn-sm">CREATE</a>
+                    </div>
                 </div>
-            </div> <!-- /.box-header -->
-            <div class="box-body p-b-0 p-t-15">
-            {{-- <div style ="overflow:scroll"> --}}
-                <table class="table table-bordered tableFixed tablePaging">
+                <table id="bu-table" class="table table-bordered tableFixed">
                     <thead>
                         <tr>
                             <th style="width: 5%">No</th>
@@ -41,13 +40,8 @@
                                 <td>{{ $counter++ }}</td>
                                 <td class="tdEllipsis" data-container="body" data-toggle="tooltip" title="{{$business_unit->name}}">{{ $business_unit->name }}</td>
                                 <td class="tdEllipsis" data-container="body" data-toggle="tooltip" title="{{$business_unit->description}}">{{ $business_unit->description }}</td>
-                                <td>
-                                    @if ($business_unit->status == 1)
-                                        <i class="fa fa-check"></i>
-                                    @elseif ($business_unit->status == 0)
-                                        <i class="fa fa-times"></i>
-                                    @endif
-                                </td>
+                                <td> {{ $business_unit->status == "1" ? "Active": "Non Active" }}</td>
+
                                 <td class="p-l-0 p-r-0" align="center">
                                     <a href="{{ route('business_unit.edit',['id'=>$business_unit->id]) }}" class="btn btn-primary btn-xs">EDIT</a>
                                 </td>
@@ -67,7 +61,17 @@
 @push('script')
 <script>
     $(document).ready(function(){
-        $('div.overlay').hide();
+        $('#bu-table').DataTable({
+            'paging'      : true,
+            'lengthChange': false,
+            'ordering'    : true,
+            'info'        : true,
+            'autoWidth'   : false,
+            'bFilter'     : true,
+            'initComplete': function(){
+                $('div.overlay').hide();
+            }
+        });
     });
 </script>
 @endpush
