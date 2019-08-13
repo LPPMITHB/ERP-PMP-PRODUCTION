@@ -18,6 +18,7 @@ class CreateMstEstimateProfile extends Migration
             $table->string('code')->unique();
             $table->text('description');
             $table->unsignedInteger('ship_id');
+            $table->string('status')->default(1);
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('branch_id');  
             $table->timestamps();

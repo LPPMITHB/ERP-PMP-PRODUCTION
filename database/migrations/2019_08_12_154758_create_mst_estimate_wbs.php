@@ -18,6 +18,7 @@ class CreateMstEstimateWbs extends Migration
             $table->string('code')->unique();
             $table->text('name');
             $table->text('description');
+            $table->string('status')->default(1);
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('branch_id');  
             $table->timestamps();

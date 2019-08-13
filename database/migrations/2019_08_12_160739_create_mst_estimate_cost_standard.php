@@ -21,6 +21,7 @@ class CreateMstEstimateCostStandard extends Migration
             $table->unsignedInteger('uom_id');
             $table->unsignedInteger('estimate_wbs_id');
             $table->integer('value')->default(0);
+            $table->string('status')->default(1);
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('branch_id');  
             $table->timestamps();
