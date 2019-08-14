@@ -1710,11 +1710,11 @@ Route::name('yard_plan.')->prefix('yard_plan')->group(function() {
 
 // Estimator Routes
 Route::name('estimator.')->prefix('estimator')->group(function() {
-    Route::get('/indexEstimateWbs', 'EstimatorController@indexEstimateWbs')->name('indexEstimateWbs');
+    Route::get('/indexEstimatorWbs', 'EstimatorController@indexEstimatorWbs')->name('indexEstimatorWbs');
 
-    Route::get('/indexEstimateCostStandard', 'EstimatorController@indexEstimateCostStandard')->name('indexEstimateCostStandard');
+    Route::get('/indexEstimatorCostStandard', 'EstimatorController@indexEstimatorCostStandard')->name('indexEstimatorCostStandard');
 
-    Route::get('/indexEstimateProfile', 'EstimatorController@indexEstimateProfile')->name('indexEstimateProfile');
+    Route::get('/indexEstimatorProfile', 'EstimatorController@indexEstimatorProfile')->name('indexEstimatorProfile');
     
     Route::get('/createWbs', 'EstimatorController@createWbs')->name('createWbs');
 
@@ -1734,7 +1734,7 @@ Route::name('estimator.')->prefix('estimator')->group(function() {
 
     Route::get('/editProfile/{id}', 'EstimatorController@editProfile')->name('editProfile');
 
-    Route::get('/showWbs/{id}', 'EstimatorController@showWbs')->name('showWbs');
+    // Route::get('/showWbs/{id}', 'EstimatorController@showWbs')->name('showWbs');
 
     Route::get('/showCostStandard/{id}', 'EstimatorController@showCostStandard')->name('showCostStandard');
 
@@ -1745,15 +1745,19 @@ Route::name('estimator.')->prefix('estimator')->group(function() {
     Route::patch('/updateCostStandard/{id}', 'EstimatorController@updateCostStandard')->name('updateCostStandard');
 
     Route::patch('/updateProfile/{id}', 'EstimatorController@updateProfile')->name('updateProfile');
+
+    Route::get('/deleteWbs/{id}', 'EstimatorController@deleteWbs')->name('deleteWbs');
+
+    Route::get('/deleteCostStandard/{id}', 'EstimatorController@deleteCostStandard')->name('deleteCostStandard');
 });
 
 // Estimator Repair Routes
 Route::name('estimator_repair.')->prefix('estimator_repair')->group(function() {
-    Route::get('/indexEstimateWbs', 'EstimatorController@indexEstimateWbs')->name('indexEstimateWbs');
+    Route::get('/indexEstimatorWbs', 'EstimatorController@indexEstimatorWbs')->name('indexEstimatorWbs');
 
-    Route::get('/indexEstimateCostStandard', 'EstimatorController@indexEstimateCostStandard')->name('indexEstimateCostStandard');
+    Route::get('/indexEstimatorCostStandard', 'EstimatorController@indexEstimatorCostStandard')->name('indexEstimatorCostStandard');
 
-    Route::get('/indexEstimateProfile', 'EstimatorController@indexEstimateProfile')->name('indexEstimateProfile');
+    Route::get('/indexEstimatorProfile', 'EstimatorController@indexEstimatorProfile')->name('indexEstimatorProfile');
     
     Route::get('/createWbs', 'EstimatorController@createWbs')->name('createWbs');
 
@@ -1784,6 +1788,10 @@ Route::name('estimator_repair.')->prefix('estimator_repair')->group(function() {
     Route::patch('/updateCostStandard/{id}', 'EstimatorController@updateCostStandard')->name('updateCostStandard');
 
     Route::patch('/updateProfile/{id}', 'EstimatorController@updateProfile')->name('updateProfile');
+
+    Route::get('/deleteWbs/{id}', 'EstimatorController@deleteWbs')->name('deleteWbs');
+
+    Route::get('/deleteCostStandard/{id}', 'EstimatorController@deleteCostStandard')->name('deleteCostStandard');
 });
 
 // Quotation Routes
