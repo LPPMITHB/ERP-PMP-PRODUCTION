@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateMstActivityConfigurationTable extends Migration
+class CreateMstActivityStandardTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateMstActivityConfigurationTable extends Migration
      */
     public function up()
     {
-        Schema::create('mst_activity_configuration', function (Blueprint $table) {
+        Schema::create('mst_activity_standard', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
             $table->text('description');
@@ -23,7 +23,7 @@ class CreateMstActivityConfigurationTable extends Migration
             $table->unsignedInteger('branch_id');  
             $table->timestamps();
 
-            $table->foreign('wbs_id')->references('id')->on('mst_wbs_configuration');
+            $table->foreign('wbs_id')->references('id')->on('mst_wbs_standard');
             $table->foreign('branch_id')->references('id')->on('mst_branch');
             $table->foreign('user_id')->references('id')->on('users');
         });
@@ -36,6 +36,6 @@ class CreateMstActivityConfigurationTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('mst_activity_configuration');
+        Schema::dropIfExists('mst_activity_standard');
     }
 }

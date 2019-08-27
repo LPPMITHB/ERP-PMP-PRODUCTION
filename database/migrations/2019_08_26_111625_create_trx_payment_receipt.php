@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateMstActivityStandardTable extends Migration
+class CreateTrxPaymentReceipt extends Migration
 {
     /**
      * Run the migrations.
@@ -13,20 +13,18 @@ class CreateMstActivityStandardTable extends Migration
      */
     public function up()
     {
-        Schema::create('mst_activity_standard', function (Blueprint $table) {
+        Schema::create('trx_payment_receipt', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
-            $table->text('description');
-            $table->unsignedInteger('wbs_standard_id')->nullable();
-            $table->integer('planned_duration');
-            $table->text('predecessor')->nullable();
+            $table->unsignedInteger('invoice_id');
+            $table->float('amount',15,2);
+            $table->string('status')->default(1);
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('branch_id');  
             $table->timestamps();
 
-            $table->foreign('wbs_standard_id')->references('id')->on('mst_wbs_standard');
-            $table->foreign('branch_id')->references('id')->on('mst_branch');
+            $table->foreign('invoice_id')->references('id')->on('trx_invoice');
             $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('branch_id')->references('id')->on('mst_branch');
         });
     }
 
@@ -37,6 +35,6 @@ class CreateMstActivityStandardTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('mst_activity_standard');
+        //
     }
 }

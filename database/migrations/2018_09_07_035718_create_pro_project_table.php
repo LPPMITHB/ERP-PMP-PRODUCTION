@@ -18,6 +18,7 @@ class CreateProProjectTable extends Migration
             $table->increments('id');
             $table->string('number')->unique();
             $table->string('drawing')->nullable();
+            $table->unsignedInteger('project_standard_id')->nullable();;
             $table->unsignedInteger('business_unit_id');
             $table->unsignedInteger('project_sequence');
             $table->unsignedInteger('ship_id');
@@ -30,6 +31,7 @@ class CreateProProjectTable extends Migration
             $table->date('planned_start_date')->nullable();
             $table->date('planned_end_date')->nullable();
             $table->string('planned_duration')->nullable();
+            $table->date('arrival_date')->nullable();
             $table->date('actual_start_date')->nullable();
             $table->date('actual_end_date')->nullable();
             $table->string('actual_duration')->nullable();
@@ -47,18 +49,19 @@ class CreateProProjectTable extends Migration
             $table->unsignedInteger('project_type');
             $table->integer('status')->default(1);
             $table->unsignedInteger('user_id');
-            $table->unsignedInteger('branch_id');            
+            $table->unsignedInteger('branch_id');
             $table->timestamps();
 
+            $table->foreign('project_standard_id')->references('id')->on('mst_project_standard');
             $table->foreign('business_unit_id')->references('id')->on('mst_business_unit');
             $table->foreign('branch_id')->references('id')->on('mst_branch');
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('ship_id')->references('id')->on('mst_ship');
             $table->foreign('customer_id')->references('id')->on('mst_customer');
-            // $table->foreign('sales_order_id')->references('id')->on('trx_sales_order');
+            $table->foreign('sales_order_id')->references('id')->on('trx_sales_order');
         });
     }
-    
+
     /**
      * Reverse the migrations.
      *

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\SalesOrder;
+use App\Models\SalesOrderDetail;
 use App\Models\Project;
 use App\Models\Customer;
 use App\Models\Configuration;
@@ -29,6 +30,9 @@ use App\Models\PurchaseRequisitionDetail;
 use App\Models\Rap;
 use App\Models\RapDetail;
 use App\Models\Stock;
+use App\Models\ProjectStandard;
+use App\Models\WbsStandard;
+use App\Models\ActivityStandard;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use DB;
@@ -58,7 +62,7 @@ class ProjectController extends Controller
         $dataWbs = Collection::make();
         $totalWeightProject = $project->wbss->where('wbs_id',null)->sum('weight');
         $dataWbs->push([
-            "id" => $project->number, 
+            "id" => $project->number,
             "parent" => "#",
             "text" => $project->name. " | Weight : (".$totalWeightProject."% / 100%)",
             "icon" => "fa fa-ship"
@@ -113,7 +117,7 @@ class ProjectController extends Controller
                         if($menu == "viewAct"){
                             if($mainMenu == "building"){
                                 $dataWbs->push([
-                                    "id" => $activity->code , 
+                                    "id" => $activity->code ,
                                     "parent" => $activity->wbs->code,
                                     "text" => $activity->name. " | Weight : ".$activity->weight."%",
                                     "start_date" => $activity->planned_start_date,
@@ -122,7 +126,7 @@ class ProjectController extends Controller
                                 ]);
                             }else{
                                 $dataWbs->push([
-                                    "id" => $activity->code , 
+                                    "id" => $activity->code ,
                                     "parent" => $activity->wbs->code,
                                     "text" => $activity->name. " | Weight : ".$activity->weight."%",
                                     "start_date" => $activity->planned_start_date,
@@ -132,7 +136,7 @@ class ProjectController extends Controller
                             }
                         }else{
                             $dataWbs->push([
-                                "id" => $activity->code , 
+                                "id" => $activity->code ,
                                 "parent" => $activity->wbs->code,
                                 "text" => $activity->name. " | Weight : ".$activity->weight."%",
                                "start_date" => $activity->planned_start_date,
@@ -142,7 +146,7 @@ class ProjectController extends Controller
                     }
                 }else{
                     $dataWbs->push([
-                        "id" => $wbs->code , 
+                        "id" => $wbs->code ,
                         "parent" => $wbs->wbs->code,
                         "text" => $wbs->number." - ".$wbs->description." | Weight : ".$wbs->weight."%",
                         "start_date" => $wbs->planned_start_date,
@@ -155,7 +159,7 @@ class ProjectController extends Controller
                     foreach($wbs->activities as $activity){
                         if($menu == "viewAct"){
                             $dataWbs->push([
-                                "id" => $activity->code , 
+                                "id" => $activity->code ,
                                 "parent" => $activity->wbs->code,
                                 "text" => $activity->name. " | Weight : ".$activity->weight."%",
                                 "start_date" => $activity->planned_start_date,
@@ -164,7 +168,7 @@ class ProjectController extends Controller
                         ]);
                         }else{
                             $dataWbs->push([
-                                "id" => $activity->code , 
+                                "id" => $activity->code ,
                                 "parent" => $activity->wbs->code,
                                 "text" => $activity->name. " | Weight : ".$activity->weight."%)",
                                "start_date" => $activity->planned_start_date,
@@ -176,7 +180,7 @@ class ProjectController extends Controller
                 $totalWeight = $wbs->wbss->sum('weight') + $wbs->activities->sum('weight');
 
                 $dataWbs->push([
-                    "id" => $wbs->code , 
+                    "id" => $wbs->code ,
                     "parent" => $project->number,
                     "text" => $wbs->number." - ".$wbs->description." | Weight : (".$totalWeight."% / ".$wbs->weight."%)",
                     "start_date" => $wbs->planned_start_date,
@@ -185,11 +189,11 @@ class ProjectController extends Controller
                 ]);
             }
         }
-        
+
         $dataWbs = $dataWbs->toArray();
         // Asc sort
         usort($dataWbs,function($first,$second){
-            if ((strpos($first['id'], 'WBS') !== false || strpos($second['id'], 'WBS') !== false) && 
+            if ((strpos($first['id'], 'WBS') !== false || strpos($second['id'], 'WBS') !== false) &&
             (strpos($first['id'], 'ACT') !== false || strpos($second['id'], 'ACT') !== false)) {
                 return $first['start_date'] > $second['start_date'];
             }
@@ -207,25 +211,25 @@ class ProjectController extends Controller
 
         $totalWeightProject = $project->wbss->where('wbs_id',null)->sum('weight');
         $dataWbs->push([
-            "id" => $project->number, 
+            "id" => $project->number,
             "parent" => "#",
             "text" => $project->name. " | Weight : (".$totalWeightProject."% / 100%)",
             "icon" => "fa fa-ship"
         ]);
-    
+
         foreach($wbss as $wbs){
             if($wbs->wbs){
                 if(count($wbs->activities)>0){
                     $totalWeight = $wbs->wbss->sum('weight') + $wbs->activities->sum('weight');
                     $dataWbs->push([
-                        "id" => $wbs->code , 
+                        "id" => $wbs->code ,
                         "parent" => $wbs->wbs->code,
                         "text" => $wbs->number." - ".$wbs->description." | Weight : (".$totalWeight."% / ".$wbs->weight."%",
                         "icon" => "fa fa-suitcase",
                     ]);
                     foreach($wbs->activities as $activity){
                         $dataWbs->push([
-                            "id" => $activity->code , 
+                            "id" => $activity->code ,
                             "parent" => $activity->wbs->code,
                             "text" => $activity->name. " | Weight : ".$activity->weight."%",
                             "icon" => "fa fa-clock-o",
@@ -233,7 +237,7 @@ class ProjectController extends Controller
                     }
                 }else{
                     $dataWbs->push([
-                        "id" => $wbs->code , 
+                        "id" => $wbs->code ,
                         "parent" => $wbs->wbs->code,
                         "text" => $wbs->number." - ".$wbs->description." | Weight : ".$wbs->weight."%",
                         "icon" => "fa fa-suitcase",
@@ -243,7 +247,7 @@ class ProjectController extends Controller
                 if(count($wbs->activities)>0){
                     foreach($wbs->activities as $activity){
                         $dataWbs->push([
-                            "id" => $activity->code , 
+                            "id" => $activity->code ,
                             "parent" => $activity->wbs->code,
                             "text" => $activity->name. " | Weight : ".$activity->weight."%",
                             "icon" => "fa fa-clock-o",
@@ -253,15 +257,79 @@ class ProjectController extends Controller
                 $totalWeight = $wbs->wbss->sum('weight') + $wbs->activities->sum('weight');
 
                 $dataWbs->push([
-                    "id" => $wbs->code , 
+                    "id" => $wbs->code ,
                     "parent" => $project->number,
                     "text" => $wbs->number." - ".$wbs->description." | Weight : (".$totalWeight."% / ".$wbs->weight."%)",
                     "icon" => "fa fa-suitcase",
                 ]);
-            } 
+            }
         }
-        
+
         return view('project.copyProjectStructure', compact('dataWbs','project','mainMenu','newProject'));
+    }
+
+    public function selectStructure($project_standard_id, $project_id){
+        $projectStandard = ProjectStandard::find($project_standard_id);
+        $newProject = Project::find($project_id);
+        $mainMenu = $newProject->business_unit_id == "1" ? "building" : "repair";
+        $wbss = $projectStandard->wbss;
+        $dataWbs = Collection::make();
+
+        $totalWeightProject = $projectStandard->wbss->where('wbs_id',null)->sum('weight');
+        $dataWbs->push([
+            "id" => "PRO".$projectStandard->id,
+            "parent" => "#",
+            "text" => $projectStandard->name,
+            "icon" => "fa fa-ship"
+        ]);
+
+        foreach($wbss as $wbs){
+            if($wbs->wbs){
+                if(count($wbs->activities)>0){
+                    $dataWbs->push([
+                        "id" => "WBS".$wbs->id,
+                        "parent" => "WBS".$wbs->wbs->id,
+                        "text" => $wbs->number." - ".$wbs->description,
+                        "icon" => "fa fa-suitcase",
+                    ]);
+                    foreach($wbs->activities as $activity){
+                        $dataWbs->push([
+                            "id" => "ACT".$activity->id,
+                            "parent" => "WBS".$activity->wbs->id,
+                            "text" => $activity->name,
+                            "icon" => "fa fa-clock-o",
+                        ]);
+                    }
+                }else{
+                    $dataWbs->push([
+                        "id" => "WBS".$wbs->id,
+                        "parent" => "WBS".$wbs->wbs->id,
+                        "text" => $wbs->number." - ".$wbs->description,
+                        "icon" => "fa fa-suitcase",
+                    ]);
+                }
+            }else{
+                if(count($wbs->activities)>0){
+                    foreach($wbs->activities as $activity){
+                        $dataWbs->push([
+                            "id" => "ACT".$activity->id,
+                            "parent" => "WBS".$activity->wbs->id,
+                            "text" => $activity->name,
+                            "icon" => "fa fa-clock-o",
+                        ]);
+                    }
+                }
+
+                $dataWbs->push([
+                    "id" => "WBS".$wbs->id,
+                    "parent" => "PRO".$projectStandard->id,
+                    "text" => $wbs->number." - ".$wbs->description,
+                    "icon" => "fa fa-suitcase",
+                ]);
+            }
+        }
+
+        return view('project.selectStructure', compact('dataWbs','projectStandard','mainMenu','newProject'));
     }
 
     public function index(Request $request)
@@ -295,8 +363,13 @@ class ProjectController extends Controller
         // $project_code = self::generateProjectCode();
         $project = new Project;
         $menu = $request->route()->getPrefix() == "/project" ? "building" : "repair";
+        $sales_orders = SalesOrder::where('status',1)->get();
 
-        return view('project.create', compact('customers','ships','project','menu','projectType'));
+        if($menu == "building"){
+            return view('project.create', compact('customers','ships','project','menu','projectType','sales_orders'));
+        }else{
+            return view('project.createRepair', compact('customers','ships','project','menu','projectType','sales_orders'));
+        }
     }
 // public function create(Request $request)
 // {
@@ -327,7 +400,7 @@ class ProjectController extends Controller
         $projectType = Configuration::get('project_type');
         $menu = $project->business_unit_id == "1" ? "building" : "repair";
 
-        
+
         return view('project.copyProjectInfo', compact('project','customers','ships','menu','projectType'));
     }
     public function storeCopyProjectStructure(Request $request)
@@ -338,7 +411,7 @@ class ProjectController extends Controller
         $old_project_id = $request->old_project_id;
         $new_project_ref = Project::find($project_id);
         $old_project_ref = Project::find($old_project_id);
-        
+
         $new_project_planned_start_date = date_create($new_project_ref->planned_end_date);
         $old_project_planned_start_date = date_create($old_project_ref->planned_end_date);
         $diff=date_diff($new_project_planned_start_date,$old_project_planned_start_date)->days;
@@ -385,7 +458,7 @@ class ProjectController extends Controller
                         $bom->user_id = Auth::user()->id;
                         $bom->branch_id = Auth::user()->branch->id;
                         $bom->save();
-    
+
                         foreach ($bom_ref->bomDetails as $bomD) {
                             $bom_detail = new BomDetail;
                             $bom_detail = $bomD->replicate();
@@ -393,7 +466,7 @@ class ProjectController extends Controller
                             $bom_detail->save();
                         }
                     }
-    
+
                     $resource_ref = ResourceTrx::where('wbs_id', $wbs_ref->id)->get();
                     if(count($resource_ref) > 0){
                         foreach ($resource_ref as $resource) {
@@ -414,7 +487,7 @@ class ProjectController extends Controller
                     $date = date($act_ref->planned_start_date);
                     $date = strtotime($diff." day",strtotime($date));
                     $act->planned_start_date = date("Y-m-d",$date);
-                    
+
                     $date = date($act_ref->planned_end_date);
                     $date = strtotime($diff." day",strtotime($date));
                     $act->planned_end_date = date("Y-m-d",$date);
@@ -439,9 +512,9 @@ class ProjectController extends Controller
                         $act->predecessor = json_encode($predecessor);
                     }
                     $act->save();
-    
+
                     $actIdConverter[$act_ref->id] = $act->id;
-                    
+
                 }
             }
             DB::commit();
@@ -499,7 +572,7 @@ class ProjectController extends Controller
                 'planned_duration' => 'required',
                 'drawing' => 'image|mimes:jpeg,png,jpg,gif,svg|max:3000'
             ]);
-        } 
+        }
         $projects = Project::all();
         foreach ($projects as $project) {
             if($project->name == $request->name){
@@ -545,6 +618,7 @@ class ProjectController extends Controller
             $project->class_contact_person_phone_2 = $request->class_contact_person_phone_2;
             $project->class_contact_person_email = $request->class_contact_person_email;
             $project->class_contact_person_email_2 = $request->class_contact_person_email_2;
+            $project->sales_order_id = $request->sales_order_id;
 
             $planStartDate = DateTime::createFromFormat('m/j/Y', $request->planned_start_date);
             $planEndDate = DateTime::createFromFormat('m/j/Y', $request->planned_end_date);
@@ -564,7 +638,7 @@ class ProjectController extends Controller
             $project->business_unit_id = $request->business_unit_id;
             $project->user_id = Auth::user()->id;
             $project->branch_id = Auth::user()->branch->id;
-            
+
             if($request->hasFile('drawing')){
                 // Get filename with the extension
                 $fileNameWithExt = $request->file('drawing')->getClientOriginalName();
@@ -581,7 +655,17 @@ class ProjectController extends Controller
             }
             $project->drawing = $fileNameToStore;
             $project->save();
-            
+
+            // update status SO
+            if($request->sales_order_id != null && $request->sales_order_id != ""){
+                $so = SalesOrder::findOrFail($request->sales_order_id);
+                $so->status = 0;
+                $so->update();
+
+                $customer = Customer::findOrFail($so->customer_id);
+                $customer->used_limit += $so->total_price;
+                $customer->update();
+            }
             DB::commit();
             if($menu == "building"){
                 return redirect()->route('project.show', ['id' => $project->id])->with('success', 'Project Created');
@@ -596,6 +680,187 @@ class ProjectController extends Controller
                 return redirect()->route('project_repair.create')->with( 'error',$e->getMessage())->withInput();
             }
         }
+    }
+
+    public function storeGeneralInfo(Request $request)
+    {
+        $this->validate($request, [
+            'number' => 'required',
+            'customer' => 'required',
+            'ship' => 'required',
+            'project_type' => 'required',
+            'planned_start_date' => 'required',
+            'planned_end_date' => 'required',
+            'arrival_date' => 'required',
+            'planned_duration' => 'required',
+            'drawing' => 'image|mimes:jpeg,png,jpg,gif,svg|max:3000'
+        ]);
+        $projects = Project::all();
+        foreach ($projects as $project) {
+            if($project->name == $request->name){
+                if($request->name != null){
+                    return redirect()->route('project_repair.create')->with('error','The project name has been taken')->withInput();
+                }
+            }
+            if($project->number == $request->number){
+                return redirect()->route('project_repair.create')->with('error','The project number has been taken')->withInput();
+            }
+        }
+
+        DB::beginTransaction();
+        $modelProject = Project::orderBy('id','desc')->whereYear('created_at', '=', date('Y'))->first();
+        try {
+            $project = new Project;
+            $project->number =  $request->number;
+            $project->project_sequence = $modelProject != null ? $modelProject->project_sequence + 1 : 1;
+            $project->name = $request->name;
+            $project->description = $request->description;
+            $project->customer_id = $request->customer;
+            $project->budget_value = $request->budget_value_int;
+            $project->ship_id = $request->ship;
+            $project->project_standard_id = $request->project_standard;
+            $project->project_type = $request->project_type;
+            $project->person_in_charge = $request->person_in_charge;
+
+            $planStartDate = DateTime::createFromFormat('m/j/Y', $request->planned_start_date);
+            $planEndDate = DateTime::createFromFormat('m/j/Y', $request->planned_end_date);
+            $arrivalDate = DateTime::createFromFormat('m/j/Y', $request->arrival_date);
+
+            if($planStartDate){
+                $project->planned_start_date = $planStartDate->format('Y-m-d');
+            }else{
+                $project->planned_start_date = null;
+            }
+            if($planEndDate){
+                $project->planned_end_date = $planEndDate->format('Y-m-d');
+            }else{
+                $project->planned_end_date = null;
+            }
+            if($arrivalDate){
+                $project->arrival_date = $arrivalDate->format('Y-m-d');
+            }else{
+                $project->arrival_date = null;
+            }
+            $project->planned_duration =  $request->planned_duration;
+            $project->progress = 0;
+            $project->business_unit_id = $request->business_unit_id;
+            $project->user_id = Auth::user()->id;
+            $project->branch_id = Auth::user()->branch->id;
+
+            if($request->hasFile('drawing')){
+                // Get filename with the extension
+                $fileNameWithExt = $request->file('drawing')->getClientOriginalName();
+                // Get just file name
+                $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+                // Get just ext
+                $extension = $request->file('drawing')->getClientOriginalExtension();
+                // File name to store
+                $fileNameToStore = $fileName.'_'.time().'.'.$extension;
+                // Upload image
+                $path = $request->file('drawing')->storeAs('documents/project',$fileNameToStore);
+            }else{
+                $fileNameToStore =  null;
+            }
+            $project->drawing = $fileNameToStore;
+            $project->save();
+
+            DB::commit();
+            return redirect()->route('project_repair.selectStructure', ['project_standard_id' => $request->project_standard,'project_id' => $project->id])->with('success', 'Project Created');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->route('project_repair.create')->with( 'error',$e->getMessage())->withInput();
+        }
+    }
+
+    public function storeSelectedStructure(Request $request)
+    {
+        $menu = $request->route()->getPrefix() == "/project" ? "building" : "repair";
+        $datas = json_decode($request->structures);
+        $project_id = $request->project_id;
+        $project_ref = Project::find($project_id);
+
+        $wbsIdConverter = [];
+
+        DB::beginTransaction();
+        try {
+            foreach ($datas as $dataTree) {
+                if(strpos($dataTree, 'WBS') !== false) {
+                    $wbs_standard_id = str_replace("WBS", "", $dataTree);
+                    $wbs_standard = WbsStandard::find($wbs_standard_id);
+
+                    $wbs = new WBS;
+                    $wbs->number = $wbs_standard->number;
+                    $wbs->description = $wbs_standard->description;
+                    $wbs->deliverables = $wbs_standard->deliverables;
+                    $wbs->planned_duration = $wbs_standard->duration;
+                    $wbs->wbs_standard_id = $wbs_standard_id;
+
+                    $wbs->code = self::generateWbsCode($project_id);
+                    if(isset($wbsIdConverter[$wbs_standard->wbs_id])){
+                        $wbs->wbs_id = $wbsIdConverter[$wbs_standard->wbs_id];
+                    }
+                    $wbs->project_id = $project_id;
+                    $wbs->user_id = Auth::user()->id;
+                    $wbs->branch_id = Auth::user()->branch->id;
+                    $wbs->save();
+                    $wbsIdConverter[$wbs_standard_id] = $wbs->id;
+                    // $bom_ref = Bom::where('wbs_id', $wbs_standard->id)->first();
+                    // if($bom_ref != null){
+                    //     $bom = new Bom;
+                    //     $bom = $bom_ref->replicate();
+                    //     $bom->code = self::generateBomCode($project_id);
+                    //     $bom->wbs_id = $wbs->id;
+                    //     $bom->project_id = $project_id;
+                    //     $bom->user_id = Auth::user()->id;
+                    //     $bom->branch_id = Auth::user()->branch->id;
+                    //     $bom->save();
+
+                    //     foreach ($bom_ref->bomDetails as $bomD) {
+                    //         $bom_detail = new BomDetail;
+                    //         $bom_detail = $bomD->replicate();
+                    //         $bom_detail->bom_id = $bom->id;
+                    //         $bom_detail->save();
+                    //     }
+                    // }
+
+                    // $resource_ref = ResourceTrx::where('wbs_id', $wbs_ref->id)->get();
+                    // if(count($resource_ref) > 0){
+                    //     foreach ($resource_ref as $resource) {
+                    //         $resource_input = new ResourceTrx;
+                    //         $resource_input = $resource->replicate();
+                    //         $resource_input->wbs_id = $wbs->id;
+                    //         $resource_input->project_id = $project_id;
+                    //         $resource_input->user_id = Auth::user()->id;
+                    //         $resource_input->branch_id = Auth::user()->branch->id;
+                    //         $resource_input->save();
+                    //     }
+                    // }
+                }elseif(strpos($dataTree, 'ACT') !== false){
+                    $act_standard_id = str_replace("ACT", "", $dataTree);
+                    $act_standard = ActivityStandard::find($act_standard_id);
+                    $act = new Activity;
+                    $act->name = $act_standard->name;
+                    $act->description = $act_standard->description;
+                    $act->planned_duration = $act_standard->duration;
+                    $act->activity_standard_id = $act_standard_id;
+
+                    if(isset($wbsIdConverter[$act_standard->wbs_id])){
+                        $act->code = self::generateActivityCode($wbsIdConverter[$act_standard->wbs_id]);
+                        $act->wbs_id = $wbsIdConverter[$act_standard->wbs_id];
+                    }
+                    $act->user_id = Auth::user()->id;
+                    $act->branch_id = Auth::user()->branch->id;
+                    $act->save();
+                }
+            }
+            DB::commit();
+
+            return redirect()->route('project_repair.show', ['id' => $request->project_id])->with('success', 'Project Created');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->route('project_repair.selectStructure', ['project_standard_id' => $request->project_standard_id,'project_id' => $project_id])->with('error', "Please Try Again, ".$e->getMessage());
+        }
+
     }
 // public function store(Request $request)
 // {
@@ -662,7 +927,7 @@ class ProjectController extends Controller
 //         $project->drawing = $fileNameToStore;
 //         $project->save();
 
-        
+
 //         DB::commit();
 //         return redirect()->route('project_repair.show', ['id' => $project->id])->with('success', 'Project Created');
 //     } catch (\Exception $e) {
@@ -696,7 +961,7 @@ class ProjectController extends Controller
                 'planned_end_date' => 'required',
                 'planned_duration' => 'required',
             ]);
-        } 
+        }
         $projects = Project::all();
         foreach ($projects as $project) {
             if($project->number == $request->number){
@@ -769,7 +1034,7 @@ class ProjectController extends Controller
             $project->drawing = $fileNameToStore;
             $project->save();
 
-            
+
             DB::commit();
             if($menu == "building"){
                 return redirect()->route('project.copyProjectStructure', ['old_id' => $request->project_ref,'new_id' => $project->id])->with('success', 'Project Created');
@@ -799,7 +1064,11 @@ class ProjectController extends Controller
         $menu = $project->business_unit_id == "1" ? "building" : "repair";
         $wbss = $project->wbss;
         $today = date("Y-m-d");
-
+        $is_pami = false;
+        $business_ids = Auth::user()->business_unit_id;
+        if (in_array("2", json_decode($business_ids))) {
+            $is_pami = true;
+        }
         //planned
         $dataPlannedCost = Collection::make();
         $modelBom = Bom::where('project_id',$id)->get();
@@ -810,16 +1079,16 @@ class ProjectController extends Controller
             $objectDate = Activity::whereIn('wbs_id',$wbss_id)->get()->groupBy('planned_start_date');
         }
         $dataPlannedCost->push([
-            "t" => $project->planned_start_date, 
+            "t" => $project->planned_start_date,
             "y" => "0",
         ]);
-        
+
         //actual
         $dataActualCost = Collection::make();
         $modelMR = MaterialRequisition::where('project_id',$id)->get();
         if($project->actual_start_date != null){
             $dataActualCost->push([
-                "t" => $project->actual_start_date, 
+                "t" => $project->actual_start_date,
                 "y" => "0",
             ]);
         }
@@ -828,21 +1097,21 @@ class ProjectController extends Controller
         $dataEvm = Collection::make();
         if($project->actual_start_date != null){
             $dataEvm->push([
-                "t" => $project->actual_start_date, 
+                "t" => $project->actual_start_date,
                 "y" => "0",
             ]);
         }
-        
+
         //Progress
         $dataPlannedProgress = Collection::make();
         $dataPlannedProgress->push([
-            "t" => $project->planned_start_date, 
+            "t" => $project->planned_start_date,
             "y" => "0",
         ]);
         $dataActualProgress = Collection::make();
         if($project->actual_start_date != null){
             $dataActualProgress->push([
-                "t" => $project->actual_start_date, 
+                "t" => $project->actual_start_date,
                 "y" => "0",
             ]);
         }
@@ -855,14 +1124,14 @@ class ProjectController extends Controller
         self::getDataStatusProgress($project,$progressStatus);
 
         $outstanding_item->push([
-            "id" => $project->number , 
+            "id" => $project->number ,
             "parent" => "#",
             "text" => $project->name,
             "icon" => "fa fa-ship"
         ]);
 
         self::getOutstandingItem($wbss,$outstanding_item, $project,$today);
-        self::getDataForGantt($project, $ganttData, $links, $today);       
+        self::getDataForGantt($project, $ganttData, $links, $today);
 
         $wbss = $project->wbss->pluck('id')->toArray();
         $activities = Activity::whereIn('wbs_id',$wbss)->get();
@@ -923,7 +1192,7 @@ class ProjectController extends Controller
                             $temp_array_data = $temp_parent_coll;
                             array_push($temp_array_data[$dataPerLvl['parent']],$dataPerLvl);
                             $separated_model[$key][$dataPerLvl['act_id']] = $temp_array_data[$dataPerLvl['parent']];
-                        }   
+                        }
                     }
                 }
             }
@@ -938,7 +1207,7 @@ class ProjectController extends Controller
                     $temp_duration += $singular['duration'];
                 }
                 if($longest_duration == $temp_duration){
-                    array_push($longest_model, $sub_model);                    
+                    array_push($longest_model, $sub_model);
                 } else if($longest_duration < $temp_duration){
                     $longest_duration = $temp_duration;
                     $longest_model = [$sub_model];
@@ -971,7 +1240,7 @@ class ProjectController extends Controller
 
         $activities = [];
         if($menu == "building"){
-            $wbss = WBS::where('project_id', $project->id)->with('bom.purchaseRequisition.purchaseOrders.vendor', 
+            $wbss = WBS::where('project_id', $project->id)->with('bom.purchaseRequisition.purchaseOrders.vendor',
             'bom.purchaseRequisition.purchaseOrders.goodsReceipts.purchaseOrder','productionOrder',
             'materialRequisitionDetails.material_requisition.goodsIssues.materialRequisition')->get();
         }else{
@@ -1021,11 +1290,11 @@ class ProjectController extends Controller
             $expectedDate = date($latestDate);
             $expectedDate = strtotime($expectedDate);
             $expectedDate = date("Y-m-d",strtotime("$late_days day", $expectedDate));
-    
+
             $project_end_date = date_create($project->planned_end_date);
             $expected_end_date = date_create($expectedDate);
             $diff=date_diff($expected_end_date,$project_end_date);
-    
+
             if($expectedDate == $project->planned_end_date){
                 $expectedDate = date("d-m-Y", strtotime($expectedDate));
                 $expectedStatus = 0;
@@ -1045,7 +1314,7 @@ class ProjectController extends Controller
         }
 
         $project_done = $project->progress == 100 ? true:false;
-        return view('project.show', compact('activities','wbss','project','today','ganttData','links',
+        return view('project.show', compact('activities','wbss','project','today','ganttData','links','is_pami',
         'outstanding_item','modelPrO','menu','dataPlannedCost','dataActualCost','project_done',
         'dataActualProgress','dataPlannedProgress', 'progressStatus','str_expected_date','expectedStatus','dataEvm'));
     }
@@ -1063,7 +1332,7 @@ class ProjectController extends Controller
 
 
         self::getDataForGantt($project, $data, $links, $today);
-        
+
         $links->jsonSerialize();
         $data->jsonSerialize();
         return view('project.ganttChart', compact('project','data','links','today','menu','wbss'));
@@ -1081,11 +1350,14 @@ class ProjectController extends Controller
         $customers = Customer::all();
         $ships = Ship::all();
         $projectType = Configuration::get('project_type');
-
+        if($project->sales_order_id != null && $project->sales_order_id != ""){
+            $sales_orders = SalesOrder::where('status',1)->orWhere('id', $project->sales_order_id)->get();
+        }else{
+            $sales_orders = SalesOrder::where('status',1)->get();
+        }
         $menu = $project->business_unit_id == "1" ? "building" : "repair";
 
-        
-        return view('project.create', compact('project','projectType','customers','ships','menu'));
+        return view('project.create', compact('project','projectType','customers','ships','menu','sales_orders'));
     }
 
     /**
@@ -1121,7 +1393,7 @@ class ProjectController extends Controller
                 'planned_end_date' => 'required',
                 'planned_duration' => 'required',
             ]);
-        } 
+        }
 
         DB::beginTransaction();
         $projects = Project::where('id', '!=', $id)->get();
@@ -1158,7 +1430,46 @@ class ProjectController extends Controller
             $project->class_contact_person_name = $request->class_contact_person_name;
             $project->class_contact_person_phone = $request->class_contact_person_phone;
             $project->class_contact_person_email = $request->class_contact_person_email;
-            
+            if($project->sales_order_id != null){
+                if($project->sales_order_id != $request->sales_order_id){
+                    // update status SO lama
+                    $so = SalesOrder::findOrFail($project->sales_order_id);
+                    $so->status = 1;
+                    $so->update();
+
+                    if($request->sales_order_id == null){
+                        $customer = Customer::findOrFail($so->customer_id);
+                        $customer->used_limit -= $so->total_price;
+                        $customer->update();
+                    }else{
+                        $newSo = SalesOrder::findOrFail($request->sales_order_id);
+                        if($newSo){
+                            if($so->customer_id != $newSo->customer_id){
+                                $customer = Customer::findOrFail($so->customer_id);
+                                $customer->used_limit -= $so->total_price;
+                                $customer->update();
+    
+                                $newCustomer = Customer::findOrFail($newSo->customer_id);
+                                $newCustomer->used_limit += $newSo->total_price;
+                                $newCustomer->update();
+                            }
+                        }else{
+                            $customer = Customer::findOrFail($so->customer_id);
+                            $customer->used_limit -= $so->total_price;
+                            $customer->update();
+                        }
+                    }
+                }
+                $project->sales_order_id = $request->sales_order_id;
+            }else{
+                $project->sales_order_id = $request->sales_order_id;
+
+                $so = SalesOrder::findOrFail($request->sales_order_id);
+                $customer = Customer::findOrFail($so->customer_id);
+                $customer->used_limit += $so->total_price;
+                $customer->update();
+            }
+
             $planStartDate = DateTime::createFromFormat('m/j/Y', $request->planned_start_date);
             $planEndDate = DateTime::createFromFormat('m/j/Y', $request->planned_end_date);
 
@@ -1182,7 +1493,12 @@ class ProjectController extends Controller
             $project->drawing = $fileNameToStore;
             $project->save();
 
-            
+            // update status SO
+            if($request->sales_order_id != null && $request->sales_order_id != ""){
+                $so = SalesOrder::findOrFail($request->sales_order_id);
+                $so->status = 0;
+                $so->update();
+            }
             DB::commit();
             if($menu == "building"){
                 return redirect()->route('project.show', ['id' => $project->id])->with('success', 'Project Updated');
@@ -1210,7 +1526,7 @@ class ProjectController extends Controller
         //
     }
 
-        
+
     // Project Cost Evaluation
     public function projectCE($id, Request $request){
         $modelWBS = WBS::where('project_id',$id)->where('wbs_id','!=',null)->get();
@@ -1219,25 +1535,31 @@ class ProjectController extends Controller
 
         $planned = Collection::make();
         $materialEvaluation = Collection::make();
-        
+
+        $is_pami = false;
+        $business_ids = Auth::user()->business_unit_id;
+        if (in_array("2", json_decode($business_ids))) {
+            $is_pami = true;
+        }
+
         $actual = Collection::make();
         foreach($project->wbss as $wbs){
             $actualCostPerWbs = 0;
             $plannedCostPerWbs = $wbs->bom != null ? $wbs->bom->rap != null ? $wbs->bom->rap->total_price : 0 : 0;
-            
+
             foreach($wbs->materialRequisitionDetails as $mrd){
                 $actualCostPerWbs = $mrd->material->cost_standard_price * $mrd->issued;
             }
-            
+
             $planned->put($wbs->id,[
                 "wbs_number" => $wbs->number." - ".$wbs->description,
-                "cost" => $plannedCostPerWbs,                   
+                "cost" => $plannedCostPerWbs,
             ]);
-                
+
             $actual->push([
                 "wbs_id" => $wbs->id,
                 "wbs_number" => $wbs->number." - ".$wbs->description,
-                "cost" => $actualCostPerWbs,                   
+                "cost" => $actualCostPerWbs,
             ]);
         }
 
@@ -1254,10 +1576,10 @@ class ProjectController extends Controller
                                         $status = 1;
                                         $quantity = $bomDetail->quantity + $data['quantity'];
                                         $issued = $data['used'];
-            
+
                                         unset($materialEvaluation[$key]);
                                         $material = $bomDetail->material->code.' - '.$bomDetail->material->description;
-            
+
                                         foreach ($bomDetail->material->materialRequisitionDetails as $mrd) {
                                             if ($mrd->wbs_id == $id) {
                                                 $materialEvaluation->push([
@@ -1288,9 +1610,9 @@ class ProjectController extends Controller
                                 $status = 1;
                                 $quantity = $bomDetail->quantity + $data['quantity'];
                                 $issued = $data['used'];
-    
+
                                 unset($materialEvaluation[$key]);
-    
+
                                 $materialEvaluation->push([
                                     "material" => $bomDetail->material->code.' - '.$bomDetail->material->description,
                                     "quantity" => $quantity,
@@ -1310,8 +1632,8 @@ class ProjectController extends Controller
                 }
             }
         }
-            
-        return view('project.showPCE', compact('modelWBS','project','actual','planned','materialEvaluation','menu'));
+
+        return view('project.showPCE', compact('modelWBS','project','actual','planned','materialEvaluation','menu','is_pami'));
     }
 
     // Configuration WBS & Estimator
@@ -1327,7 +1649,7 @@ class ProjectController extends Controller
 
         return view('project.configWbsEstimator', compact('project','wbss'));
     }
-    
+
     //Methods
     public function makeCpm($earliest_act, $current_act, $cpm_model, $predecessor_collection, $level)
     {
@@ -1349,7 +1671,7 @@ class ProjectController extends Controller
     public function generateProjectCode(){
         $code = 'PROJECT';
         $modelProject = Project::orderBy('code', 'desc')->first();
-        
+
         $number = 1;
 		if(isset($modelProject)){
             $number += intval(substr($modelProject->code, -2));
@@ -1367,7 +1689,7 @@ class ProjectController extends Controller
         $year = $project->created_at->year % 100;
 
         $modelWbs = WBS::orderBy('code', 'desc')->where('project_id', $id)->first();
-        
+
         $number = 1;
 		if(isset($modelWbs)){
             $number += intval(substr($modelWbs->code, -4));
@@ -1385,7 +1707,7 @@ class ProjectController extends Controller
         $businessUnit = $project->business_unit_id;
 
         $modelActivity = Activity::orderBy('code', 'desc')->whereIn('wbs_id', $project->wbss->pluck('id')->toArray())->first();
-        
+
         $number = 1;
 		if(isset($modelActivity)){
             $number += intval(substr($modelActivity->code, -4));
@@ -1402,7 +1724,7 @@ class ProjectController extends Controller
         $year = $project->created_at->year % 100;
 
         $modelBom = Bom::orderBy('code', 'desc')->where('project_id', $project_id)->first();
-        
+
         $number = 1;
 		if(isset($modelBom)){
             $number += intval(substr($modelBom->code, -4));
@@ -1427,7 +1749,7 @@ class ProjectController extends Controller
 
 		$rap_number = $year+$number;
         $rap_number = 'RAP-'.$rap_number;
-        
+
 		return $rap_number;
     }
 
@@ -1526,7 +1848,7 @@ class ProjectController extends Controller
             if($bomDetail->source != 'WIP'){
                 if($bomDetail->material_id != null){
                     $modelStock = Stock::where('material_id',$bomDetail->material_id)->first();
-                    
+
                     if(isset($modelStock)){
                         $remaining = $modelStock->quantity - $modelStock->reserved;
                         if($remaining < $bomDetail->quantity){
@@ -1565,15 +1887,15 @@ class ProjectController extends Controller
             if($wbs->wbs){
                 if($wbs->progress == 100){
                     $outstanding_item->push([
-                        "id" => $wbs->code , 
+                        "id" => $wbs->code ,
                         "parent" => $wbs->wbs->code,
                         "text" => $wbs->number.' - '.$wbs->description.' <b>| Progress : '.$wbs->progress.' %</b>',
                         "icon" => "fa fa-suitcase",
-                        "a_attr" =>  ["style" => "background-color:#0b710b; font-weight:bold; color:white;"], 
+                        "a_attr" =>  ["style" => "background-color:#0b710b; font-weight:bold; color:white;"],
                     ]);
                 }elseif($today>$wbs->planned_end_date && $wbs->progress != 100){
                     $outstanding_item->push([
-                        "id" => $wbs->code , 
+                        "id" => $wbs->code ,
                         "parent" => $wbs->wbs->code,
                         "text" => $wbs->number.' - '.$wbs->description.' <b>| Progress : '.$wbs->progress.' %</b>',
                         "icon" => "fa fa-suitcase",
@@ -1581,7 +1903,7 @@ class ProjectController extends Controller
                     ]);
                 }elseif($today==$wbs->planned_end_date && $wbs->progress != 100){
                     $outstanding_item->push([
-                        "id" => $wbs->code , 
+                        "id" => $wbs->code ,
                         "parent" => $wbs->wbs->code,
                         "text" => $wbs->number.' - '.$wbs->description.' <b>| Progress : '.$wbs->progress.' %</b>',
                         "icon" => "fa fa-suitcase",
@@ -1589,7 +1911,7 @@ class ProjectController extends Controller
                     ]);
                 }else{
                     $outstanding_item->push([
-                        "id" => $wbs->code , 
+                        "id" => $wbs->code ,
                         "parent" => $wbs->wbs->code,
                         "text" => $wbs->number.' - '.$wbs->description.' <b>| Progress : '.$wbs->progress.' %</b>',
                         "icon" => "fa fa-suitcase",
@@ -1599,7 +1921,7 @@ class ProjectController extends Controller
             }else{
                 if($wbs->progress == 100){
                     $outstanding_item->push([
-                        "id" => $wbs->code , 
+                        "id" => $wbs->code ,
                         "parent" => $project->number,
                         "text" => $wbs->number.' - '.$wbs->description.' <b>| Progress : '.$wbs->progress.' %</b>',
                         "icon" => "fa fa-suitcase",
@@ -1607,7 +1929,7 @@ class ProjectController extends Controller
                     ]);
                 }elseif($today>$wbs->planned_end_date && $wbs->progress != 100){
                     $outstanding_item->push([
-                        "id" => $wbs->code , 
+                        "id" => $wbs->code ,
                         "parent" => $project->number,
                         "text" => $wbs->number.' - '.$wbs->description.' <b>| Progress : '.$wbs->progress.' %</b>',
                         "icon" => "fa fa-suitcase",
@@ -1615,7 +1937,7 @@ class ProjectController extends Controller
                     ]);
                 }elseif($today==$wbs->planned_end_date && $wbs->progress != 100){
                     $outstanding_item->push([
-                        "id" => $wbs->code , 
+                        "id" => $wbs->code ,
                         "parent" => $project->number,
                         "text" => $wbs->number.' - '.$wbs->description.' <b>| Progress : '.$wbs->progress.' %</b>',
                         "icon" => "fa fa-suitcase",
@@ -1623,14 +1945,14 @@ class ProjectController extends Controller
                     ]);
                 }else{
                     $outstanding_item->push([
-                        "id" => $wbs->code , 
+                        "id" => $wbs->code ,
                         "parent" => $project->number,
                         "text" => $wbs->number.' - '.$wbs->description.' <b>| Progress : '.$wbs->progress.' %</b>',
                         "icon" => "fa fa-suitcase",
                         "a_attr" =>  ["style" => "background-color:#3db9d3; font-weight:bold; color:white;"],
                     ]);
                 }
-            }  
+            }
         }
     }
 
@@ -1667,11 +1989,11 @@ class ProjectController extends Controller
             }
         }
     }
-    
+
     function getDataForGantt($project, $data, $links, $today){
         $index = 0;
         $wbss_id = $project->wbss->pluck('id')->toArray();
-        $activities = Activity::whereIn('wbs_id',$wbss_id)->orderBy('planned_start_date','asc')->get(); 
+        $activities = Activity::whereIn('wbs_id',$wbss_id)->orderBy('planned_start_date','asc')->get();
         $wbss = $project->wbss;
         foreach($activities as $activity){
             if($activity->predecessor != null){
@@ -1679,7 +2001,7 @@ class ProjectController extends Controller
                 foreach($predecessors as $predecessor){
                     $activityPredecessor = Activity::find($predecessor[0]);
                     $links->push([
-                        "id" => $index, 
+                        "id" => $index,
                         "source"=>$activityPredecessor->code,
                         "target"=>$activity->code,
                         "type"=>"0"
@@ -1691,22 +2013,22 @@ class ProjectController extends Controller
             if($today>$activity->planned_end_date){
                 if($activity->status == 0){
                     $data->push([
-                        "id" => $activity->code , 
+                        "id" => $activity->code ,
                         "text" => $activity->actual_duration != null ? "[Actual] ".$activity->name." | Weight : ".$activity->weight."%" : $activity->name." | Weight : ".$activity->weight."%",
                         "progress" => 1,
                         "status" => 0,
-                        "start_date" =>  date_format($start_date_activity,"d-m-Y"), 
-                        "duration" => $activity->actual_duration != null ? $activity->actual_duration : $activity->planned_duration  , 
-                        "parent" => $activity->wbs->code, 
+                        "start_date" =>  date_format($start_date_activity,"d-m-Y"),
+                        "duration" => $activity->actual_duration != null ? $activity->actual_duration : $activity->planned_duration  ,
+                        "parent" => $activity->wbs->code,
                         "color" => "green"
                     ]);
                 }else{
                     $data->push([
-                        "id" => $activity->code , 
+                        "id" => $activity->code ,
                         "text" => $activity->actual_duration != null ? "[Actual] ".$activity->name." | Weight : ".$activity->weight."%" : $activity->name." | Weight : ".$activity->weight."%",
                         "progress" => 0,
                         "status" => 1,
-                        "start_date" =>  date_format($start_date_activity,"d-m-Y"), 
+                        "start_date" =>  date_format($start_date_activity,"d-m-Y"),
                         "duration" => $activity->actual_duration != null ? $activity->actual_duration : $activity->planned_duration  ,
                         "parent" => $activity->wbs->code,
                         "color" => "red",
@@ -1716,23 +2038,23 @@ class ProjectController extends Controller
             }else if($today==$activity->planned_end_date){
                 if($activity->status == 0){
                     $data->push([
-                        "id" => $activity->code , 
+                        "id" => $activity->code ,
                         "text" => $activity->actual_duration != null ? "[Actual] ".$activity->name." | Weight : ".$activity->weight."%" : $activity->name." | Weight : ".$activity->weight."%",
                         "progress" => 1,
                         "status" => 0,
-                        "start_date" =>  date_format($start_date_activity,"d-m-Y"), 
-                        "duration" => $activity->actual_duration != null ? $activity->actual_duration : $activity->planned_duration  , 
-                        "parent" => $activity->wbs->code, 
+                        "start_date" =>  date_format($start_date_activity,"d-m-Y"),
+                        "duration" => $activity->actual_duration != null ? $activity->actual_duration : $activity->planned_duration  ,
+                        "parent" => $activity->wbs->code,
                         "color" => "green",
                         "progressColor" => "green",
                     ]);
                 }else{
                     $data->push([
-                        "id" => $activity->code , 
+                        "id" => $activity->code ,
                         "text" => $activity->actual_duration != null ? "[Actual] ".$activity->name." | Weight : ".$activity->weight."%" : $activity->name." | Weight : ".$activity->weight."%",
                         "progress" => 0,
                         "status" => 1,
-                        "start_date" =>  date_format($start_date_activity,"d-m-Y"), 
+                        "start_date" =>  date_format($start_date_activity,"d-m-Y"),
                         "duration" => $activity->actual_duration != null ? $activity->actual_duration : $activity->planned_duration  ,
                         "parent" => $activity->wbs->code,
                         "color" => "yellow",
@@ -1742,25 +2064,25 @@ class ProjectController extends Controller
             }else{
                 if($activity->status == 0){
                     $data->push([
-                        "id" => $activity->code , 
+                        "id" => $activity->code ,
                         "text" => $activity->actual_duration != null ? "[Actual] ".$activity->name." | Weight : ".$activity->weight."%" : $activity->name." | Weight : ".$activity->weight."%",
                         "progress" => 1,
                         "status" => 0,
-                        "start_date" =>  date_format($start_date_activity,"d-m-Y"), 
-                        "duration" => $activity->actual_duration != null ? $activity->actual_duration : $activity->planned_duration  , 
-                        "parent" => $activity->wbs->code, 
+                        "start_date" =>  date_format($start_date_activity,"d-m-Y"),
+                        "duration" => $activity->actual_duration != null ? $activity->actual_duration : $activity->planned_duration  ,
+                        "parent" => $activity->wbs->code,
                         "color" => "green",
                         "progressColor" => "green",
                     ]);
                 }else{
                     $data->push([
-                        "id" => $activity->code , 
+                        "id" => $activity->code ,
                         "text" => $activity->actual_duration != null ? "[Actual] ".$activity->name." | Weight : ".$activity->weight."%" : $activity->name." | Weight : ".$activity->weight."%",
                         "progress" => 0,
                         "status" => 1,
-                        "start_date" =>  date_format($start_date_activity,"d-m-Y"), 
+                        "start_date" =>  date_format($start_date_activity,"d-m-Y"),
                         "duration" => $activity->actual_duration != null ? $activity->actual_duration : $activity->planned_duration  ,
-                        "parent" => $activity->wbs->code,  
+                        "parent" => $activity->wbs->code,
                         "progressColor" => "#3db9d3",
                     ]);
                 }
@@ -1773,7 +2095,7 @@ class ProjectController extends Controller
             //     $activityRef = Activity::where('wbs_id',$wbs->id)->orderBy('planned_start_date','asc')->first();
             //     $earliest_date_ref = $activityRef->planned_start_date;
             // }
-            
+
             // $earliest_date = self::getEarliestActivity($wbs,$earliest_date_ref);
 
             // $start_date_wbs = $earliest_date != null ? date_create($earliest_date) : date_create($project->planned_start_date);
@@ -1785,10 +2107,10 @@ class ProjectController extends Controller
                 if($today>$wbs->planned_end_date){
                     if($wbs->progress != 100){
                         $data->push([
-                            "id" => $wbs->code , 
+                            "id" => $wbs->code ,
                             "text" => $wbs->actual_duration != null ? "[Actual] ".$wbs->number." - ".$wbs->description." | Weight : ".$wbs->weight."%" : $wbs->number." - ".$wbs->description." | Weight : ".$wbs->weight."%",
                             "progress" => $wbs->progress / 100,
-                            "start_date" =>  date_format($start_date_wbs,"d-m-Y"), 
+                            "start_date" =>  date_format($start_date_wbs,"d-m-Y"),
                             "duration" => $wbs->actual_duration != null ? $wbs->actual_duration : $wbs->planned_duration,
                             "parent" => $wbs->wbs->code,
                             "color" => "red",
@@ -1796,12 +2118,12 @@ class ProjectController extends Controller
                         ]);
                     }else{
                         $data->push([
-                            "id" => $wbs->code , 
+                            "id" => $wbs->code ,
                             "text" => $wbs->actual_duration != null ? "[Actual] ".$wbs->number." - ".$wbs->description." | Weight : ".$wbs->weight."%" : $wbs->number." - ".$wbs->description." | Weight : ".$wbs->weight."%",
                             "progress" => $wbs->progress / 100,
-                            "start_date" =>  date_format($start_date_wbs,"d-m-Y"), 
-                            "duration" => $wbs->actual_duration != null ? $wbs->actual_duration : $wbs->planned_duration, 
-                            "parent" => $wbs->wbs->code, 
+                            "start_date" =>  date_format($start_date_wbs,"d-m-Y"),
+                            "duration" => $wbs->actual_duration != null ? $wbs->actual_duration : $wbs->planned_duration,
+                            "parent" => $wbs->wbs->code,
                             "color" => "green",
                             "progressColor" => $wbs->progress == 0 ? "green" : "green",
                         ]);
@@ -1809,10 +2131,10 @@ class ProjectController extends Controller
                 }else if($today==$wbs->planned_end_date){
                     if($wbs->progress != 100){
                         $data->push([
-                            "id" => $wbs->code , 
+                            "id" => $wbs->code ,
                             "text" => $wbs->actual_duration != null ? "[Actual] ".$wbs->number." - ".$wbs->description." | Weight : ".$wbs->weight."%" : $wbs->number." - ".$wbs->description." | Weight : ".$wbs->weight."%",
                             "progress" => $wbs->progress / 100,
-                            "start_date" =>  date_format($start_date_wbs,"d-m-Y"), 
+                            "start_date" =>  date_format($start_date_wbs,"d-m-Y"),
                             "duration" => $wbs->actual_duration != null ? $wbs->actual_duration : $wbs->planned_duration,
                             "parent" => $wbs->wbs->code,
                             "color" => "yellow",
@@ -1820,12 +2142,12 @@ class ProjectController extends Controller
                         ]);
                     }else{
                         $data->push([
-                            "id" => $wbs->code , 
+                            "id" => $wbs->code ,
                             "text" => $wbs->actual_duration != null ? "[Actual] ".$wbs->number." - ".$wbs->description." | Weight : ".$wbs->weight."%" : $wbs->number." - ".$wbs->description." | Weight : ".$wbs->weight."%",
                             "progress" => $wbs->progress / 100,
-                            "start_date" =>  date_format($start_date_wbs,"d-m-Y"), 
+                            "start_date" =>  date_format($start_date_wbs,"d-m-Y"),
                             "duration" => $wbs->actual_duration != null ? $wbs->actual_duration : $wbs->planned_duration,
-                            "parent" => $wbs->wbs->code, 
+                            "parent" => $wbs->wbs->code,
                             "color" => "green",
                             "progressColor" => $wbs->progress == 0 ? "green" : "green",
                         ]);
@@ -1833,10 +2155,10 @@ class ProjectController extends Controller
                 }else{
                     if($wbs->progress == 100){
                         $data->push([
-                            "id" => $wbs->code , 
+                            "id" => $wbs->code ,
                             "text" => $wbs->actual_duration != null ? "[Actual] ".$wbs->number." - ".$wbs->description." | Weight : ".$wbs->weight."%" : $wbs->number." - ".$wbs->description." | Weight : ".$wbs->weight."%",
                             "progress" => $wbs->progress / 100,
-                            "start_date" =>  date_format($start_date_wbs,"d-m-Y"), 
+                            "start_date" =>  date_format($start_date_wbs,"d-m-Y"),
                             "duration" => $wbs->actual_duration != null ? $wbs->actual_duration : $wbs->planned_duration,
                             "parent" => $wbs->wbs->code,
                             "color" => "green",
@@ -1844,35 +2166,35 @@ class ProjectController extends Controller
                         ]);
                     }else{
                         $data->push([
-                            "id" => $wbs->code , 
+                            "id" => $wbs->code ,
                             "text" => $wbs->actual_duration != null ? "[Actual] ".$wbs->number." - ".$wbs->description." | Weight : ".$wbs->weight."%" : $wbs->number." - ".$wbs->description." | Weight : ".$wbs->weight."%",
                             "progress" => $wbs->progress / 100,
-                            "start_date" =>  date_format($start_date_wbs,"d-m-Y"), 
+                            "start_date" =>  date_format($start_date_wbs,"d-m-Y"),
                             "duration" => $wbs->actual_duration != null ? $wbs->actual_duration : $wbs->planned_duration,
                             "parent" => $wbs->wbs->code,
                             "progressColor" => $wbs->progress == 0 ? "#3db9d3" : "green",
                         ]);
                     }
-                } 
+                }
             }else{
                 if($today>$wbs->planned_end_date){
                     if($wbs->progress != 100){
                         $data->push([
-                            "id" => $wbs->code , 
+                            "id" => $wbs->code ,
                             "text" => $wbs->actual_duration != null ? "[Actual] ".$wbs->number." - ".$wbs->description." | Weight : ".$wbs->weight."%" : $wbs->number." - ".$wbs->description." | Weight : ".$wbs->weight."%",
                             "progress" => $wbs->progress / 100,
-                            "start_date" =>  date_format($start_date_wbs,"d-m-Y"), 
+                            "start_date" =>  date_format($start_date_wbs,"d-m-Y"),
                             "duration" => $wbs->actual_duration != null ? $wbs->actual_duration : $wbs->planned_duration,
                             "color" => "red",
                             "progressColor" => $wbs->progress == 0 ? "red" : "green",
                         ]);
                     }else{
                         $data->push([
-                            "id" => $wbs->code , 
+                            "id" => $wbs->code ,
                             "text" => $wbs->actual_duration != null ? "[Actual] ".$wbs->number." - ".$wbs->description." | Weight : ".$wbs->weight."%" : $wbs->number." - ".$wbs->description." | Weight : ".$wbs->weight."%",
                             "progress" => $wbs->progress / 100,
-                            "start_date" =>  date_format($start_date_wbs,"d-m-Y"), 
-                            "duration" => $wbs->actual_duration != null ? $wbs->actual_duration : $wbs->planned_duration,  
+                            "start_date" =>  date_format($start_date_wbs,"d-m-Y"),
+                            "duration" => $wbs->actual_duration != null ? $wbs->actual_duration : $wbs->planned_duration,
                             "color" => "green",
                             "progressColor" => $wbs->progress == 0 ? "green" : "green",
                         ]);
@@ -1880,21 +2202,21 @@ class ProjectController extends Controller
                 }else if($today==$wbs->planned_end_date){
                     if($wbs->progress != 100){
                         $data->push([
-                            "id" => $wbs->code , 
+                            "id" => $wbs->code ,
                             "text" => $wbs->actual_duration != null ? "[Actual] ".$wbs->number." - ".$wbs->description." | Weight : ".$wbs->weight."%" : $wbs->number." - ".$wbs->description." | Weight : ".$wbs->weight."%",
                             "progress" => $wbs->progress / 100,
-                            "start_date" =>  date_format($start_date_wbs,"d-m-Y"), 
+                            "start_date" =>  date_format($start_date_wbs,"d-m-Y"),
                             "duration" => $wbs->actual_duration != null ? $wbs->actual_duration : $wbs->planned_duration,
                             "color" => "yellow",
                             "progressColor" => $wbs->progress == 0 ? "yellow" : "green",
                         ]);
                     }else{
                         $data->push([
-                            "id" => $wbs->code , 
+                            "id" => $wbs->code ,
                             "text" => $wbs->actual_duration != null ? "[Actual] ".$wbs->number." - ".$wbs->description." | Weight : ".$wbs->weight."%" : $wbs->number." - ".$wbs->description." | Weight : ".$wbs->weight."%",
                             "progress" => $wbs->progress / 100,
-                            "start_date" =>  date_format($start_date_wbs,"d-m-Y"), 
-                            "duration" => $wbs->actual_duration != null ? $wbs->actual_duration : $wbs->planned_duration,  
+                            "start_date" =>  date_format($start_date_wbs,"d-m-Y"),
+                            "duration" => $wbs->actual_duration != null ? $wbs->actual_duration : $wbs->planned_duration,
                             "color" => "green",
                             "progressColor" => $wbs->progress == 0 ? "green" : "green",
                         ]);
@@ -1902,29 +2224,29 @@ class ProjectController extends Controller
                 }else{
                     if($wbs->progress == 100){
                         $data->push([
-                            "id" => $wbs->code , 
+                            "id" => $wbs->code ,
                             "text" => $wbs->actual_duration != null ? "[Actual] ".$wbs->number." - ".$wbs->description." | Weight : ".$wbs->weight."%" : $wbs->number." - ".$wbs->description." | Weight : ".$wbs->weight."%",
                             "progress" => $wbs->progress / 100,
-                            "start_date" =>  date_format($start_date_wbs,"d-m-Y"), 
+                            "start_date" =>  date_format($start_date_wbs,"d-m-Y"),
                             "duration" => $wbs->actual_duration != null ? $wbs->actual_duration : $wbs->planned_duration,
                             "color" => "green",
                             "progressColor" => "green",
                         ]);
                     }else{
                         $data->push([
-                            "id" => $wbs->code , 
+                            "id" => $wbs->code ,
                             "text" => $wbs->actual_duration != null ? "[Actual] ".$wbs->number." - ".$wbs->description." | Weight : ".$wbs->weight."%" : $wbs->number." - ".$wbs->description." | Weight : ".$wbs->weight."%",
                             "progress" => $wbs->progress / 100,
-                            "start_date" =>  date_format($start_date_wbs,"d-m-Y"), 
+                            "start_date" =>  date_format($start_date_wbs,"d-m-Y"),
                             "duration" => $wbs->actual_duration != null ? $wbs->actual_duration : $wbs->planned_duration,
                             "progressColor" => $wbs->progress == 0 ? "#3db9d3" : "green",
                         ]);
                     }
-                } 
+                }
             }
         }
     }
-    
+
 
     public function getDataChart($dataPlannedCost,$objectDate,$modelMR,$dataActualCost, $project, $dataActualProgress,$dataPlannedProgress, $menu,$dataEvm)
     {
@@ -1937,32 +2259,32 @@ class ProjectController extends Controller
             if($otherCost->actual_cost != null){
                 if($otherCost->wbs != null){
                     $tempPlanned->push([
-                        "t" => $otherCost->wbs->planned_end_date, 
+                        "t" => $otherCost->wbs->planned_end_date,
                         "y" => ($otherCost->plan_cost/1000000)."",
                     ]);
                     $tempActual->push([
-                        "t" => $otherCost->wbs->planned_end_date, 
+                        "t" => $otherCost->wbs->planned_end_date,
                         "y" => ($otherCost->actual_cost/1000000)."",
                     ]);
                 }else{
                     $tempPlanned->push([
-                        "t" => $otherCost->created_at->format('Y-m-d'), 
+                        "t" => $otherCost->created_at->format('Y-m-d'),
                         "y" => ($otherCost->plan_cost/1000000)."",
                     ]);
                     $tempActual->push([
-                        "t" => $otherCost->created_at->format('Y-m-d'), 
+                        "t" => $otherCost->created_at->format('Y-m-d'),
                         "y" => ($otherCost->actual_cost/1000000)."",
                     ]);
                 }
             }else{
                 if($otherCost->wbs != null){
                     $tempPlanned->push([
-                        "t" => $otherCost->wbs->planned_end_date, 
+                        "t" => $otherCost->wbs->planned_end_date,
                         "y" => ($otherCost->plan_cost/1000000)."",
                     ]);
                 }else{
                     $tempPlanned->push([
-                        "t" => $otherCost->created_at->format('Y-m-d'), 
+                        "t" => $otherCost->created_at->format('Y-m-d'),
                         "y" => ($otherCost->plan_cost/1000000)."",
                     ]);
                 }
@@ -1975,7 +2297,7 @@ class ProjectController extends Controller
                         if($wbs->bom->rap){
                             if($wbs->bom->rap->total_price != 0.0){
                                 $tempPlanned->push([
-                                    "t" => $date, 
+                                    "t" => $date,
                                     "y" => ($wbs->bom->rap->total_price/1000000)."",
                                 ]);
                             }
@@ -1993,24 +2315,24 @@ class ProjectController extends Controller
                                 $price = $act_detail->material->cost_standard_price;
                                 if($act_detail->weight != null){
                                     $tempPlanned->push([
-                                        "t" => $date, 
+                                        "t" => $date,
                                         "y" => number_format($price_per_kg * $act_detail->weight/1000000,2)."",
                                     ]);
-                                }else{                            
+                                }else{
                                     $tempPlanned->push([
-                                        "t" => $date, 
+                                        "t" => $date,
                                         "y" => number_format($price * $act_detail->quantity_material/1000000,2)."",
                                     ]);
                                 }
                             }else{
                                 if($act_detail->weight != null){
                                     $tempPlanned->push([
-                                        "t" => $date, 
+                                        "t" => $date,
                                         "y" => number_format(0,2)."",
                                     ]);
-                                }else{                            
+                                }else{
                                     $tempPlanned->push([
-                                        "t" => $date, 
+                                        "t" => $date,
                                         "y" => number_format(0,2)."",
                                     ]);
                                 }
@@ -2029,7 +2351,7 @@ class ProjectController extends Controller
                 $plannedCost += $data['y'];
             }
             $dataPlannedCost->push([
-                "t" => $date, 
+                "t" => $date,
                 "y" =>  $plannedCost."",
             ]);
         }
@@ -2049,7 +2371,7 @@ class ProjectController extends Controller
                     }
                 }
                 $tempActual->push([
-                    "t" => $date, 
+                    "t" => $date,
                     "y" => ($giCost/1000000)."",
                 ]);
             }
@@ -2058,14 +2380,14 @@ class ProjectController extends Controller
         $tempActual = $tempActual->groupBy('t');
         $tempActual = $tempActual->all();
         ksort($tempActual);
-        
+
         $actualCost = 0;
         foreach ($tempActual as $date => $datas) {
             foreach ($datas as $data) {
                 $actualCost += $data['y'];
             }
             $dataActualCost->push([
-                "t" => $date, 
+                "t" => $date,
                 "y" =>  $actualCost."",
             ]);
         }
@@ -2097,11 +2419,11 @@ class ProjectController extends Controller
             }
             if($date != null){
                 $dataActualProgress->push([
-                    "t" => $date, 
+                    "t" => $date,
                     "y" => $actualProgress."",
                 ]);
                 $dataEvm->push([
-                    "t" => $date, 
+                    "t" => $date,
                     "y" => number_format(($actualProgress/100) * $plannedCost,2),
                 ]);
             }else{
@@ -2109,23 +2431,23 @@ class ProjectController extends Controller
                 if($project != null){
                     if(date('Y-m-d')>$activity->wbs->project->actual_start_date){
                         $dataActualProgress->push([
-                            "t" => date('Y-m-d'), 
+                            "t" => date('Y-m-d'),
                             "y" => $actualProgress."",
                         ]);
                         $dataEvm->push([
-                            "t" => date('Y-m-d'), 
+                            "t" => date('Y-m-d'),
                             "y" => number_format(($actualProgress/100) * $plannedCost,2),
                         ]);
                     }
                 }
-            }   
+            }
         }
         foreach($plannedSorted as $date => $group){
             foreach($group as $activity){
                 $plannedProgress += 100 * ($activity->weight/100);
             }
             $dataPlannedProgress->push([
-                "t" => $date, 
+                "t" => $date,
                 "y" => $plannedProgress."",
             ]);
         }
@@ -2139,7 +2461,7 @@ class ProjectController extends Controller
         $last_end_week = strtotime("next saturday",$last_start_week);
 
         $last_end_week = date("Y-m-d",$last_end_week);
-        
+
         $now_end_week = date( 'Y-m-d', strtotime( 'saturday this week' ) );
 
         $actualProgress = 0;
@@ -2155,7 +2477,7 @@ class ProjectController extends Controller
         });
         $lastActualActivities = $actualActivities->where('planned_end_date','<',$last_end_week);
         $nowActualActivities = $actualActivities->where('planned_end_date','<',$now_end_week);
-        
+
         $tempLastPlanned = 0;
         foreach($lastPlannedActivities as $activity){
             $tempLastPlanned +=  100 * ($activity->weight/100);
@@ -2197,7 +2519,7 @@ class ProjectController extends Controller
 
 
         return response(['data' => $data, 'links'=> $links], Response::HTTP_OK);
-    
+
     }
 
     public function getDataJstreeAPI($id){
@@ -2208,7 +2530,7 @@ class ProjectController extends Controller
         $outstanding_item = Collection::make();
 
         $outstanding_item->push([
-            "id" => $project->number , 
+            "id" => $project->number ,
             "parent" => "#",
             "text" => $project->name,
             "icon" => "fa fa-ship"
@@ -2218,7 +2540,7 @@ class ProjectController extends Controller
 
 
         return response($outstanding_item, Response::HTTP_OK);
-    
+
     }
 
     public function getDataChartAPI($id){
@@ -2229,44 +2551,44 @@ class ProjectController extends Controller
         $modelBom = Bom::where('project_id',$id)->get();
         $wbsChart = $project->wbss->groupBy('planned_end_date');
         $dataPlannedCost->push([
-            "t" => $project->planned_start_date, 
+            "t" => $project->planned_start_date,
             "y" => "0",
         ]);
-        
+
         //actual
         $dataActualCost = Collection::make();
         $modelMR = MaterialRequisition::where('project_id',$id)->get();
         if($project->actual_start_date != null){
             $dataActualCost->push([
-                "t" => $project->actual_start_date, 
+                "t" => $project->actual_start_date,
                 "y" => "0",
             ]);
         }
-        
+
         //Progress
         $dataPlannedProgress = Collection::make();
         $dataPlannedProgress->push([
-            "t" => $project->planned_start_date, 
+            "t" => $project->planned_start_date,
             "y" => "0",
         ]);
         $dataActualProgress = Collection::make();
         if($project->actual_start_date != null){
             $dataActualProgress->push([
-                "t" => $project->actual_start_date, 
+                "t" => $project->actual_start_date,
                 "y" => "0",
             ]);
         }
         self::getDataChart($dataPlannedCost,$wbsChart,$modelMR,$dataActualCost, $project, $dataActualProgress, $dataPlannedProgress);
-        
+
         return response(['dataPlannedCost' => $dataPlannedCost, 'dataActualCost'=> $dataActualCost,
         'dataActualProgress'=> $dataActualProgress,'dataPlannedProgress'=> $dataPlannedProgress], Response::HTTP_OK);
     }
-    
+
     public function getActivityAPI($activity_code){
         $activity = Activity::where('code',$activity_code)->get()->jsonSerialize();
         return response($activity, Response::HTTP_OK);
     }
-    
+
     public function getCustomerPM($id){
         $customer = Customer::find($id);
         return response($customer->jsonSerialize(), Response::HTTP_OK);
@@ -2303,7 +2625,7 @@ class ProjectController extends Controller
                     "resource_name" => $resource->resource->name,
                     "quantity" => number_format($resource->quantity),
                     "quantityInt" => $resource->quantity,
-                    "category_id" => $resource->category->id,                     
+                    "category_id" => $resource->category->id,
                 ]);
             }
             array_push($categories,$resource->category->id."");
@@ -2313,9 +2635,14 @@ class ProjectController extends Controller
 
         $data->push([
             "resources" => $resources,
-            "categories" => $categories, 
+            "categories" => $categories,
         ]);
         return response($data->jsonSerialize(), Response::HTTP_OK);
     }
-    
+
+    public function getProjectStandardAPI($ship_id){
+        $project_standards = ProjectStandard::where('ship_id',$ship_id)->get()->jsonSerialize();
+        return response($project_standards, Response::HTTP_OK);
+    }
+
 }

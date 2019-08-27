@@ -46,7 +46,7 @@
                                 <div class="col-xs-12 col-md-4 no-padding">
                                     <div class="box-body no-padding col-md-10">
                                         <div class="col-md-5 col-xs-4 no-padding">PO Number</div>
-                                        <div class="col-md-6 col-xs-8 no-padding"><b>: {{ modelPO.number }}</b></div>
+                                        <div class="col-md-6 col-xs-8 no-padding"><b>: @endverbatim<a href= "{{ route('purchase_order.show', ['id'=>$modelPO->id]) }}" class="text-primary">@verbatim{{ modelPO.number }}</a></b></div>
 
                                         <div class="col-md-5 col-xs-4 no-padding">PO Description</div>
                                         <div class="col-md-6 col-xs-8 no-padding tdEllipsis" data-container="body" v-tooltip:top="tooltipText(modelPO.description)"><b>: {{ modelPO.description }}</b></div>
@@ -91,10 +91,10 @@
                                                 <th width="4%">No</th>
                                                 <th width="10%">Material Number</th>
                                                 <th width="12%">Material Description</th>
-                                                <th width="4%">Qty</th>
-                                                <th width="6.5%">Received</th>
+                                                <th width="5.5%">Ordered Quantity</th>
+                                                <th width="6%">Quantity Received</th>
                                                 <th width="4%">Unit</th>
-                                                <th width="14%">Storage Location</th>
+                                                <th width="12%">Storage Location</th>
                                                 <th width="9%">Received Date</th>
                                                 <th width="7%">Item OK</th>
                                             </tr>

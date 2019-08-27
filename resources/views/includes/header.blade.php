@@ -35,18 +35,35 @@
         <li class="dropdown notifications-menu">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <i class="fa fa-bell-o"></i>
-            @if(auth()->user()->role->notifications->where('status',1)->count())
-            <span class="label label-warning">{{ auth()->user()->role->notifications->where('status',1)->count() }}</span>
+            @php
+                $user_id = auth()->user()->id;
+                $notifications = auth()->user()->role->notifications;
+                foreach ($notifications as $key => $notification) {
+                  $user_data = json_decode($notification->user_data);
+
+                  foreach ($user_data as $data) {
+                    if($data->id == $user_id){
+                      if($data->status == 0){
+                        $notifications->forget($key);
+                      }
+                    }
+                  }
+                }
+            @endphp
+            @if($notifications->count())
+            <span class="label label-warning">{{ $notifications->count() }}</span>
             @endif
           </a>
-          <ul class="dropdown-menu" style="width: 550px">
-              @if(auth()->user()->role->notifications->where('status',1)->count())
-                <li class="header">You have {{ auth()->user()->role->notifications->where('status',1)->count() }} new notifications</li>
-                  @foreach(auth()->user()->role->notifications as $notification)
+          <ul class="dropdown-menu" style="width: 750px">
+              @if($notifications->count())
+                <li class="header">You have {{ $notifications->count() }} new notifications</li>
+                  @foreach($notifications as $notification)
                   @php
                     $data = json_decode($notification->data);
                     $now = new DateTime(date("Y-m-d"));
                     $notification_date = new DateTime($notification->notification_date);
+
+                    $formatted_date = date('d-m-Y', strtotime($notification->notification_date));   
                     $interval = $notification_date->diff($now);
                   @endphp
                   <li>
@@ -55,11 +72,13 @@
                           <div style="width: 20px;" class="col-sm-1">
                             @if($data->title == "Activity")
                               <i style="font-size: 25px" class="fa fa-suitcase text-aqua m-t-7"></i>
+                            @elseif($data->title == "Purchase Requisition")
+                              <i style="font-size: 25px" class="fa fa-file-text-o text-aqua m-t-7"></i>
                             @endif
                           </div>
                           <div class="col-sm-11">
-                            <div class="col-sm-12"><b>{{$data->title}}</b></div>
-                            <div class="col-sm-12">{{$interval->days}} Day(s) {{ $data->text }}</div>
+                            <div class="col-sm-12"><b>{{$data->title}}</b> [{{$data->time_info}} : {{$formatted_date}}]</div>
+                            <div class="col-sm-12">{{ $data->text }}</div>
                           </div>
                         </div>
                       </a>

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateMstWbsStandardTable extends Migration
+class CreateMstMaterialStandardTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,22 +13,18 @@ class CreateMstWbsStandardTable extends Migration
      */
     public function up()
     {
-        Schema::create('mst_wbs_standard', function (Blueprint $table) {
+        Schema::create('mst_material_standard', function (Blueprint $table) {
             $table->increments('id');
-            $table->text('number');
-            $table->text('description');
-            $table->string('deliverables');
-            $table->unsignedInteger('project_standard_id')->nullable();
+            $table->unsignedInteger('project_standard_id');
             $table->unsignedInteger('wbs_standard_id')->nullable();
-            $table->integer('planned_duration');
-            $table->unsignedInteger('user_id');
-            $table->unsignedInteger('branch_id');  
+            $table->unsignedInteger('material_id')->nullable();
+            $table->float('quantity',15,2);
+            $table->string('source')->default('Stock');
             $table->timestamps();
             
             $table->foreign('project_standard_id')->references('id')->on('mst_project_standard');
             $table->foreign('wbs_standard_id')->references('id')->on('mst_wbs_standard');
-            $table->foreign('branch_id')->references('id')->on('mst_branch');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('material_id')->references('id')->on('mst_material');
         });
     }
 
@@ -39,6 +35,6 @@ class CreateMstWbsStandardTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('mst_wbs_standard');
+        Schema::dropIfExists('mst_bom_standard_detail');
     }
 }

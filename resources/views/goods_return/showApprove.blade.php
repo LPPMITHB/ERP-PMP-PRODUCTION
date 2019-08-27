@@ -37,7 +37,7 @@
                             <i class="fa fa-envelope"></i>
                         </span>
                         <div class="info-box-content">
-                            <span class="info-box-text">GI Number</span>
+                            <span class="info-box-text">GR Number</span>
                             <span class="info-box-number">{{ $modelGRT->number }}</span>
                         </div>
                     </div>
@@ -51,10 +51,10 @@
                             : <b>{{ $status }}</b>
                         </div>
                         <div class="col-xs-4 col-md-4">
-                            Po Number
+                            PO Number
                         </div>
                         <div class="col-xs-8 col-md-8">
-                            : <b>{{ isset($modelGRT->purchase_order_id) ? $modelGRT->purchaseOrder->number :  '-'}}</b>
+                            : <b><a href= "{{ route('purchase_order.show', ['id'=>$modelGRT->purchaseOrder->id]) }}" class="text-primary">{{ isset($modelGRT->purchase_order_id) ? $modelGRT->purchaseOrder->number :  '-'}}</a></b>
                         </div>
                         <div class="col-xs-4 col-md-4">
                             Created By
@@ -84,7 +84,7 @@
                             <th width="5%">No</th>
                             <th width="20%">Material Number</th>
                             <th width="20%">Material Description</th>
-                            <th width="25%">Quantity</th>
+                            <th width="25%">Return Quantity</th>
                             <th width="30%">Storage Location</th>
                         </tr>
                     </thead>
@@ -160,7 +160,7 @@
             'initComplete': function(){
                 $('div.overlay').hide();
             }
-        }); 
+        });
     });
 
     var data = {
