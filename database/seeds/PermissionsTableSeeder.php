@@ -246,20 +246,12 @@ class PermissionsTableSeeder extends Seeder
         //     'updated_at' => date('Y-m-d'),
         // ]);
 
-        // WBS Configuration Repair
-        $manageWbsConfigurationRepair = Menu::where('name','Manage WBS Configuration')->where('menu_id',$projectManagementRepair)->select('id')->first()->id;
+        // Project Standard Repair
+        $manageProjectStandard = Menu::where('name','Manage Project Standard')->select('id')->first()->id;
         DB::table('permissions')->insert([
-            'name' => 'Manage Wbs Configuration Repair',
-            'menu_id' => $manageWbsConfigurationRepair,
-            'middleware' => 'manage-wbs-configuration',
-            'created_at' => date('Y-m-d'),
-            'updated_at' => date('Y-m-d'),
-        ]);
-
-        DB::table('permissions')->insert([
-            'name' => 'Manage Activity Configuration Repair',
-            'menu_id' => $manageWbsConfigurationRepair,
-            'middleware' => 'manage-activity-configuration',
+            'name' => 'Manage Project Standard',
+            'menu_id' => $manageProjectStandard,
+            'middleware' => 'manage-project-standard',
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d'),
         ]);
@@ -2471,6 +2463,16 @@ class PermissionsTableSeeder extends Seeder
             'name' => 'Resource Schedule Repair',
             'menu_id' => $resourceSchedule,
             'middleware' => 'resource-schedule-repair',
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d'),
+        ]);
+
+        // Quality Control Task
+        $qcTask = Menu::where('name','Create QC Task')->select('id')->first()->id;
+        DB::table('permissions')->insert([
+            'name' => 'Create QC Task',
+            'menu_id' => $qcTask,
+            'middleware' => 'create-qc-task',
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d'),
         ]);

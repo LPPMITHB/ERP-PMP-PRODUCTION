@@ -18,7 +18,8 @@
         "laravel-mix": "^2.1.14",
         "lodash": "^4.17.11",
         "popper.js": "^1.14.6",
-        "vue": "^2.5.21"
+        "vue": "^2.5.21",
+        "vue-template-compiler": "^2.5.21"
     },
     "dependencies": {
         "admin-lte": "^2.4.8",
@@ -31,6 +32,7 @@
         "imagemin": "^6.0.0",
         "izitoast": "^1.4.0",
         "jstree": "^3.3.7",
+        "magnific-popup": "^1.1.0",
         "moment": "^2.24.0",
         "selectize": "^0.12.6"
     }

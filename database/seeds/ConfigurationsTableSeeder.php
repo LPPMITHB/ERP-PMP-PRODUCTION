@@ -152,49 +152,58 @@ class ConfigurationsTableSeeder extends Seeder
         ]);
 
         $project_type = array(
-            // UNTUK PAMI
-
-            // 0 => array(
-            //     'id' => 1,
-            //     'name' => 'Special Service',
-            // ),
-            // 1 => array(
-            //     'id' => 2,
-            //     'name' => 'Intermediate',
-            // ),
-            // 2 => array(
-            //     'id' => 3,
-            //     'name' => 'Occasional',
-            // ),
-            // 3 => array(
-            //     'id' => 4,
-            //     'name' => 'Onboard',
-            // ),
-            // 4 => array(
-            //     'id' => 5,
-            //     'name' => 'Spot',
-            // ),
-
-            // UNTUK PMP
+            //UNTUK PAMI
             0 => array(
                 'id' => 1,
+                'name' => 'Special Service',
+                'business_unit_id' => 2,
+            ),
+
+            1 => array(
+                'id' => 2,
+                'name' => 'Intermediate',
+                'business_unit_id' => 2,
+            ),
+
+            2 => array(
+                'id' => 3,
+                'name' => 'Occasional',
+                'business_unit_id' => 2,
+            ),
+
+            3 => array(
+                'id' => 4,
+                'name' => 'Onboard',
+                'business_unit_id' => 2,
+            ),
+
+            4 => array(
+                'id' => 5,
+                'name' => 'Spot',
+                'business_unit_id' => 2,
+            ),
+
+            5 => array(
+                'id' => 6,
+                'name' => 'Emergency Repair',
+                'business_unit_id' => 2,
+            ),
+
+            // UNTUK PMP
+            6 => array(
+                'id' => 7,
                 'name' => 'New Building',
                 'business_unit_id' => 1,
             ),
-            1 => array(
-                'id' => 2,
+            7 => array(
+                'id' => 8,
                 'name' => 'Marine Services',
                 'business_unit_id' => 1,
             ),
-            2 => array(
-                'id' => 3,
+            8 => array(
+                'id' => 9,
                 'name' => 'Fabrication',
                 'business_unit_id' => 1,
-            ),
-            3 => array(
-                'id' => 4,
-                'name' => 'Emergency Repair',
-                'business_unit_id' => 2,
             ),
         );
 
@@ -472,17 +481,13 @@ class ConfigurationsTableSeeder extends Seeder
 
         $approval_pr = array(
             0 => array(
-                'type' => "1 Stage",
-                'level_1' => array(
+                'type' => "Joint Approval",
+                'value' => array(
                     0 => array(
                         'minimum' => 0,
-                        'maximum' => 1000000,
-                        'role_id' => 1,
-                    ),
-                    1 => array(
-                        'minimum' => 0,
-                        'maximum' => 1000000,
-                        'role_id' => 1,
+                        'maximum' => 5000000,
+                        'role_id_1' => 1,
+                        'role_id_2' => 4,
                     ),
                 ),
             ),
@@ -497,20 +502,93 @@ class ConfigurationsTableSeeder extends Seeder
             'updated_at' => date('Y-m-d')
         ]);
 
+        $approval_po = array(
+            0 => array(
+                'type' => "Single Approval",
+                'value' => array(
+                    0 => array(
+                        'minimum' => 0,
+                        'maximum' => 1000000,
+                        'role_id_1' => 1,
+                        'role_id_2' => null,
+                    ),
+                ),
+            ),
+        );
+
+        DB::table('mst_configuration')->insert([
+            'slug' => 'approval-po',
+            'title' => 'Approval PO',
+            'value' => json_encode($approval_po),
+            'is_active' => true,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        $approval_mr = array(
+            0 => array(
+                'type' => "Single Approval",
+                'value' => array(
+                    0 => array(
+                        'minimum' => 0,
+                        'maximum' => 1000000,
+                        'role_id_1' => 1,
+                        'role_id_2' => null,
+                    ),
+                ),
+            ),
+        );
+
+        DB::table('mst_configuration')->insert([
+            'slug' => 'approval-mr',
+            'title' => 'Approval MR',
+            'value' => json_encode($approval_mr),
+            'is_active' => true,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
+        $approval_mwo = array(
+            0 => array(
+                'type' => "Single Approval",
+                'value' => array(
+                    0 => array(
+                        'minimum' => 0,
+                        'maximum' => 1000000,
+                        'role_id_1' => 1,
+                        'role_id_2' => null,
+                    ),
+                ),
+            ),
+        );
+
+        DB::table('mst_configuration')->insert([
+            'slug' => 'approval-mwo',
+            'title' => 'Approval MWO',
+            'value' => json_encode($approval_mwo),
+            'is_active' => true,
+            'created_at' => date('Y-m-d'),
+            'updated_at' => date('Y-m-d')
+        ]);
+
 
 
         $standar_price = array(
             0 => array(
                 'id' => 1,
-                'value' => 'last_price',
+                'value' => 'fixed price',
             ),
             1 => array(
                 'id' => 2,
-                'value' => 'fifo',
+                'value' => 'last price',
             ),
             2 => array(
                 'id' => 3,
-                'value' => 'average',
+                'value' => 'fifo price',
+            ),
+            3 => array(
+                'id' => 4,
+                'value' => 'average price',
                 'moving_range' => 'null',
             ),
         );
