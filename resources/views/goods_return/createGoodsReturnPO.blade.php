@@ -46,7 +46,7 @@
                                 <div class="col-xs-12 col-lg-6 col-md-12 no-padding">
                                     <div class="box-body no-padding">
                                         <div class="col-md-4 col-xs-4 no-padding">PO Number</div>
-                                        <div class="col-md-8 col-xs-8 no-padding"><b>: {{ modelPO.number }}</b></div>
+                                        <div class="col-md-8 col-xs-8 no-padding"><b>: @endverbatim<a href= "{{ route('purchase_requisition.show', ['id'=>$modelPO->id]) }}" class="text-primary">@verbatim{{ modelPO.number }}</a></b></div>
 
                                         <div class="col-md-4 col-xs-4 no-padding">Vendor</div>
                                         <div class="col-md-8 col-xs-8 no-padding"><b>: {{ vendor.name }}</b></div>
@@ -77,8 +77,8 @@
                                                 <th width="20%">Material Number</th>
                                                 <th width="35%">Material Description</th>
                                                 <th width="10%">Shipping Date</th>
-                                                <th width="10%">Quantity</th>
-                                                <th width="10%">Return Qty</th>
+                                                <th width="15%">Material Quantity</th>
+                                                <th width="15%">Return Quantity</th>
                                                 <th width="5%">Unit</th>
                                             </tr>
                                         </thead>

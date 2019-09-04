@@ -94,7 +94,7 @@
                             : <b>{{ $modelMR->project->name }}</b>
                         </div>
                         <div class="col-xs-4 col-md-4">
-                            Customer Name
+                            Customer
                         </div>
                         <div class="col-xs-8 col-md-8">
                             : <b>{{ $modelMR->project->customer->name }}</b>
@@ -120,10 +120,10 @@
                         <tr>
                             <th width="5%">No</th>
                             <th width="40%">Material Desc.</th>
-                            <th width="14%">Quantity</th>
                             <th width="30%">WBS Name</th>
-                            <th width="14%">Planned Qty</th>
-                            <th width="14%">Issued Qty</th>
+                            <th width="14%">Request Quantity</th>
+                            <th width="14%">Planned Quantity</th>
+                            <th width="14%">Issued Quantity</th>
                             <th width="6%">Unit</th>
                         </tr>
                     </thead>
@@ -132,8 +132,8 @@
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $MRD->material->description }}</td>
-                                <td>{{ number_format($MRD->quantity,2) }}</td>
                                 <td>{{ $MRD->wbs != null ? $MRD->wbs->number : "-" }}</td>
+                                <td>{{ number_format($MRD->quantity,2) }}</td>
                                 <td>{{ $MRD->planned_quantity }}</td>
                                 <td>{{ $MRD->issued }}</td>
                                 <td>{{ $MRD->material->uom->unit }}</td>

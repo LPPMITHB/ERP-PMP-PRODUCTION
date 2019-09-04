@@ -8,6 +8,11 @@ class Project extends Model
 {
     protected $table = 'pro_project';
     
+    public function projectStandard()
+    {
+        return $this->belongsTo('App\Models\ProjectStandard');
+    }
+
     public function businessUnit()
     {
         return $this->belongsTo('App\Models\BusinessUnit');
@@ -71,5 +76,25 @@ class Project extends Model
     public function dailyManHours()
     {
         return $this->hasMany('App\Models\DailyManHour');
+    }
+
+    public function cost()
+    {
+        return $this->hasMany('App\Models\Cost');
+    }
+
+    public function salesOrder()
+    {
+        return $this->belongsTo('App\Models\SalesOrder');
+    }
+
+    public function qualityControlTasks()
+    {
+        return $this->hasMany('App\Models\QualityControlTask');
+    }
+
+    public function deliveryDocuments()
+    {
+        return $this->hasMany('App\Models\DeliveryDocument');
     }
 }

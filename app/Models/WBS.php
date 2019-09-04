@@ -30,7 +30,7 @@ class WBS extends Model
 
     public function wbsConfig()
     {
-        return $this->belongsTo('App\Models\WbsConfiguration', 'wbs_configuration_id');
+        return $this->belongsTo('App\Models\WbsStandard', 'wbs_configuration_id');
     }
 
     public function bom()
@@ -66,5 +66,10 @@ class WBS extends Model
     public function goodsReceipt()
     {
         return $this->hasOne('App\Models\GoodsReceipt', 'wbs_id');
+    }
+
+    public function qualityControlTasks()
+    {
+        return $this->hasMany('App\Models\QualityControlTask', 'wbs_id');
     }
 }

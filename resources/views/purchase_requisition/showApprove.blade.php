@@ -3,7 +3,7 @@
 @section('content-header')
 @if($modelPR->type == 1)
     @php($type = 'Material')
-@else  
+@else
     @php($type = 'Resource')
 @endif
 @if($route == "/purchase_requisition")
@@ -87,7 +87,7 @@
                 <div class="col-xs-12 col-md-4 m-t-10">
                     <div class="col-xs-12 no-padding"><b>Revision Description</b></div>
                     <div class="col-xs-12 no-padding">
-                        <textarea class="form-control" rows="3" id="rev_desc"></textarea>  
+                        <textarea class="form-control" rows="3" id="rev_desc"></textarea>
                     </div>
                 </div>
             </div>
@@ -104,7 +104,7 @@
                                     <th width="20%">Resource Number</th>
                                     <th width="25%">Resource Description</th>
                                 @endif
-                                <th width="8%">Qty</th>
+                                <th width="8%">Request Quantity</th>
                                 <th width="7%">Unit</th>
                                 <th width="14%">Project Number</th>
                                 <th width="13%">Required Date</th>
@@ -159,7 +159,7 @@
                     @endif
                 @verbatim
                 <div id="approval">
-                    <div class="col-md-12 m-b-10 p-r-0 p-t-10" v-if="modelPR.status == 1 || modelPR.status == 4">
+                    <div class="col-md-12 m-b-10 p-r-0 p-t-10" v-if="modelPR.status == 1 || modelPR.status == 4 || modelPR.status == 9">
                         <button type="button" class="col-xs-12 col-md-1 btn btn-primary pull-right m-l-10 m-t-5" @click.prevent="submitForm('approve')">APPROVE</button>
                         <button type="button" class="col-xs-12 col-md-1 btn btn-danger pull-right m-l-10 p-r-10 m-t-5" @click.prevent="submitForm('need-revision')">REVISE</button>
                         <button type="button" class="col-xs-12 col-md-1 btn btn-danger pull-right p-r-10 m-t-5" @click.prevent="submitForm('reject')">REJECT</button>

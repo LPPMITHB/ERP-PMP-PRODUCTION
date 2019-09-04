@@ -9,10 +9,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Structure;
 use App\Models\Project;
 use App\Models\WBS;
+use App\Models\WBSImage;
 use App\Models\Activity;
 use App\Models\Category;
 use App\Models\WbsProfile;
-use App\Models\WbsConfiguration;
+use App\Models\WbsStandard;
 use App\Models\ActivityProfile;
 use App\Models\BomProfile;
 use App\Models\ResourceProfile;
@@ -31,16 +32,6 @@ use Auth;
 class WBSController extends Controller
 {
 
-    public function createWbsConfiguration(Request $request)
-    {
-        $is_pami = false;
-        $business_ids = Auth::user()->business_unit_id;
-        if(in_array("2", json_decode($business_ids))){
-            $is_pami = true;
-        }
-        return view('wbs.createWbsConfiguration',compact('is_pami'));
-    }
-
     public function createWbsProfile(Request $request)
     {
         $project_type = Configuration::get('project_type');
@@ -56,7 +47,7 @@ class WBSController extends Controller
         $route = $request->route()->getPrefix();
 
         $materials = Material::orderBy('code')->get();
-        
+
         if($route == '/wbs'){
             if($wbs->business_unit_id == 1){
                 return view('wbs.createBomProfile', compact('wbs','route','materials','bom'));
@@ -230,22 +221,6 @@ class WBSController extends Controller
         return view('wbs.createSubWbsProfile', compact('wbs','array','menu'));
     }
 
-    public function createSubWbsConfiguration($wbs_id, Request $request)
-    {
-        $wbs = WbsConfiguration::find($wbs_id);
-        $array = [
-            'Dashboard' => route('index'),
-            'Create WBS Configuration' => route('wbs_repair.createWbsConfiguration'),
-        ];
-        $iteration = 0;
-        $array_reverse = [];
-        $array_reverse = array_reverse(self::getParentsWbsConfiguration($wbs,$array_reverse, $iteration));
-        foreach ($array_reverse as $key => $value) {
-            $array[$key] = $value;
-        }
-        $array[$wbs->number] = "";
-        return view('wbs.createSubWbsConfiguration', compact('wbs','array'));
-    }
 
     public function createWBS($id, Request $request)
     {
@@ -266,17 +241,17 @@ class WBSController extends Controller
         $project = Project::find($id);
         $menu = "repair";
         $businessUnit = 2;
-        $wbs_config = WbsConfiguration::where('wbs_id', null)->get();
+        $wbs_standard = WbsStandard::where('wbs_id', null)->get();
 
-        return view('wbs.createWbsRepair', compact('project','menu','wbs_config'));
+        return view('wbs.createWbsRepair', compact('project','menu','wbs_standard'));
     }
 
 // public function createWbsRepair($id, Request $request)
 // {
 //     $project = Project::find($id);
-//     $wbs_config = WbsConfiguration::where('wbs_id', null)->get();
+//     $wbs_standard = WbsStandard::where('wbs_id', null)->get();
 
-//     return view('wbs.createWbsRepair', compact('project','wbs_config'));
+//     return view('wbs.createWbsRepair', compact('project','wbs_standard'));
 // }
 
 
@@ -298,15 +273,15 @@ class WBSController extends Controller
 
             $planned_start_date = DateTime::createFromFormat('d-m-Y', $data['planned_start_date']);
             $wbs->planned_start_date =  $planned_start_date->format('Y-m-d');
-            
+
             $planned_end_date = DateTime::createFromFormat('d-m-Y', $data['planned_end_date']);
             $wbs->planned_end_date =  $planned_end_date->format('Y-m-d');
-            
+
             $wbs->planned_duration = $data['planned_duration'];
             $wbs->weight =  $data['weight'];
             $wbs->user_id = Auth::user()->id;
             $wbs->branch_id = Auth::user()->branch->id;
-            
+
 
             if(!$wbs->save()){
                 return response(["error"=>"Failed to save, please try again!"],Response::HTTP_OK);
@@ -329,13 +304,13 @@ class WBSController extends Controller
             return response(["error"=> "WBS Number must be UNIQUE"],Response::HTTP_OK);
         }
         try {
-            $wbsConfig = WbsConfiguration::find($data['wbs_configuration_id']);
+            $wbsStandard = WbsStandard::find($data['wbs_standard_id']);
             $wbs = new WBS;
             $wbs->code = self::generateWbsCode($data['project_id']);
             $wbs->number = $data['number'];
             $wbs->description = $data['description'];
-            $wbs->deliverables = $wbsConfig->deliverables;
-            $wbs->wbs_configuration_id = $wbsConfig->id;
+            $wbs->deliverables = $wbsStandard->deliverables;
+            $wbs->wbs_standard_id = $wbsStandard->id;
             $wbs->project_id = $data['project_id'];
 
             if(isset($data['wbs_id'])){
@@ -344,15 +319,15 @@ class WBSController extends Controller
 
             $planned_start_date = DateTime::createFromFormat('d-m-Y', $data['planned_start_date']);
             $wbs->planned_start_date =  $planned_start_date->format('Y-m-d');
-            
+
             $planned_end_date = DateTime::createFromFormat('d-m-Y', $data['planned_end_date']);
             $wbs->planned_end_date =  $planned_end_date->format('Y-m-d');
-            
+
             $wbs->planned_duration = $data['planned_duration'];
             $wbs->weight =  $data['weight'];
             $wbs->user_id = Auth::user()->id;
             $wbs->branch_id = Auth::user()->branch->id;
-            
+
 
             if(!$wbs->save()){
                 return response(["error"=>"Failed to save, please try again!"],Response::HTTP_OK);
@@ -407,39 +382,6 @@ class WBSController extends Controller
         }
     }
 
-    public function storeWbsConfiguration(Request $request)
-    {
-        $data = $request->json()->all();
-        $modelWbsConfig = WbsConfiguration::where('number',$data['number'])->first();
-        if($modelWbsConfig != null){
-            return response(["error"=> "WBS Number must be UNIQUE"],Response::HTTP_OK);
-        }
-        DB::beginTransaction();
-        try {
-            $wbsConfiguration = new WbsConfiguration;
-            $wbsConfiguration->number = $data['number'];
-            $wbsConfiguration->description = $data['description'];
-            $wbsConfiguration->deliverables = $data['deliverables'];
-            $wbsConfiguration->duration = $data['duration'];
-
-            if(isset($data['wbs_configuration_id'])){
-                $wbsConfiguration->wbs_id = $data['wbs_configuration_id'];
-            }
-
-            $wbsConfiguration->user_id = Auth::user()->id;
-            $wbsConfiguration->branch_id = Auth::user()->branch->id;
-
-            if(!$wbsConfiguration->save()){
-                return response(["error"=>"Failed to save, please try again!"],Response::HTTP_OK);
-            }else{
-                DB::commit();
-                return response(["response"=>"Success to create new WBS Configuration"],Response::HTTP_OK);
-            }
-        } catch (\Exception $e) {
-            DB::rollback();
-            return response(["error"=> $e->getMessage()],Response::HTTP_OK);
-        }
-    }
 
     public function adoptWbs(Request $request)
     {
@@ -462,7 +404,7 @@ class WBSController extends Controller
             $wbs->user_id = Auth::user()->id;
             $wbs->branch_id = Auth::user()->branch->id;
             $wbs->save();
-            
+
             if(count($wbsProfile->activities)>0){
                 foreach($wbsProfile->activities as $activity){
                     $activityInput = new Activity;
@@ -486,7 +428,7 @@ class WBSController extends Controller
                 $bom->branch_id = Auth::user()->branch->id;
                 $bom->user_id = Auth::user()->id;
                 $bom->save();
-    
+
                 foreach($bomProfile as $material){
                     $bom_detail = new BomDetail;
                     $bom_detail->bom_id = $bom->id;
@@ -545,33 +487,6 @@ class WBSController extends Controller
         }
     }
 
-public function updateWbsConfiguration(Request $request, $id)
-{
-    $data = $request->json()->all();
-    $wbs_ref = WbsConfiguration::find($id);
-    $modelWbsConfig = WbsConfiguration::where('number',$data['number'])->where('id','!=',$id)->first();
-    if($modelWbsConfig != null){
-        return response(["error"=> "WBS Number must be UNIQUE"],Response::HTTP_OK);
-    }
-    DB::beginTransaction();
-    try {
-        $wbs_ref->number = $data['number'];
-        $wbs_ref->description = $data['description'];
-        $wbs_ref->deliverables = $data['deliverables'];
-        $wbs_ref->duration = $data['duration'];
-
-        if(!$wbs_ref->save()){
-            return response(["error"=>"Failed to save, please try again!"],Response::HTTP_OK);
-        }else{
-            DB::commit();
-            return response(["response"=>"Success to Update WBS ".$wbs_ref->number],Response::HTTP_OK);
-        }
-    } catch (\Exception $e) {
-        DB::rollback();
-        return response(["error"=> $e->getMessage()],Response::HTTP_OK);
-    }
-}
-
     public function createSubWBS($project_id, $wbs_id, Request $request)
     {
         $wbs = WBS::find($wbs_id);
@@ -605,7 +520,7 @@ public function updateWbsConfiguration(Request $request, $id)
         foreach ($array_reverse as $key => $value) {
             $array[$key] = $value;
         }
-        
+
         $array["WBS ".$wbs->number] = "";
         return view('wbs.createSubWBS', compact('project', 'wbs','array','menu','wbs_profiles'));
     }
@@ -613,7 +528,14 @@ public function updateWbsConfiguration(Request $request, $id)
     public function createSubWbsRepair($project_id, $wbs_id, Request $request)
     {
         $wbs = WBS::find($wbs_id);
-        $wbs_config = WbsConfiguration::where('wbs_id', $wbs->wbs_configuration_id)->get();
+        if($wbs->weight == null){
+            if($wbs->wbs != null){
+                return redirect()->route('wbs_repair.createSubWBS', [$wbs->project_id,$wbs->wbs_id])->with('error', 'Please configure weight for WBS '.$wbs->number.' - '.$wbs->description);
+            }else{
+                return redirect()->route('wbs_repair.createWBS', [$wbs->project_id])->with('error', 'Please configure weight for WBS '.$wbs->number.' - '.$wbs->description);
+            }
+        }
+        $wbs_standard = WbsStandard::where('wbs_id', $wbs->wbs_standard_id)->get();
         $project = Project::find($project_id);
         $menu = "repair";
         $businessUnit = 2;
@@ -631,9 +553,9 @@ public function updateWbsConfiguration(Request $request, $id)
         foreach ($array_reverse as $key => $value) {
             $array[$key] = $value;
         }
-        
+
         $array["WBS ".$wbs->number] = "";
-        return view('wbs.createSubWbsRepair', compact('project', 'wbs','array','menu','wbs_config'));
+        return view('wbs.createSubWbsRepair', compact('project', 'wbs','array','menu','wbs_standard'));
     }
 
     public function update(Request $request, $id)
@@ -653,10 +575,10 @@ public function updateWbsConfiguration(Request $request, $id)
             $wbs_ref->deliverables = $data['deliverables'];
             $planned_start_date = DateTime::createFromFormat('d-m-Y', $data['planned_start_date']);
             $wbs_ref->planned_start_date =  $planned_start_date->format('Y-m-d');
-            
+
             $planned_end_date = DateTime::createFromFormat('d-m-Y', $data['planned_end_date']);
             $wbs_ref->planned_end_date =  $planned_end_date->format('Y-m-d');
-            
+
             $wbs_ref->planned_duration = $data['planned_duration'];
             $wbs_ref->weight =  $data['weight'];
 
@@ -676,7 +598,7 @@ public function updateWbsConfiguration(Request $request, $id)
     {
         $data = $request->json()->all();
         $wbs_ref = WBS::find($id);
-        $wbs_config = WbsConfiguration::find($data['wbs_configuration_id']);
+        $wbs_standard = WbsStandard::find($data['wbs_standard_id']);
         $modelWbs = WBS::where('id','!=',$id)->where('project_id',$wbs_ref->project_id)->where('number',$data['number'])->first();
         if($modelWbs != null){
             return response(["error"=> "WBS Number must be UNIQUE"],Response::HTTP_OK);
@@ -685,14 +607,14 @@ public function updateWbsConfiguration(Request $request, $id)
         try {
             $wbs_ref->number = $data['number'];
             $wbs_ref->description = $data['description'];
-            $wbs_ref->deliverables = $wbs_config->deliverables;
-            $wbs_ref->wbs_configuration_id = $wbs_config->id;
+            $wbs_ref->deliverables = $wbs_standard->deliverables;
+            $wbs_ref->wbs_standard_id = $wbs_standard->id;
             $planned_start_date = DateTime::createFromFormat('d-m-Y', $data['planned_start_date']);
             $wbs_ref->planned_start_date =  $planned_start_date->format('Y-m-d');
-            
+
             $planned_end_date = DateTime::createFromFormat('d-m-Y', $data['planned_end_date']);
             $wbs_ref->planned_end_date =  $planned_end_date->format('Y-m-d');
-            
+
             $wbs_ref->planned_duration = $data['planned_duration'];
             $wbs_ref->weight =  $data['weight'];
 
@@ -727,10 +649,10 @@ public function updateWbsConfiguration(Request $request, $id)
             $wbs_ref->deliverables = $data->deliverables;
             $planned_start_date = DateTime::createFromFormat('d-m-Y', $data->planned_start_date);
             $wbs_ref->planned_start_date =  $planned_start_date->format('Y-m-d');
-            
+
             $planned_end_date = DateTime::createFromFormat('d-m-Y', $data->planned_end_date);
             $wbs_ref->planned_end_date =  $planned_end_date->format('Y-m-d');
-            
+
             $wbs_ref->planned_duration = $data->planned_duration;
             $wbs_ref->weight =  $data->weight;
 
@@ -758,15 +680,16 @@ public function updateWbsConfiguration(Request $request, $id)
         }
     }
 
-    
+
 
     public function show($id, Request $request)
     {
         $wbs = WBS::find($id);
+        $images = WBSImage::orderBy('id')->whereIn('wbs_id',$id)->get();
         $project = $wbs->project;
         $menu = $project->business_unit_id == "1" ? "building" : "repair";
 
-        return view('wbs.show', compact('wbs','menu'));
+        return view('wbs.show', compact('wbs','menu', 'images'));
     }
 
     public function destroyWbsProfile(Request $request, $id)
@@ -806,39 +729,6 @@ public function updateWbsConfiguration(Request $request, $id)
         }
     }
 
-    public function destroyWbsConfiguration(Request $request, $id)
-    {
-        DB::beginTransaction();
-        try {
-            $wbsConfiguration = WbsConfiguration::find($id);
-            $error = [];
-            if(count($wbsConfiguration->wbss)>0){
-                array_push($error, ["Failed to delete, this WBS have child WBS"]);
-            }
-
-            if(count($wbsConfiguration->activities)>0){
-                array_push($error, ["Failed to delete, this WBS have activities"]);
-            }
-
-            if(count($wbsConfiguration->wbssProject)>0){
-                array_push($error, ["Failed to delete, this WBS already been used by a project"]);
-            }
-            
-            if(count($error)>0){
-                return response(["error"=> $error],Response::HTTP_OK);
-            }
-            if(!$wbsConfiguration->delete()){
-                array_push($error, ["Failed to delete, please try again!"]);
-                return response(["error"=> $error],Response::HTTP_OK);
-            }else{
-                DB::commit();
-                return response(["response"=>"Success to delete WBS"],Response::HTTP_OK);
-            }
-        } catch (\Exception $e) {
-            DB::rollback();
-                return response(["error"=> $e->getMessage()],Response::HTTP_OK);
-        }
-    }
 
     public function destroyWbs(Request $request, $id)
     {
@@ -848,7 +738,7 @@ public function updateWbsConfiguration(Request $request, $id)
             $wbs = WBS::find($id);
             $error = [];
             if($wbs->productionOrder != null){
-                array_push($error, ["Failed to delete, this WBS already have Production Order"]);                
+                array_push($error, ["Failed to delete, this WBS already have Production Order"]);
                 return response(["error"=> $error],Response::HTTP_OK);
             }
 
@@ -867,7 +757,7 @@ public function updateWbsConfiguration(Request $request, $id)
             if($wbs->bom != null){
                 array_push($error, ["Failed to delete, this WBS have BOM"]);
             }
-            
+
             if(count($error)>0){
                 return response(["error"=> $error],Response::HTTP_OK);
             }
@@ -893,7 +783,7 @@ public function updateWbsConfiguration(Request $request, $id)
         $year = $project->created_at->year % 100;
 
         $modelWbs = WBS::orderBy('code', 'desc')->where('project_id', $id)->first();
-        
+
         $number = 1;
 		if(isset($modelWbs)){
             $number += intval(substr($modelWbs->code, -4));
@@ -911,7 +801,7 @@ public function updateWbsConfiguration(Request $request, $id)
         $businessUnit = $project->business_unit_id;
 
         $modelActivity = Activity::orderBy('code', 'desc')->whereIn('wbs_id', $project->wbss->pluck('id')->toArray())->first();
-        
+
         $number = 1;
 		if(isset($modelActivity)){
             $number += intval(substr($modelActivity->code, -4));
@@ -928,7 +818,7 @@ public function updateWbsConfiguration(Request $request, $id)
         $year = $project->created_at->year % 100;
 
         $modelBom = Bom::orderBy('code', 'desc')->where('project_id', $project_id)->first();
-        
+
         $number = 1;
 		if(isset($modelBom)){
             $number += intval(substr($modelBom->code, -4));
@@ -954,18 +844,6 @@ public function updateWbsConfiguration(Request $request, $id)
                 }else{
                     $array_reverse[$wbs->number] = route('wbs_repair.createSubWbsProfile',[$wbs->id]);
                 }
-                return $array_reverse;
-            }
-        }
-    }
-
-    function getParentsWbsConfiguration($wbs, $array_reverse, $iteration) {
-        if ($wbs) {
-            if($wbs->wbs){
-                $array_reverse[$wbs->number] = route('wbs_repair.createSubWbsConfiguration',[$wbs->wbs->id]);
-                return self::getParentsWbsConfiguration($wbs->wbs,$array_reverse, $iteration);
-            }else{
-                $array_reverse[$wbs->number] = route('wbs_repair.createSubWbsConfiguration',[$wbs->id]);
                 return $array_reverse;
             }
         }
@@ -998,14 +876,14 @@ public function updateWbsConfiguration(Request $request, $id)
             if($wbs->wbss){
                 if(count($wbs->activities)>0){
                     $dataWbsProfile->push([
-                        "id" => "WBS".$wbs->id, 
+                        "id" => "WBS".$wbs->id,
                         "parent" => $parent,
                         "text" => $wbs->number,
                         "icon" => "fa fa-suitcase",
                     ]);
                     foreach($wbs->activities as $activity){
                         $dataWbsProfile->push([
-                            "id" => "ACT".$activity->id, 
+                            "id" => "ACT".$activity->id,
                             "parent" => "WBS".$activity->wbs_id,
                             "text" => $activity->name,
                             "icon" => "fa fa-clock-o",
@@ -1013,7 +891,7 @@ public function updateWbsConfiguration(Request $request, $id)
                     }
                 }else{
                     $dataWbsProfile->push([
-                        "id" => "WBS".$wbs->id, 
+                        "id" => "WBS".$wbs->id,
                         "parent" => $parent,
                         "text" => $wbs->number,
                         "icon" => "fa fa-suitcase",
@@ -1023,14 +901,14 @@ public function updateWbsConfiguration(Request $request, $id)
             }else{
                 if(count($wbs->activities)>0){
                     $dataWbsProfile->push([
-                        "id" => "WBS".$wbs->id, 
+                        "id" => "WBS".$wbs->id,
                         "parent" => $parent,
                         "text" => $wbs->number,
                         "icon" => "fa fa-suitcase",
                     ]);
                     foreach($wbs->activities as $activity){
                         $dataWbsProfile->push([
-                            "id" => "ACT".$activity->id, 
+                            "id" => "ACT".$activity->id,
                             "parent" => "WBS".$activity->wbs_id,
                             "text" => $activity->name,
                             "icon" => "fa fa-clock-o",
@@ -1038,13 +916,13 @@ public function updateWbsConfiguration(Request $request, $id)
                     }
                 }else{
                     $dataWbsProfile->push([
-                        "id" => "WBS".$wbs->id, 
+                        "id" => "WBS".$wbs->id,
                         "parent" => $parent,
                         "text" => $wbs->number,
                         "icon" => "fa fa-suitcase",
                     ]);
                 }
-            } 
+            }
         }
     }
 
@@ -1087,7 +965,7 @@ public function updateWbsConfiguration(Request $request, $id)
                         $bomInput->branch_id = Auth::user()->branch->id;
                         $bomInput->user_id = Auth::user()->id;
                         $bomInput->save();
-    
+
                         foreach($bomProfile as $material){
                             $bom_detail = new BomDetail;
                             $bom_detail->bom_id = $bomInput->id;
@@ -1136,7 +1014,7 @@ public function updateWbsConfiguration(Request $request, $id)
                         $bomInput->branch_id = Auth::user()->branch->id;
                         $bomInput->user_id = Auth::user()->id;
                         $bomInput->save();
-    
+
                         foreach($bomProfile as $material){
                             $bom_detail = new BomDetail;
                             $bom_detail->bom_id = $bomInput->id;
@@ -1199,7 +1077,7 @@ public function updateWbsConfiguration(Request $request, $id)
                         $bomInput->branch_id = Auth::user()->branch->id;
                         $bomInput->user_id = Auth::user()->id;
                         $bomInput->save();
-    
+
                         foreach($bomProfile as $material){
                             $bom_detail = new BomDetail;
                             $bom_detail->bom_id = $bomInput->id;
@@ -1248,7 +1126,7 @@ public function updateWbsConfiguration(Request $request, $id)
                         $bomInput->branch_id = Auth::user()->branch->id;
                         $bomInput->user_id = Auth::user()->id;
                         $bomInput->save();
-    
+
                         foreach($bomProfile as $material){
                             $bom_detail = new BomDetail;
                             $bom_detail->bom_id = $bomInput->id;
@@ -1275,7 +1153,7 @@ public function updateWbsConfiguration(Request $request, $id)
                         }
                     }
                 }
-            } 
+            }
         }
     }
 
@@ -1292,19 +1170,9 @@ public function updateWbsConfiguration(Request $request, $id)
         return response($wbss, Response::HTTP_OK);
     }
 
-    public function getWbsConfigurationAPI(){
-
-        $wbss = WbsConfiguration::where('wbs_id', null)->get()->jsonSerialize();
-        return response($wbss, Response::HTTP_OK);
-    }
 
     public function getSubWbsProfileAPI($wbs_id){
         $wbss = WbsProfile::where('wbs_id', $wbs_id)->get()->jsonSerialize();
-        return response($wbss, Response::HTTP_OK);
-    }
-    
-    public function getSubWbsConfigurationAPI($wbs_id){
-        $wbss = WbsConfiguration::where('wbs_id', $wbs_id)->get()->jsonSerialize();
         return response($wbss, Response::HTTP_OK);
     }
 
@@ -1343,7 +1211,7 @@ public function updateWbsConfiguration(Request $request, $id)
         $dataWbsProfile = Collection::make();
 
         $dataWbsProfile->push([
-            "id" => "WBS".$wbs_profile_ref->id, 
+            "id" => "WBS".$wbs_profile_ref->id,
             "parent" => "#",
             "text" => $wbs_profile_ref->number,
             "icon" => "fa fa-suitcase"
@@ -1352,7 +1220,7 @@ public function updateWbsConfiguration(Request $request, $id)
         if(count($wbs_profile_ref->activities)>0){
             foreach ($wbs_profile_ref->activities as $activity) {
                 $dataWbsProfile->push([
-                    "id" => "ACT".$activity->id, 
+                    "id" => "ACT".$activity->id,
                     "parent" => "WBS".$wbs_profile_ref->id,
                     "text" => $activity->name,
                     "icon" => "fa fa-clock-o"
@@ -1367,7 +1235,7 @@ public function updateWbsConfiguration(Request $request, $id)
 
         return response($dataWbsProfile, Response::HTTP_OK);
     }
-    
+
     public function getBomProfileAPI($wbs_id){
         $bom = BomProfile::where('wbs_id',$wbs_id)->with('material.uom','service')->get()->jsonSerialize();
 
@@ -1381,7 +1249,7 @@ public function updateWbsConfiguration(Request $request, $id)
     }
 
     public function getRdProfilesAPI($ids){
-        $ids = json_decode($ids);       
+        $ids = json_decode($ids);
         return response(ResourceDetail::whereNotIn('id',$ids)->get()->jsonSerialize(), Response::HTTP_OK);
     }
 }

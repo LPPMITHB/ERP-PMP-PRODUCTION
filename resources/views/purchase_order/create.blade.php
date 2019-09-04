@@ -102,7 +102,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-5 p-t-15">
-                                            <label for="delivery_terms">Delivery Terms</label>
+                                            <label for="delivery_terms">Delivery Terms *</label>
                                         </div>
                                         <div class="col-sm-7 p-t-13 p-l-0">
                                             <selectize v-model="delivery_term" :settings="dtSettings">
@@ -112,7 +112,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-5 p-t-15">
-                                            <label for="payment_terms">Payment Terms</label>
+                                            <label for="payment_terms">Payment Terms *</label>
                                         </div>
                                         <div class="col-sm-7 p-t-13 p-l-0">
                                             <selectize v-model="payment_term" :settings="ptSettings">
@@ -122,7 +122,7 @@
                                     </div>
                                     <div class="row" v-if="modelPR.type == 3">
                                         <div class="col-sm-5 p-t-15">
-                                            <label for="delivery_date_subcon">Delivery Date</label>
+                                            <label for="delivery_date_subcon">Delivery Date Subcon</label>
                                         </div>
                                         <div class="col-sm-7 p-t-13 p-l-0">
                                             <input v-model="delivery_date_subcon" autocomplete="off" type="text" class="form-control datepicker" name="delivery_date_subcon" id="delivery_date_subcon" placeholder="Delivery Date">
@@ -171,10 +171,10 @@
                                                     <th width="15%">Resource Number</th>
                                                     <th width="20%">Resource Description</th>
                                                 </template>
-                                                <th style="width: 6%">Qty</th>
-                                                <th style="width: 6%">Order</th>
+                                                <th style="width: 8%">Requested Quantity</th>
+                                                <th style="width: 8%">Order Quantity</th>
                                                 <th style="width: 6%">Unit</th>
-                                                <th style="width: 14%">Price / pcs ({{selectedCurrency}})</th>
+                                                <th style="width: 10%">Price per pcs ({{selectedCurrency}})</th>
                                                 <th style="width: 10%">Disc. (%)</th>
                                                 <th style="width: 12%">Delivery Date</th>
                                                 <th style="width: 8%"></th>
@@ -460,7 +460,7 @@
             dataOk: function(){
                 let isOk = false;
                 if(this.modelPR.type != 3){
-                    if(this.vendor_id == "" || this.delivery_date == "" || this.currency == ""){
+                    if(this.vendor_id == "" || this.delivery_date == "" || this.currency == "" || this.delivery_term == null || this.payment_term == null || this.delivery_term == "" || this.payment_term == ""){
                         isOk = true;
                     }
                 }else{
