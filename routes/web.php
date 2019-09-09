@@ -2120,3 +2120,32 @@ Route::name('close_project.')->prefix('close_project')->group(function() {
 
     Route::delete('/{id}', 'CloseProjectController@destroy')->name('destroy');
 });
+
+// Customer Portal Routes
+Route::name('customer_portal.')->prefix('customer_portal')->group(function() {
+    Route::get('/selectProject', 'CustomerPortalController@selectProject')->name('selectProject');
+
+    Route::get('/selectProjectPost', 'CustomerPortalController@selectProjectPost')->name('selectProjectPost');
+
+    Route::get('/selectProjectReply', 'CustomerPortalController@selectProjectReply')->name('selectProjectReply');
+    
+    Route::get('/', 'CustomerPortalController@index')->name('index');
+
+    Route::get('/{id}', 'CustomerPortalController@show')->name('show');
+
+    Route::get('/showProject/{id}', 'CustomerPortalController@showProject')->name('showProject');
+
+    Route::get('/showPost/{id}', 'CustomerPortalController@showPost')->name('showPost');
+
+    Route::get('/createPost/{id}', 'CustomerPortalController@createPost')->name('createPost');
+
+    Route::get('/selectPost/{id}', 'CustomerPortalController@selectPost')->name('selectPost');
+
+    Route::post('/storePost', 'CustomerPortalController@storePost')->name('storePost');
+
+    Route::post('/storeComment', 'CustomerPortalController@storeComment')->name('storeComment');
+
+    Route::patch('/{id}', 'CustomerPortalController@close')->name('close');
+
+    Route::delete('/{id}', 'CustomerPortalController@destroy')->name('destroy');
+});

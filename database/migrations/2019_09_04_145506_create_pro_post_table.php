@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateProWbsImages extends Migration
+class CreateProPostTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,18 +13,18 @@ class CreateProWbsImages extends Migration
      */
     public function up()
     {
-        Schema::create('pro_wbs_images', function (Blueprint $table) {
+        Schema::create('pro_post', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('wbs_id');
+            $table->unsignedInteger('project_id')->nullable();
+            $table->string('subject')->nullable();
+            $table->text('body')->nullable();
+            $table->longText('file_name')->nullable();
             $table->unsignedInteger('user_id');
-            $table->unsignedInteger('branch_id');
-            $table->string('drawing');
-            $table->string('description')->nullable();
+            $table->integer('status');
             $table->timestamps();
 
-            $table->foreign('wbs_id')->references('id')->on('pro_wbs');
+            $table->foreign('project_id')->references('id')->on('pro_project');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('branch_id')->references('id')->on('mst_branch');
         });
     }
 
@@ -35,6 +35,6 @@ class CreateProWbsImages extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('pro_post');
     }
 }
