@@ -28,6 +28,7 @@ use App\Models\ResourceTrx;
 use DB;
 use DateTime;
 use Auth;
+use File;
 
 class WBSController extends Controller
 {
@@ -62,6 +63,12 @@ class WBSController extends Controller
                 return redirect()->route('wbs_repair.createWbsProfile')->with('error', 'WBS isn\'t exist, Please try again !');
             }
         }
+    }
+
+    public function manageWbsImages(Request $request){
+        $images = WBSImage::with('wbs')->with('user')->get();
+        $menu = $request->route()->getPrefix() == "/wbs" ? "building" : "repair";
+        return view('wbs.manageWbsImages', compact('menu','images'));
     }
 
     public function storeBomProfile(Request $request){
@@ -690,7 +697,11 @@ class WBSController extends Controller
                 $images->user_id = Auth::user()->id;
                 $images->branch_id = Auth::user()->branch->id;
                 $images->drawing = $fileNameToStore;
-                $images->description = $data->img_desc;
+                if(isset($data->img_desc)){
+                    $images->description = $data->img_desc;
+                }else{
+                    $images->description = "";
+                }
 
                 $images->save();
             }
@@ -724,11 +735,29 @@ class WBSController extends Controller
     public function show($id, Request $request)
     {
         $wbs = WBS::find($id);
-        $images = WBSImage::where('wbs_id',$wbs->id)->get();
+        $images = WBSImage::where('wbs_id',$wbs->id)->with('user')->get();
         $project = $wbs->project;
         $menu = $project->business_unit_id == "1" ? "building" : "repair";
 
         return view('wbs.show', compact('wbs','menu', 'images'));
+    }
+
+    public function destroyWbsImage(Request $request, $id)
+    {
+        $route = $request->route()->getPrefix();
+        DB::beginTransaction();
+        try {
+            $image = WBSImage::find($id);
+            $imageRoute = public_path("app/documents/wbs_images/".$image->drawing);
+            if($image->delete() && File::exists($imageRoute)){
+                File::delete($imageRoute);
+                DB::commit();
+                return response(["response"=>"Successfully deleted image."],Response::HTTP_OK);
+            }
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response(["error"=>$e->getMessage()], Response::HTTP_OK);
+        }
     }
 
     public function destroyWbsProfile(Request $request, $id)
@@ -1218,6 +1247,11 @@ class WBSController extends Controller
     public function getWbsAPI($project_id){
         $wbss = WBS::orderBy('planned_start_date', 'asc')->where('project_id', $project_id)->where('wbs_id', null)->get()->jsonSerialize();
         return response($wbss, Response::HTTP_OK);
+    }
+
+    public function getWbsImagesAPI($wbs_id){
+        $images = WBSImage::where('wbs_id',$wbs_id)->with('user')->get()->jsonSerialize();
+        return response($images, Response::HTTP_OK);
     }
 
     public function getAllWbsAPI($project_id){
