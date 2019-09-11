@@ -2013,7 +2013,7 @@ Route::name('qc_type.')->prefix('qc_type')->group(function() {
 
     Route::delete('/deletedetail/{id}', 'QualityControlTypeController@deleteDetail')->name('deletedetail');
 
-    Route::patch('/store', 'QualityControlTypeController@store')->name('store');
+    Route::post('/', 'QualityControlTypeController@store')->name('store');
 
     Route::delete('/{id}', 'QualityControlTypeController@destroy')->name('destroy');
 
@@ -2025,6 +2025,10 @@ Route::name('qc_task.')->prefix('qc_task')->group(function() {
     Route::get('/', 'QualityControlTaskController@index')->name('index')->middleware('can:list-qc-task');
 
     Route::get('/selectProject', 'QualityControlTaskController@selectProject')->name('selectProject');
+
+    Route::get('/selectProjectConfirm', 'QualityControlTaskController@selectProjectConfirm')->name('selectProjectConfirm');
+
+    Route::get('/selectProjectSummary', 'QualityControlTaskController@selectProjectSummary')->name('selectProjectSummary');
 
     Route::get('/selectWBS/{id}', 'QualityControlTaskController@selectWBS')->name('selectWBS')->middleware('can:list-bom');
 
