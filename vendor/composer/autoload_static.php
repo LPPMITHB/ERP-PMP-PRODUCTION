@@ -504,6 +504,10 @@ class ComposerStaticInitd270b2c2405293f0078dca28ea2f5c78
         'App\\Http\\Controllers\\ConfigurationController' => __DIR__ . '/../..' . '/app/Http/Controllers/ConfigurationController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
         'App\\Http\\Controllers\\CustomerController' => __DIR__ . '/../..' . '/app/Http/Controllers/CustomerController.php',
+<<<<<<< HEAD
+=======
+        'App\\Http\\Controllers\\CustomerPortalController' => __DIR__ . '/../..' . '/app/Http/Controllers/CustomerPortalController.php',
+>>>>>>> 8cf5eeb9e58d3872afed789ec3656e996acc24d6
         'App\\Http\\Controllers\\CustomerVisitController' => __DIR__ . '/../..' . '/app/Http/Controllers/CustomerVisitController.php',
         'App\\Http\\Controllers\\DailyManHourController' => __DIR__ . '/../..' . '/app/Http/Controllers/DailyManHourController.php',
         'App\\Http\\Controllers\\DeliveryDocumentController' => __DIR__ . '/../..' . '/app/Http/Controllers/DeliveryDocumentController.php',
@@ -604,6 +608,8 @@ class ComposerStaticInitd270b2c2405293f0078dca28ea2f5c78
         'App\\Models\\Payment' => __DIR__ . '/../..' . '/app/Models/Payment.php',
         'App\\Models\\Permission' => __DIR__ . '/../..' . '/app/Models/Permission.php',
         'App\\Models\\Pica' => __DIR__ . '/../..' . '/app/Models/Pica.php',
+        'App\\Models\\Post' => __DIR__ . '/../..' . '/app/Models/Post.php',
+        'App\\Models\\PostComment' => __DIR__ . '/../..' . '/app/Models/PostComment.php',
         'App\\Models\\ProductionOrder' => __DIR__ . '/../..' . '/app/Models/ProductionOrder.php',
         'App\\Models\\ProductionOrderDetail' => __DIR__ . '/../..' . '/app/Models/ProductionOrderDetail.php',
         'App\\Models\\ProductionOrderUpload' => __DIR__ . '/../..' . '/app/Models/ProductionOrderUpload.php',
@@ -616,6 +622,10 @@ class ComposerStaticInitd270b2c2405293f0078dca28ea2f5c78
         'App\\Models\\PurchaseRequisitionDetail' => __DIR__ . '/../..' . '/app/Models/PurchaseRequisitionDetail.php',
         'App\\Models\\PurchasingInfoRecord' => __DIR__ . '/../..' . '/app/Models/PurchasingInfoRecord.php',
         'App\\Models\\QualityControlTask' => __DIR__ . '/../..' . '/app/Models/QualityControlTask.php',
+<<<<<<< HEAD
+=======
+        'App\\Models\\QualityControlTaskDetail' => __DIR__ . '/../..' . '/app/Models/QualityControlTaskDetail.php',
+>>>>>>> 8cf5eeb9e58d3872afed789ec3656e996acc24d6
         'App\\Models\\QualityControlType' => __DIR__ . '/../..' . '/app/Models/QualityControlType.php',
         'App\\Models\\QualityControlTypeDetail' => __DIR__ . '/../..' . '/app/Models/QualityControlTypeDetail.php',
         'App\\Models\\Quotation' => __DIR__ . '/../..' . '/app/Models/Quotation.php',
@@ -647,6 +657,7 @@ class ComposerStaticInitd270b2c2405293f0078dca28ea2f5c78
         'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',
         'App\\Models\\Vendor' => __DIR__ . '/../..' . '/app/Models/Vendor.php',
         'App\\Models\\WBS' => __DIR__ . '/../..' . '/app/Models/WBS.php',
+        'App\\Models\\WBSImage' => __DIR__ . '/../..' . '/app/Models/WBSImage.php',
         'App\\Models\\Warehouse' => __DIR__ . '/../..' . '/app/Models/Warehouse.php',
         'App\\Models\\WbsConfiguration' => __DIR__ . '/../..' . '/app/Models/WbsConfiguration.php',
         'App\\Models\\WbsProfile' => __DIR__ . '/../..' . '/app/Models/WbsProfile.php',

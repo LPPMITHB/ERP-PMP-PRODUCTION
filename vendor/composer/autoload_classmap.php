@@ -22,6 +22,10 @@ return array(
     'App\\Http\\Controllers\\ConfigurationController' => $baseDir . '/app/Http/Controllers/ConfigurationController.php',
     'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',
     'App\\Http\\Controllers\\CustomerController' => $baseDir . '/app/Http/Controllers/CustomerController.php',
+<<<<<<< HEAD
+=======
+    'App\\Http\\Controllers\\CustomerPortalController' => $baseDir . '/app/Http/Controllers/CustomerPortalController.php',
+>>>>>>> 8cf5eeb9e58d3872afed789ec3656e996acc24d6
     'App\\Http\\Controllers\\CustomerVisitController' => $baseDir . '/app/Http/Controllers/CustomerVisitController.php',
     'App\\Http\\Controllers\\DailyManHourController' => $baseDir . '/app/Http/Controllers/DailyManHourController.php',
     'App\\Http\\Controllers\\DeliveryDocumentController' => $baseDir . '/app/Http/Controllers/DeliveryDocumentController.php',
@@ -122,6 +126,8 @@ return array(
     'App\\Models\\Payment' => $baseDir . '/app/Models/Payment.php',
     'App\\Models\\Permission' => $baseDir . '/app/Models/Permission.php',
     'App\\Models\\Pica' => $baseDir . '/app/Models/Pica.php',
+    'App\\Models\\Post' => $baseDir . '/app/Models/Post.php',
+    'App\\Models\\PostComment' => $baseDir . '/app/Models/PostComment.php',
     'App\\Models\\ProductionOrder' => $baseDir . '/app/Models/ProductionOrder.php',
     'App\\Models\\ProductionOrderDetail' => $baseDir . '/app/Models/ProductionOrderDetail.php',
     'App\\Models\\ProductionOrderUpload' => $baseDir . '/app/Models/ProductionOrderUpload.php',
@@ -134,6 +140,10 @@ return array(
     'App\\Models\\PurchaseRequisitionDetail' => $baseDir . '/app/Models/PurchaseRequisitionDetail.php',
     'App\\Models\\PurchasingInfoRecord' => $baseDir . '/app/Models/PurchasingInfoRecord.php',
     'App\\Models\\QualityControlTask' => $baseDir . '/app/Models/QualityControlTask.php',
+<<<<<<< HEAD
+=======
+    'App\\Models\\QualityControlTaskDetail' => $baseDir . '/app/Models/QualityControlTaskDetail.php',
+>>>>>>> 8cf5eeb9e58d3872afed789ec3656e996acc24d6
     'App\\Models\\QualityControlType' => $baseDir . '/app/Models/QualityControlType.php',
     'App\\Models\\QualityControlTypeDetail' => $baseDir . '/app/Models/QualityControlTypeDetail.php',
     'App\\Models\\Quotation' => $baseDir . '/app/Models/Quotation.php',
@@ -165,6 +175,7 @@ return array(
     'App\\Models\\User' => $baseDir . '/app/Models/User.php',
     'App\\Models\\Vendor' => $baseDir . '/app/Models/Vendor.php',
     'App\\Models\\WBS' => $baseDir . '/app/Models/WBS.php',
+    'App\\Models\\WBSImage' => $baseDir . '/app/Models/WBSImage.php',
     'App\\Models\\Warehouse' => $baseDir . '/app/Models/Warehouse.php',
     'App\\Models\\WbsConfiguration' => $baseDir . '/app/Models/WbsConfiguration.php',
     'App\\Models\\WbsProfile' => $baseDir . '/app/Models/WbsProfile.php',
