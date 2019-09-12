@@ -22,10 +22,7 @@ return array(
     'App\\Http\\Controllers\\ConfigurationController' => $baseDir . '/app/Http/Controllers/ConfigurationController.php',
     'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',
     'App\\Http\\Controllers\\CustomerController' => $baseDir . '/app/Http/Controllers/CustomerController.php',
-<<<<<<< HEAD
-=======
     'App\\Http\\Controllers\\CustomerPortalController' => $baseDir . '/app/Http/Controllers/CustomerPortalController.php',
->>>>>>> 8cf5eeb9e58d3872afed789ec3656e996acc24d6
     'App\\Http\\Controllers\\CustomerVisitController' => $baseDir . '/app/Http/Controllers/CustomerVisitController.php',
     'App\\Http\\Controllers\\DailyManHourController' => $baseDir . '/app/Http/Controllers/DailyManHourController.php',
     'App\\Http\\Controllers\\DeliveryDocumentController' => $baseDir . '/app/Http/Controllers/DeliveryDocumentController.php',
@@ -140,10 +137,7 @@ return array(
     'App\\Models\\PurchaseRequisitionDetail' => $baseDir . '/app/Models/PurchaseRequisitionDetail.php',
     'App\\Models\\PurchasingInfoRecord' => $baseDir . '/app/Models/PurchasingInfoRecord.php',
     'App\\Models\\QualityControlTask' => $baseDir . '/app/Models/QualityControlTask.php',
-<<<<<<< HEAD
-=======
     'App\\Models\\QualityControlTaskDetail' => $baseDir . '/app/Models/QualityControlTaskDetail.php',
->>>>>>> 8cf5eeb9e58d3872afed789ec3656e996acc24d6
     'App\\Models\\QualityControlType' => $baseDir . '/app/Models/QualityControlType.php',
     'App\\Models\\QualityControlTypeDetail' => $baseDir . '/app/Models/QualityControlTypeDetail.php',
     'App\\Models\\Quotation' => $baseDir . '/app/Models/Quotation.php',

@@ -504,10 +504,7 @@ class ComposerStaticInitd270b2c2405293f0078dca28ea2f5c78
         'App\\Http\\Controllers\\ConfigurationController' => __DIR__ . '/../..' . '/app/Http/Controllers/ConfigurationController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
         'App\\Http\\Controllers\\CustomerController' => __DIR__ . '/../..' . '/app/Http/Controllers/CustomerController.php',
-<<<<<<< HEAD
-=======
         'App\\Http\\Controllers\\CustomerPortalController' => __DIR__ . '/../..' . '/app/Http/Controllers/CustomerPortalController.php',
->>>>>>> 8cf5eeb9e58d3872afed789ec3656e996acc24d6
         'App\\Http\\Controllers\\CustomerVisitController' => __DIR__ . '/../..' . '/app/Http/Controllers/CustomerVisitController.php',
         'App\\Http\\Controllers\\DailyManHourController' => __DIR__ . '/../..' . '/app/Http/Controllers/DailyManHourController.php',
         'App\\Http\\Controllers\\DeliveryDocumentController' => __DIR__ . '/../..' . '/app/Http/Controllers/DeliveryDocumentController.php',
@@ -622,10 +619,7 @@ class ComposerStaticInitd270b2c2405293f0078dca28ea2f5c78
         'App\\Models\\PurchaseRequisitionDetail' => __DIR__ . '/../..' . '/app/Models/PurchaseRequisitionDetail.php',
         'App\\Models\\PurchasingInfoRecord' => __DIR__ . '/../..' . '/app/Models/PurchasingInfoRecord.php',
         'App\\Models\\QualityControlTask' => __DIR__ . '/../..' . '/app/Models/QualityControlTask.php',
-<<<<<<< HEAD
-=======
         'App\\Models\\QualityControlTaskDetail' => __DIR__ . '/../..' . '/app/Models/QualityControlTaskDetail.php',
->>>>>>> 8cf5eeb9e58d3872afed789ec3656e996acc24d6
         'App\\Models\\QualityControlType' => __DIR__ . '/../..' . '/app/Models/QualityControlType.php',
         'App\\Models\\QualityControlTypeDetail' => __DIR__ . '/../..' . '/app/Models/QualityControlTypeDetail.php',
         'App\\Models\\Quotation' => __DIR__ . '/../..' . '/app/Models/Quotation.php',
