@@ -1551,7 +1551,7 @@ class ProjectController extends Controller
             $plannedCostPerWbs = $wbs->bom != null ? $wbs->bom->rap != null ? $wbs->bom->rap->total_price : 0 : 0;
 
             foreach($wbs->materialRequisitionDetails as $mrd){
-                $actualCostPerWbs = $mrd->material->cost_standard_price * $mrd->issued;
+                $actualCostPerWbs += $mrd->material->cost_standard_price * $mrd->issued;
             }
 
             $planned->put($wbs->id,[
