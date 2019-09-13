@@ -1422,6 +1422,7 @@ class ProjectController extends Controller
             $project->name = $request->name;
             $project->description = $request->description;
             $project->customer_id = $request->customer;
+            $project->project_type = $request->project_type;
             $project->ship_id = $request->ship;
             $project->budget_value = str_replace(",", "", $request->budget_value);
             $project->flag = $request->flag;
