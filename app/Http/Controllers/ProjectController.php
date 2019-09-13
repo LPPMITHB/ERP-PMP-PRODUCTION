@@ -1422,7 +1422,6 @@ class ProjectController extends Controller
             $project->name = $request->name;
             $project->description = $request->description;
             $project->customer_id = $request->customer;
-            $project->project_type = $request->project_type;
             $project->ship_id = $request->ship;
             $project->budget_value = str_replace(",", "", $request->budget_value);
             $project->flag = $request->flag;
@@ -1494,7 +1493,7 @@ class ProjectController extends Controller
                 $fileNameToStore =  null;
             }
             $project->drawing = $fileNameToStore;
-            $project->update();
+            $project->save();
 
             // update status SO
             if($request->sales_order_id != null && $request->sales_order_id != ""){
