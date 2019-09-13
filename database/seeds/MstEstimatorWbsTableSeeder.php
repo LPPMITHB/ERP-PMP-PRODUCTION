@@ -3,8 +3,8 @@
 use Illuminate\Database\Seeder;
 
 class MstEstimatorWbsTableSeeder extends Seeder
-{
 
+{
     /**
      * Auto generated seed file
      *
