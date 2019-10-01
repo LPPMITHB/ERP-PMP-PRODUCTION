@@ -97,7 +97,8 @@ class ConfigurationsTableSeeder extends Seeder
         DB::table('mst_configuration')->insert([
             'slug' => 'resource_category',
             'title' => 'Resource Categories',
-            'value' => json_encode($resource_category),
+            // 'value' => json_encode($resource_category),
+            'value' => '{}',
             'is_active' => true,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
@@ -121,7 +122,8 @@ class ConfigurationsTableSeeder extends Seeder
         DB::table('mst_configuration')->insert([
             'slug' => 'depreciation_methods',
             'title' => 'Depreciation Methods',
-            'value' => json_encode($depreciation_methods),
+            // 'value' => json_encode($depreciation_methods),
+            'value' => '{}',
             'is_active' => true,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
@@ -145,7 +147,8 @@ class ConfigurationsTableSeeder extends Seeder
         DB::table('mst_configuration')->insert([
             'slug' => 'vendor_category',
             'title' => 'Vendor Category',
-            'value' => json_encode($vendor_category),
+            // 'value' => json_encode($vendor_category),
+            'value' => '{}',
             'is_active' => true,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
@@ -388,7 +391,8 @@ class ConfigurationsTableSeeder extends Seeder
         DB::table('mst_configuration')->insert([
             'slug' => 'payment_terms',
             'title' => 'Payment Terms',
-            'value' => json_encode($payment_terms),
+            // 'value' => json_encode($payment_terms),
+            'value' => '{}',
             'is_active' => true,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
@@ -406,7 +410,8 @@ class ConfigurationsTableSeeder extends Seeder
         DB::table('mst_configuration')->insert([
             'slug' => 'delivery_terms',
             'title' => 'Delivery Terms',
-            'value' => json_encode($delivery_terms),
+            // 'value' => json_encode($delivery_terms),
+            'value' => '{}',
             'is_active' => true,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
@@ -424,7 +429,8 @@ class ConfigurationsTableSeeder extends Seeder
         DB::table('mst_configuration')->insert([
             'slug' => 'weather',
             'title' => 'Weather',
-            'value' => json_encode($weather),
+            // 'value' => json_encode($weather),
+            'value' => '{}',
             'is_active' => true,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
@@ -442,7 +448,8 @@ class ConfigurationsTableSeeder extends Seeder
         DB::table('mst_configuration')->insert([
             'slug' => 'tidal',
             'title' => 'Tidal',
-            'value' => json_encode($tidal),
+            // 'value' => json_encode($tidal),
+            'value' => '{}',
             'is_active' => true,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
