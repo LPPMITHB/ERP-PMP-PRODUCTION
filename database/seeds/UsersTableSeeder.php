@@ -24,16 +24,16 @@ class UsersTableSeeder extends Seeder
             'business_unit_id' => '[1,2,3]',
         ]);
 
-        // DB::table('users')->insert([
-        //     'username' => 'pmp',
-        //     'name' => 'User PMP',
-        //     'email' => 'pmp@pmp.com',
-        //     'type' => 1,
-        //     'role_id' => 4,
-        //     'branch_id' => 1,
-        //     'password' => bcrypt('patria'),
-        //     'business_unit_id' => '[1]',
-        // ]);
+        DB::table('users')->insert([
+            'username' => 'pmp',
+            'name' => 'User PMP',
+            'email' => 'pmp@pmp.com',
+            'type' => 1,
+            'role_id' => 4,
+            'branch_id' => 1,
+            'password' => bcrypt('patria'),
+            'business_unit_id' => '[1]',
+        ]);
 
         // DB::table('users')->insert([
         //     'username' => 'pami',
