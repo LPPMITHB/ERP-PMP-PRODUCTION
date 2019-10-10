@@ -50,6 +50,7 @@ class MaterialController extends Controller
             }
         }
 
+        dd($material, $is_pami);
         return view('material.create', compact('dimension_types', 'material', 'uoms', 'material_families', 'densities', 'is_pami', 'standard_prices_config'));
     }
 
