@@ -731,7 +731,7 @@ class PurchaseOrderController extends Controller
         'wbs', 
         'resource', 
         'material.uom', 
-        'purchaseRequisitionDetail.purchaseRequisition', 
+        'purchaseRequisitionDetail.purchaseRequisition'
         // 'pro_wbs_material', 
         // 'pro_wbs_material.areaUom', 
         // 'pro_wbs_material.serviceDetail', 
