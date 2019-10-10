@@ -33,7 +33,6 @@ class MaterialController extends Controller
     public function create()
     {
         $material = new Material;
-        dd($material);
         $uoms = Uom::all();
         // Mengecek apakah ini memiliki bisnis id Pami
         $is_pami = false;
@@ -44,7 +43,7 @@ class MaterialController extends Controller
         $material_families = Configuration::get('material_family');
         $densities = Configuration::get('density');
         $dimension_types = Configuration::get('dimension_type');
-        $standard_prices_config = Configuration::get('standar-price');
+        $standard_prices_config = Configuration::get('standard-price');
         foreach ($dimension_types as $dimension_type) {
             foreach ($dimension_type->dimensions as $dimension) {
                 $dimension->value = "";
