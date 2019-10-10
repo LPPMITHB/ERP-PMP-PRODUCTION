@@ -33,6 +33,7 @@ class MaterialController extends Controller
     public function create()
     {
         $material = new Material;
+        dd($material);
         $uoms = Uom::all();
         // Mengecek apakah ini memiliki bisnis id Pami
         $is_pami = false;
