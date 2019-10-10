@@ -38,12 +38,12 @@ Route::get('/getServicesBOM/{id}', 'BOMController@getServicesAPI')->name('api.bo
 Route::get('/getPRBom/{id}', 'BOMController@getPRAPI')->name('api.bom.getPRAPI');
 Route::get('/getBomHeader/{id}', 'BOMController@getBomHeaderAPI')->name('api.bom.getBomHeaderAPI');
 
-// // bos
-// Route::get('/getServiceBOS/{id}', 'BOSController@getServiceAPI')->name('api.bos.getServiceAPI');
-// Route::get('/getBos/{id}', 'BOSController@getBosAPI')->name('api.bos.getBosAPI');
-// Route::get('/getNewBos/{id}', 'BOSController@getNewBosAPI')->name('api.bos.getNewBosAPI');
-// Route::get('/getBosDetail/{id}', 'BOSController@getBosDetailAPI')->name('api.bos.getBosDetailAPI');
-// Route::get('/getServicesBOS/{id}', 'BOSController@getServicesAPI')->name('api.bos.getServicesAPI');
+// bos
+Route::get('/getServiceBOS/{id}', 'BOSController@getServiceAPI')->name('api.bos.getServiceAPI');
+Route::get('/getBos/{id}', 'BOSController@getBosAPI')->name('api.bos.getBosAPI');
+Route::get('/getNewBos/{id}', 'BOSController@getNewBosAPI')->name('api.bos.getNewBosAPI');
+Route::get('/getBosDetail/{id}', 'BOSController@getBosDetailAPI')->name('api.bos.getBosDetailAPI');
+Route::get('/getServicesBOS/{id}', 'BOSController@getServicesAPI')->name('api.bos.getServicesAPI');
 
 // rap
 Route::get('/getNewCost/{id}', 'RAPController@getNewCostAPI')->name('api.bom.getNewCostAPI');
@@ -53,6 +53,7 @@ Route::get('/getAllWbss/{id}', 'RAPController@getAllWbssCostAPI')->name('api.bom
 Route::get('/getProjectPR/{id}', 'PurchaseRequisitionController@getProjectApi')->name('api.purchase_requisition.getProjectApi');
 Route::get('/getMaterialPR/{id}', 'PurchaseRequisitionController@getMaterialAPI')->name('api.purchase_requisition.getMaterialAPI');
 Route::get('/ProjectStandardPR/{id}', 'PurchaseRequisitionController@ProjectStandardAPI')->name('api.purchase_requisition.ProjectStandardAPI');
+Route::get('/getRepeatPR/{id}', 'PurchaseRequisitionController@getRepeatAPI')->name('api.purchase_requisition.getRepeatAPI');
 // Route::get('/getMaterials/{id}', 'PurchaseRequisitionController@getMaterialsAPI')->name('api.purchase_requisition.getMaterialsAPI');
 Route::get('/getWbsPR/{id}', 'PurchaseRequisitionController@getWbsAPI')->name('api.purchase_requisition.getWbsAPI');
 Route::get('/getModelWbsPR/{id}', 'PurchaseRequisitionController@getModelWbsAPI')->name('api.purchase_requisition.getModelWbsAPI');
@@ -234,3 +235,7 @@ Route::get('/getDeliveryDocuments/{project_id}', 'DeliveryDocumentController@get
 // Post
 Route::get('/getPosts/{project_id}', 'CustomerPortalController@getPostsAPI')->name('api.project.getPostsAPI');
 Route::get('/getComments/{project_id}', 'CustomerPortalController@getCommentsAPI')->name('api.project.getCommentsAPI');
+
+//Material Standard
+Route::get('/getMaterialProjectStandard/{id}', 'ProjectStandardController@getMaterialAPI')->name('api.project_standard.getMaterialAPI');
+Route::get('/getMaterialPartsPS/{id}', 'ProjectStandardController@getMaterialPartsPSAPI')->name('api.project_standard.getMaterialPartsPSAPI');

@@ -3,7 +3,7 @@
     @if ($menu == "building")
         @breadcrumb(
             [
-                'title' => 'Manage Work Breakdown Structures',
+                'title' => 'Manage Work Breakdown Structures (Level 1)',
                 'items' => [
                     'Dashboard' => route('index'),
                     'View all Projects' => route('project.index'),
@@ -16,7 +16,7 @@
     @else
         @breadcrumb(
             [
-                'title' => 'Manage Work Breakdown Structures',
+                'title' => 'Manage Work Breakdown Structures (Level 1)',
                 'items' => [
                     'Dashboard' => route('index'),
                     'View all Projects' => route('project_repair.index'),
@@ -76,7 +76,7 @@
                                 <th style="width: 2px">No</th>
                                 <th style="width: 15%">Deliverables</th>
                                 <th style="width: 15%">Description</th>
-                                <th style="width: 10%">Number</th>
+                                <th style="width: 10%">WBS</th>
                                 <th style="width: 7%">Start Date</th>
                                 <th style="width: 7%">End Date</th>
                                 <th style="width: 7%">Duration</th>

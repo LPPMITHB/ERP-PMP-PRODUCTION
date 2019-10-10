@@ -64,7 +64,6 @@ class UserController extends Controller
             'branch' => 'required',
         ]);
 
-        // dd($request->businessUnit);
         if($request->businessUnit == null){
             return redirect()->route('user.create')->with('error', "Please fill Business Unit")->withInput(Input::all());
         }

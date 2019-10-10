@@ -77,4 +77,25 @@ class WBS extends Model
     {
         return $this->hasMany('App\Models\WBSImage', 'wbs_id');
     }
+
+    public function wbsMaterials()
+    {
+        return $this->hasMany('App\Models\WbsMaterial', 'wbs_id');
+    }
+
+    public function serviceDetail()
+    {
+        return $this->belongsTo('App\Models\ServiceDetail');
+    }
+
+    public function areaUom()
+    {
+        return $this->belongsTo('App\Models\Uom');
+    }
+
+    public function vendor()
+    {
+        return $this->belongsTo('App\Models\Vendor');
+    }
+
 }

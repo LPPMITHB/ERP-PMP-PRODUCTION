@@ -4,13 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class MaterialStandard extends Model
+class ResourceStandard extends Model
 {
-    protected $table = 'mst_material_standard';
+    protected $table = 'mst_resource_standard';
     
-    public function material()
+    public function resource()
     {
-        return $this->belongsTo('App\Models\Material');
+        return $this->belongsTo('App\Models\Resource');
     }
 
     public function user()
@@ -31,10 +31,5 @@ class MaterialStandard extends Model
     public function project()
     {
         return $this->belongsTo('App\Models\ProjectStandard');
-    }
-
-    public function partDetails()
-    {    
-        return $this->hasMany('App\Models\PartDetailStandard');
     }
 }
