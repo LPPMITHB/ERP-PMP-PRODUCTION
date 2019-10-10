@@ -116,8 +116,8 @@
                             <tbody>
                                 <tr v-for="(bomDetail,index) in bomDetail">
                                     <td class="p-t-15 p-b-15">{{ index+1 }}</td>
-                                    <td>{{ bomDetail.material.code }}</td>
-                                    <td>{{ bomDetail.material.description }}</td>
+                                    <td class="tdEllipsis" data-container="body" v-tooltip:top="(bomDetail.material.code)">{{ bomDetail.material.code }}</td>
+                                    <td class="tdEllipsis" data-container="body" v-tooltip:top="(bomDetail.material.code)">{{ bomDetail.material.description }}</td>
                                     <td>{{ bomDetail.quantity }}</td>
                                     <td>{{ bomDetail.material.uom.unit }}</td>
                                     <td>{{ bomDetail.source}}</td>
