@@ -372,7 +372,6 @@
                 this.submittedForm.cost_standard_service = this.submittedForm.cost_standard_service.replace(/,/g , '');
                 this.submittedForm.min = (this.submittedForm.min+"").replace(/,/g , '');
                 this.submittedForm.max = (this.submittedForm.max+"").replace(/,/g , '');
-
                 if(this.selectedDimensionType != null){
                     this.selectedDimensionType.forEach(dimension => {
                         dimension.value = (dimension.value+"").replace(/,/g , '');
