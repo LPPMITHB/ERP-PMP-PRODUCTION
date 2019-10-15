@@ -9,7 +9,7 @@ class Configuration extends Model
     protected $table = 'mst_configuration';
 
     public static function get($slug){
-        $configuration = Configuration::where('slug', $slug)->first();
+        $configuration = Configuration::where('slug', $slug)->firstOrFail();
         
         return json_decode($configuration->value);
     }
