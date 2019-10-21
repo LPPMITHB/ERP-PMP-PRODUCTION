@@ -97,8 +97,7 @@ class ConfigurationsTableSeeder extends Seeder
         DB::table('mst_configuration')->insert([
             'slug' => 'resource_category',
             'title' => 'Resource Categories',
-            // 'value' => json_encode($resource_category),
-            'value' => '{}',
+            'value' => json_encode($resource_category),
             'is_active' => true,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
@@ -122,8 +121,7 @@ class ConfigurationsTableSeeder extends Seeder
         DB::table('mst_configuration')->insert([
             'slug' => 'depreciation_methods',
             'title' => 'Depreciation Methods',
-            // 'value' => json_encode($depreciation_methods),
-            'value' => '{}',
+            'value' => json_encode($depreciation_methods),
             'is_active' => true,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
@@ -147,8 +145,7 @@ class ConfigurationsTableSeeder extends Seeder
         DB::table('mst_configuration')->insert([
             'slug' => 'vendor_category',
             'title' => 'Vendor Category',
-            // 'value' => json_encode($vendor_category),
-            'value' => '{}',
+            'value' => json_encode($vendor_category),
             'is_active' => true,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
@@ -391,8 +388,7 @@ class ConfigurationsTableSeeder extends Seeder
         DB::table('mst_configuration')->insert([
             'slug' => 'payment_terms',
             'title' => 'Payment Terms',
-            // 'value' => json_encode($payment_terms),
-            'value' => '{}',
+            'value' => json_encode($payment_terms),
             'is_active' => true,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
@@ -410,8 +406,7 @@ class ConfigurationsTableSeeder extends Seeder
         DB::table('mst_configuration')->insert([
             'slug' => 'delivery_terms',
             'title' => 'Delivery Terms',
-            // 'value' => json_encode($delivery_terms),
-            'value' => '{}',
+            'value' => json_encode($delivery_terms),
             'is_active' => true,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
@@ -429,8 +424,7 @@ class ConfigurationsTableSeeder extends Seeder
         DB::table('mst_configuration')->insert([
             'slug' => 'weather',
             'title' => 'Weather',
-            // 'value' => json_encode($weather),
-            'value' => '{}',
+            'value' => json_encode($weather),
             'is_active' => true,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
@@ -448,8 +442,7 @@ class ConfigurationsTableSeeder extends Seeder
         DB::table('mst_configuration')->insert([
             'slug' => 'tidal',
             'title' => 'Tidal',
-            // 'value' => json_encode($tidal),
-            'value' => '{}',
+            'value' => json_encode($tidal),
             'is_active' => true,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d')
@@ -461,16 +454,31 @@ class ConfigurationsTableSeeder extends Seeder
                 'name' => "Block",
                 'dimensions' => array(
                     0 => array(
-                        'name' => "Panjang",
-                        'uom_id' => 1
+                        'name' => "Length",
+                        'uom_id' => 11
                     ),
                     1 => array(
-                        'name' => "Lebar",
-                        'uom_id' => 1
+                        'name' => "Width",
+                        'uom_id' => 11
                     ),
                     2 => array(
-                        'name' => "Tinggi",
-                        'uom_id' => 1
+                        'name' => "Height",
+                        'uom_id' => 11
+                    ),
+                ),
+                'status' => 1,
+            ),
+            1 => array(
+                'id' => "2",
+                'name' => "Cylinder",
+                'dimensions' => array(
+                    0 => array(
+                        'name' => "Width",
+                        'uom_id' => 11
+                    ),
+                    1 => array(
+                        'name' => "Radius",
+                        'uom_id' => 11
                     ),
                 ),
                 'status' => 1,
@@ -488,13 +496,13 @@ class ConfigurationsTableSeeder extends Seeder
 
         $approval_pr = array(
             0 => array(
-                'type' => "Joint Approval",
+                'type' => "Single Approval",
                 'value' => array(
                     0 => array(
                         'minimum' => 0,
                         'maximum' => 500000000,
                         'role_id_1' => 1,
-                        'role_id_2' => 4,
+                        'role_id_2' => null,
                     ),
                 ),
             ),

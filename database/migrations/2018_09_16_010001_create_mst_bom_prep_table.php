@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTrxRapDetailTable extends Migration
+class CreateMstBomPrepTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,20 +13,20 @@ class CreateTrxRapDetailTable extends Migration
      */
     public function up()
     {
-        Schema::create('trx_rap_detail', function (Blueprint $table) {
+        Schema::create('mst_bom_prep', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('rap_id');
             $table->unsignedInteger('material_id')->nullable();
+            $table->unsignedInteger('project_id')->nullable();
             $table->unsignedInteger('wbs_id')->nullable();
-            $table->longText('dimensions_value')->nullable();
-            $table->float('quantity',15,2);
-            $table->double('price');
-            $table->string('source')->nullable();
+            $table->float('weight',15,2)->nullable();
+            $table->float('quantity',15,2)->nullable();
+            $table->integer('status')->default(1);
+            $table->string('source')->default('Stock');
             $table->timestamps();
-    
+
             $table->foreign('material_id')->references('id')->on('mst_material');
+            $table->foreign('project_id')->references('id')->on('pro_project');
             $table->foreign('wbs_id')->references('id')->on('pro_wbs');
-            $table->foreign('rap_id')->references('id')->on('trx_rap');
         });
     }
 
@@ -37,6 +37,6 @@ class CreateTrxRapDetailTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('trx_rap_detail');
+        Schema::dropIfExists('mst_bom_prep');
     }
 }
