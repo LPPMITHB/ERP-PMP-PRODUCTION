@@ -508,34 +508,37 @@ Route::name('yard.')->prefix('yard')->group(function() {
 
 //BOM Routes
 Route::name('bom.')->prefix('bom')->group(function() {
-    Route::get('/manageWbsMaterialBuilding/{id}','BOMController@manageWbsMaterialBuilding')->name('manageWbsMaterialBuilding')->middleware('can:create-bom');
-    
     //MRS
     Route::get('/selectProjectSum', 'BOMController@selectProjectSum')->name('selectProjectSum')->middleware('can:create-bom');
-    
+
     Route::get('/selectWBSSum/{id}', 'BOMController@selectWBSSum')->name('selectWBSSum')->middleware('can:create-bom');
-    
+
     Route::get('/materialSummaryBuilding/{id}', 'BOMController@materialSummaryBuilding')->name('materialSummaryBuilding')->middleware('can:create-bom');
-    
+
     Route::post('/storeBom', 'BOMController@storeBom')->name('storeBom')->middleware('can:create-bom');
-    
-    Route::get('/selectProject', 'BOMController@selectProject')->name('selectProject')->middleware('can:list-bom');
 
-    Route::get('/indexProject', 'BOMController@indexProject')->name('indexProject')->middleware('can:create-bom');
-
-    Route::get('/{id}', 'BOMController@show')->name('show')->middleware('can:show-bom');
     //
     Route::get('/selectWBS/{id}', 'BOMController@selectWBS')->name('selectWBS')->middleware('can:create-bom');
 
     Route::put('/confirmBom', 'BOMController@confirm')->name('confirmBom')->middleware('can:confirm-bom');
 
-    Route::post('/storeBom', 'BOMController@storeBom')->name('storeBom')->middleware('can:create-bom');
+    // Route::post('/storeBomWhenConfirm', 'BOMController@storeBomWhenConfirm')->name('storeBomWhenConfirm')->middleware('can:create-bom');
 
     Route::put('/', 'BOMController@update')->name('update')->middleware('can:edit-bom');
 
     Route::get('/create/{id}', 'BOMController@create')->name('create')->middleware('can:create-bom');
 
+    Route::get('/selectWBSManage/{id}', 'BOMController@selectWBSManage')->name('selectWBSManage')->middleware('can:list-bom');
+
+    Route::get('/manageWbsMaterialBuilding/{id}','BOMController@manageWbsMaterialBuilding')->name('manageWbsMaterialBuilding')->middleware('can:create-bom');
+
+    Route::get('/indexProject', 'BOMController@indexProject')->name('indexProject')->middleware('can:create-bom');
+
+    Route::get('/selectProject', 'BOMController@selectProject')->name('selectProject')->middleware('can:list-bom');
+
     Route::get('/indexBom/{id}', 'BOMController@indexBom')->name('indexBom')->middleware('can:edit-bom');
+
+    Route::get('/{id}', 'BOMController@show')->name('show')->middleware('can:show-bom');
 
     Route::get('/{id}/edit', 'BOMController@edit')->name('edit')->middleware('can:edit-bom');
 
@@ -560,6 +563,8 @@ Route::name('bom_repair.')->prefix('bom_repair')->group(function() {
     Route::get('/materialSummary/{id}', 'BOMController@materialSummary')->name('materialSummary')->middleware('can:create-bom-repair');
 
     Route::post('/storeBom', 'BOMController@storeBomRepair')->name('storeBomRepair')->middleware('can:create-bom-repair');
+
+    // Route::post('/storeBomRepairWhenConfirm', 'BOMController@storeBomRepairWhenConfirm')->name('storeBomRepairWhenConfirm')->middleware('can:create-bom');
 
     Route::put('/confirmBom', 'BOMController@confirm')->name('confirmBom')->middleware('can:confirm-bom-repair');
 
