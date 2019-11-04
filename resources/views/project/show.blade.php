@@ -290,118 +290,61 @@
         </div>
     </div>
 
-    <!-- unused -->
-    <div class="modal fade" id="confirm_activity_modal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                    <h4 class="modal-title">Confirm Activity <b id="confirm_activity_code"></b></h4>
+    <div class="row">
+        <div class="col-sm-12" style="margin-top: -5px;">
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h4><b>Gantt Chart</b></h4>
                 </div>
-                <div class="modal-body">
-                    <table>
-                        <thead>
-                            <th colspan="2">Activity Details</th>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Planned Start Date</td>
-                                <td>:</td>
-                                <td>&ensp;<b id="planned_start_date"></b></td>
-                            </tr>
-                            <tr>
-                                <td>Planned End Date</td>
-                                <td>:</td>
-                                <td>&ensp;<b id="planned_end_date"></b></td>
-                            </tr>
-                            <tr>
-                                <td>Planned Duration</td>
-                                <td>:</td>
-                                <td>&ensp;<b id="planned_duration"></b></td>
-                            </tr>
-                            <tr>
-                                <td>Predecessor</td>
-                                <td>:</td>
-                                <td>&ensp;<template v-if="havePredecessor == false">-</template></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <template v-if="havePredecessor == false"><br></template>
-                    <template v-if="havePredecessor == true">
-                        <table class="table table-bordered tableFixed">
-                            <thead>
-                                <tr>
-                                    <th class="p-l-5" style="width: 5%">No</th>
-                                    <th style="width: 15%">Code</th>
-                                    <th style="width: 29%">Name</th>
-                                    <th style="width: 29%">Description</th>
-                                    <th style="width: 15%">WBS Number</th>
-                                    <th style="width: 12%">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="(data,index) in predecessorActivities">
-                                    <td class="p-b-15 p-t-15">{{ index + 1 }}</td>
-                                    <td class="tdEllipsis p-b-15 p-t-15" data-container="body" v-tooltip:top="tooltipText(data.code)">{{ data.code }}</td>
-                                    <td class="tdEllipsis p-b-15 p-t-15" data-container="body" v-tooltip:top="tooltipText(data.name)">{{ data.name }}</td>
-                                    <td class="tdEllipsis p-b-15 p-t-15" data-container="body" v-tooltip:top="tooltipText(data.description)">{{ data.description }}</td>
-                                    <td class="tdEllipsis p-b-15 p-t-15" data-container="body" v-tooltip:top="tooltipText(data.wbs.number)">{{ data.wbs.number }}</td>
-                                    <td class="textCenter">
-                                        <template v-if="data.status == 0">
-                                            <i class='fa fa-check'></i>
-                                        </template>
-                                        <template v-else>
-                                            <i class='fa fa-times'></i>
-                                        </template>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </template>
-                    <div class="row">
-                        <div class="form-group col-sm-6">
-                            <label for="actual_start_date" class=" control-label">Actual Start Date</label>
-                            <div class="input-group date">
-                                <div class="input-group-addon">
-                                    <i class="fa fa-calendar"></i>
-                                </div>
-                                <input v-model="confirmActivity.actual_start_date" type="text" class="form-control datepicker" id="actual_start_date" placeholder="Start Date">
-                            </div>
-                        </div>
-
-                        <div class="form-group col-sm-6">
-                            <label for="actual_end_date" class=" control-label">Actual End Date</label>
-                            <div class="input-group date">
-                                <div class="input-group-addon">
-                                    <i class="fa fa-calendar"></i>
-                                </div>
-                                <input v-model="confirmActivity.actual_end_date" type="text" class="form-control datepicker" id="actual_end_date" placeholder="End Date">
-                            </div>
-                        </div>
-
-
+                <div class="box-body gantt_chart_mobile">
+                    <label>View by :</label>
+                    <label><input type="radio" name="scale" value="day" />Day scale</label>
+                    <label><input type="radio" name="scale" value="month" checked />Month scale</label>
+                    <label><input type="radio" name="scale" value="year" />Year scale</label>
+                    <div class="col-sm-12 col-xs-12 no-padding-left">
+                        <div id="ganttChart" style='width:100%; height:490px;'></div>
                     </div>
-                    <div class="row">
-                        <div class="form-group col-sm-6">
-                            <label for="duration" class=" control-label">Actual Duration (Days)</label>
-                            <input @keyup="setEndDateEdit" @change="setEndDateEdit" v-model="confirmActivity.actual_duration"  type="number" class="form-control" id="actual_duration" placeholder="Duration" >
-                        </div>
-                        <div class="form-group col-sm-6">
-                            <label for="duration" class=" control-label">Current Progress (%)</label>
-                            <input v-model="confirmActivity.current_progress"  type="number" class="form-control" id="current_progress" placeholder="Current Progress" >
-                        </div>
-                    </div>
-
                 </div>
-                <div class="modal-footer">
-                    <button id="btnSave" type="button" class="btn btn-primary" data-dismiss="modal" @click.prevent="confirm">SAVE</button>
+                <div class="box-body gantt_chart_mobile_notification">
+                    <div class="col-xs-12 textCenter"><b>Please view Gantt Chart in Landscape Mode</b></div>
                 </div>
             </div>
-            <!-- /.modal-content -->
         </div>
-        <!-- /.modal-dialog -->
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6" style="margin-top: -5px;">
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h4><b>Planned Cost Vs. Actual Cost</b></h4>
+                </div>
+                <div class="box-body" style="">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="chart">
+                                <canvas id="cost" width="703" height="350"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6" style="margin-top: -5px;">
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <h4><b>Planned Progress Vs. Actual Progress</b></h4>
+                </div>
+                <div class="box-body" style="">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="chart">
+                                <canvas id="progress" width="703" height="350"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="modal fade" id="mm_prod_info">
@@ -690,57 +633,6 @@
 </div>
 @endverbatim
 
-<div class="row">
-    <div class="col-sm-12" style="margin-top: -5px;">
-        <div class="box box-solid">
-            <div class="box-header with-border"><h4><b>Gantt Chart</b></h4></div>
-            <div class="box-body gantt_chart_mobile">
-                <label>View by :</label>
-                <label><input type="radio" name="scale" value="day" />Day scale</label>
-                <label><input type="radio" name="scale" value="month" checked/>Month scale</label>
-                <label><input type="radio" name="scale" value="year"/>Year scale</label>
-                <div class="col-sm-12 col-xs-12 no-padding-left">
-                    <div id="ganttChart" style='width:100%; height:490px;'></div>
-                </div>
-            </div>
-            <div class="box-body gantt_chart_mobile_notification">
-                <div class="col-xs-12 textCenter"><b>Please view Gantt Chart in Landscape Mode</b></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-sm-6" style="margin-top: -5px;">
-        <div class="box box-solid">
-            <div class="box-header with-border"><h4><b>Planned Cost Vs. Actual Cost</b></h4></div>
-            <div class="box-body" style="">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="chart">
-                            <canvas id="cost" width="703" height="350"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-6" style="margin-top: -5px;">
-        <div class="box box-solid">
-            <div class="box-header with-border"><h4><b>Planned Progress Vs. Actual Progress</b></h4></div>
-            <div class="box-body" style="">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="chart">
-                            <canvas id="progress" width="703" height="350"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 {{-- <div class="row">
     <div class="col-sm-6" style="margin-top: -5px;">
         <div class="box box-solid">
@@ -805,192 +697,6 @@
     });
     jQuery('.dataTable').wrap('<div class="dataTables_scroll" />');
 
-    var costCanvas = document.getElementById("cost").getContext("2d");
-    var progressCanvas = $('#progress').get(0).getContext('2d');
-    var horizonalLinePlugin = {
-        afterDraw: function(chartInstance) {
-            var yScale = chartInstance.scales["y-axis-0"];
-            var canvas = chartInstance.chart;
-            var ctx = canvas.ctx;
-            var index;
-            var line;
-            var style;
-
-            if (chartInstance.options.horizontalLine) {
-            for (index = 0; index < chartInstance.options.horizontalLine.length; index++) {
-                line = chartInstance.options.horizontalLine[index];
-
-                if (!line.style) {
-                    style = "rgba(169,169,169, .6)";
-                } else {
-                    style = line.style;
-                }
-
-                if (line.y) {
-                    yValue = yScale.getPixelForValue(line.y);
-                } else {
-                    yValue = 0;
-                }
-
-                ctx.lineWidth = 3;
-
-                if (yValue) {
-                    ctx.beginPath();
-                    ctx.moveTo(0, yValue);
-                    ctx.lineTo(canvas.width, yValue);
-                    ctx.strokeStyle = style;
-                    ctx.stroke();
-                }
-
-                if (line.text) {
-                    ctx.fillStyle = style;
-                    ctx.fillText(line.text, 0, yValue + ctx.lineWidth + 10);
-                }
-            }
-            return;
-            };
-        }
-    };
-    Chart.pluginService.register(horizonalLinePlugin);
-    var configCost = {
-        type: 'line',
-        data: {
-            datasets: [
-                {
-                    label: "EVM Cost",
-                    backgroundColor: "rgba(0, 0, 0, 0)",
-                    borderColor : "rgba(122, 122, 211, 122)",
-                    data: @json($dataEvm),
-                },
-                {
-                    label: "Planned Cost",
-                    borderColor: "rgba(0, 0, 255, 0.7)",
-                    data: @json($dataPlannedCost),
-                },
-                {
-                    label: "Actual Cost",
-                    borderColor: "green",
-                    data: @json($dataActualCost),
-                },
-            ]
-        },
-        options: {
-            "horizontalLine": [{
-                "y": @json($project->budget_value/1000000),
-                "style": "rgba(255, 0, 0, .4)",
-                "text": "Budget Value"
-            }],
-            elements: {
-                point: {
-                    radius: 4,
-                    hitRadius: 4,
-                    hoverRadius: 6
-                }
-            },
-            tooltips: {
-                callbacks: {
-                    label: function(tooltipItem, data) {
-                        var value = tooltipItem.yLabel;
-                        if(parseInt(value) >= 1000){
-                            return 'Rp' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                        } else {
-                            return 'Rp' + value;
-                        }
-                    }
-                } // end callbacks:
-            }, //end tooltips
-            responsive: true,
-            scales: {
-                xAxes: [{
-                    type: 'time',
-                    time: {
-                        tooltipFormat: 'll',
-                        unit: 'week',
-                    }
-                }],
-                yAxes: [{
-                    gridLines: {
-                        display:false
-                    },
-                    ticks: {
-                        beginAtZero:true,
-                        callback: function(value, index, values) {
-                            if(parseInt(value) >= 1000){
-                               return 'Rp' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                            } else {
-                               return 'Rp' + value;
-                            }
-                       },
-                       suggestedMax : @json($project->budget_value/1000000),
-                    },
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'in million'
-                    }
-                }]
-            },
-        }
-    };
-
-    var costChart = new Chart(costCanvas, configCost);
-
-    var configProgress = {
-        type: 'line',
-        data: {
-            datasets: [
-                {
-                    label: "Planned Progress",
-                    borderColor: "rgba(0, 0, 255, 0.7)",
-                    data: @json($dataPlannedProgress),
-                },
-                {
-                    label: "Actual Progress",
-                    borderColor: "green",
-                    data: @json($dataActualProgress),
-                }
-            ]
-        },
-        options: {
-            elements: {
-                point: {
-                    radius: 4,
-                    hitRadius: 4,
-                    hoverRadius: 6
-                }
-            },
-            tooltips: {
-                callbacks: {
-                    label: function(tooltipItem, data) {
-                        var value = tooltipItem.yLabel;
-                            return value + "%";
-                    }
-                } // end callbacks:
-            }, //end tooltips
-            responsive: true,
-            scales: {
-                xAxes: [{
-                    type: 'time',
-                    time: {
-                        tooltipFormat: 'll',
-                        unit: 'week',
-                    }
-                }],
-                yAxes: [{
-                    gridLines: {
-                        display:false
-                    },
-                    ticks: {
-                        beginAtZero:true,
-                        callback: function(value, index, values) {
-                            return value + "%";
-                       }
-                    }
-                }]
-            }
-        }
-    };
-
-    var progress = new Chart(progressCanvas, configProgress);
 
     $(document).ready(function(){
         var outstanding_item = @json($outstanding_item);
@@ -1227,6 +933,192 @@
                         }
                     }
                 );
+                var costCanvas = document.getElementById("cost").getContext("2d");
+                var progressCanvas = $('#progress').get(0).getContext('2d');
+                var horizonalLinePlugin = {
+                    afterDraw: function(chartInstance) {
+                        var yScale = chartInstance.scales["y-axis-0"];
+                        var canvas = chartInstance.chart;
+                        var ctx = canvas.ctx;
+                        var index;
+                        var line;
+                        var style;
+
+                        if (chartInstance.options.horizontalLine) {
+                        for (index = 0; index < chartInstance.options.horizontalLine.length; index++) {
+                            line = chartInstance.options.horizontalLine[index];
+
+                            if (!line.style) {
+                                style = "rgba(169,169,169, .6)";
+                            } else {
+                                style = line.style;
+                            }
+
+                            if (line.y) {
+                                yValue = yScale.getPixelForValue(line.y);
+                            } else {
+                                yValue = 0;
+                            }
+
+                            ctx.lineWidth = 3;
+
+                            if (yValue) {
+                                ctx.beginPath();
+                                ctx.moveTo(0, yValue);
+                                ctx.lineTo(canvas.width, yValue);
+                                ctx.strokeStyle = style;
+                                ctx.stroke();
+                            }
+
+                            if (line.text) {
+                                ctx.fillStyle = style;
+                                ctx.fillText(line.text, 0, yValue + ctx.lineWidth + 10);
+                            }
+                        }
+                        return;
+                        };
+                    }
+                };
+                Chart.pluginService.register(horizonalLinePlugin);
+                var configCost = {
+                    type: 'line',
+                    data: {
+                        datasets: [
+                            {
+                                label: "EVM Cost",
+                                backgroundColor: "rgba(0, 0, 0, 0)",
+                                borderColor : "rgba(122, 122, 211, 122)",
+                                data: @json($dataEvm),
+                            },
+                            {
+                                label: "Planned Cost",
+                                borderColor: "rgba(0, 0, 255, 0.7)",
+                                data: @json($dataPlannedCost),
+                            },
+                            {
+                                label: "Actual Cost",
+                                borderColor: "green",
+                                data: @json($dataActualCost),
+                            },
+                        ]
+                    },
+                    options: {
+                        "horizontalLine": [{
+                            "y": @json($project->budget_value/1000000),
+                            "style": "rgba(255, 0, 0, .4)",
+                            "text": "Budget Value"
+                        }],
+                        elements: {
+                            point: {
+                                radius: 4,
+                                hitRadius: 4,
+                                hoverRadius: 6
+                            }
+                        },
+                        tooltips: {
+                            callbacks: {
+                                label: function(tooltipItem, data) {
+                                    var value = tooltipItem.yLabel;
+                                    if(parseInt(value) >= 1000){
+                                        return 'Rp' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                    } else {
+                                        return 'Rp' + value;
+                                    }
+                                }
+                            } // end callbacks:
+                        }, //end tooltips
+                        responsive: true,
+                        scales: {
+                            xAxes: [{
+                                type: 'time',
+                                time: {
+                                    tooltipFormat: 'll',
+                                    unit: 'week',
+                                }
+                            }],
+                            yAxes: [{
+                                gridLines: {
+                                    display:false
+                                },
+                                ticks: {
+                                    beginAtZero:true,
+                                    callback: function(value, index, values) {
+                                        if(parseInt(value) >= 1000){
+                                        return 'Rp' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                        } else {
+                                        return 'Rp' + value;
+                                        }
+                                },
+                                suggestedMax : @json($project->budget_value/1000000),
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'in million'
+                                }
+                            }]
+                        },
+                    }
+                };
+
+                var costChart = new Chart(costCanvas, configCost);
+
+                var configProgress = {
+                    type: 'line',
+                    data: {
+                        datasets: [
+                            {
+                                label: "Planned Progress",
+                                borderColor: "rgba(0, 0, 255, 0.7)",
+                                data: @json($dataPlannedProgress),
+                            },
+                            {
+                                label: "Actual Progress",
+                                borderColor: "green",
+                                data: @json($dataActualProgress),
+                            }
+                        ]
+                    },
+                    options: {
+                        elements: {
+                            point: {
+                                radius: 4,
+                                hitRadius: 4,
+                                hoverRadius: 6
+                            }
+                        },
+                        tooltips: {
+                            callbacks: {
+                                label: function(tooltipItem, data) {
+                                    var value = tooltipItem.yLabel;
+                                        return value + "%";
+                                }
+                            } // end callbacks:
+                        }, //end tooltips
+                        responsive: true,
+                        scales: {
+                            xAxes: [{
+                                type: 'time',
+                                time: {
+                                    tooltipFormat: 'll',
+                                    unit: 'week',
+                                }
+                            }],
+                            yAxes: [{
+                                gridLines: {
+                                    display:false
+                                },
+                                ticks: {
+                                    beginAtZero:true,
+                                    callback: function(value, index, values) {
+                                        return value + "%";
+                                }
+                                }
+                            }]
+                        }
+                    }
+                };
+
+                var progress = new Chart(progressCanvas, configProgress);
             },
             computed:{
                 progressBarColor: function(){
