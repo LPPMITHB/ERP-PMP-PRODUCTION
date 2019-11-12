@@ -14,6 +14,7 @@ use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Carbon;
+use DateTime;
 use Auth;
 use DB;
 
@@ -209,9 +210,8 @@ class QualityControlTaskController extends Controller
         $route = $request->route()->getPrefix();
         $modelQcType = QualityControlType::all();
         $modelWbs = WBS::findOrFail($id);
-
-        // dd($modelWbs);
-        
+        $planned_end_date = DateTime::createFromFormat('Y-m-d', $modelWbs->planned_end_date);
+        $modelWbs->planned_end_date = $planned_end_date->format('d-m-Y');
         return view('qc_task.create', compact('route','modelQcType','modelWbs'));
     }
 
@@ -224,20 +224,39 @@ class QualityControlTaskController extends Controller
     public function store(Request $request)
     {
         $data = json_decode($request->datas);
+        DB::beginTransaction();
         try {
             $qcTask = new QualityControlTask;
             $qcTask->wbs_id = $data->wbs_id;
             $qcTask->quality_control_type_id = $data->qc_type_id;
-            $qcTask->description = $data->description;
+            if($data->description != ''){
+                $qcTask->description = $data->description;
+            }else{
+                $qcTask->description = null;
+            }
+            $qcTask->external_join = $data->checkedExternal;
+            $startDate = DateTime::createFromFormat('d-m-Y', $data->start_date);
+            $endDate = DateTime::createFromFormat('d-m-Y', $data->end_date);
+            if($startDate){
+                $qcTask->start_date = $startDate->format('Y-m-d');
+            }else{
+                $qcTask->start_date = null;
+            }
+            if($endDate){
+                $qcTask->end_date = $endDate->format('Y-m-d');
+            }else{
+                $qcTask->end_date = null;
+            }
+            $qcTask->duration = $data->duration;
             $qcTask->user_id = Auth::user()->id;
             $qcTask->branch_id = Auth::user()->branch->id;
             
             if ($qcTask->save()) {
-                foreach ($data->dataQcTask as $data) {
+                foreach ($data->dataQcTask as $dataQCDetail) {
                     $qcTaskDetail = new QualityControlTaskDetail;
                     $qcTaskDetail->quality_control_task_id = $qcTask->id;
-                    $qcTaskDetail->name = $data->name;
-                    $qcTaskDetail->description = $data->description;
+                    $qcTaskDetail->name = $dataQCDetail->name;
+                    $qcTaskDetail->description = $dataQCDetail->task_description;
                     $qcTaskDetail->save();
                 }
             }
@@ -245,7 +264,7 @@ class QualityControlTaskController extends Controller
             return redirect()->route('qc_task.show', $qcTask->id)->with('success', 'Success Created New Quality Control Task!');
         } catch (\Exception $e) {
             DB::rollback();
-            return redirect()->route('qc_task.create', $qcTask->wbs_id)->with('error', $e->getMessage())->withInput();
+            return redirect()->route('qc_task.selectProject')->with('error', $e->getMessage())->withInput();
         }
     }
 
@@ -254,7 +273,11 @@ class QualityControlTaskController extends Controller
         DB::beginTransaction();
         try{
             $qc_task_detail = QualityControlTaskDetail::find($data['id']);
-            $qc_task_detail->status = $data['status'];
+            if($data['status_first_ref'] == null){
+                $qc_task_detail->status_first = $data['status_first'];
+            }else{
+                $qc_task_detail->status_second = $data['status_second'];
+            }
             $qc_task_detail->notes = $data['notes'];
 
             if(!$qc_task_detail->update()){
@@ -403,6 +426,11 @@ class QualityControlTaskController extends Controller
     public function getQcTypeApi($id){
         $qc_type = QualityControlType::where('id',$id)->with('qualityControlTypeDetails')->first()->jsonSerialize();
         return response($qc_type, Response::HTTP_OK);
+    }
+
+    public function getQcTypeDetailsApi($id){
+        $qcTypeDetails = QualityControlTypeDetail::where('quality_control_type_id',$id)->get()->jsonSerialize();
+        return response($qcTypeDetails, Response::HTTP_OK);
     }
 
     public function getQcTaskDetailsAPI($id){
