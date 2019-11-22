@@ -94,6 +94,10 @@ class ComposerStaticInitd270b2c2405293f0078dca28ea2f5c78
             'Whoops\\' => 7,
             'Webmozart\\Assert\\' => 17,
         ),
+        'U' => 
+        array (
+            'Unisharp\\Ckeditor\\' => 18,
+        ),
         'T' => 
         array (
             'TijsVerkoyen\\CssToInlineStyles\\' => 31,
@@ -218,6 +222,10 @@ class ComposerStaticInitd270b2c2405293f0078dca28ea2f5c78
         'Webmozart\\Assert\\' => 
         array (
             0 => __DIR__ . '/..' . '/webmozart/assert/src',
+        ),
+        'Unisharp\\Ckeditor\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/unisharp/laravel-ckeditor',
         ),
         'TijsVerkoyen\\CssToInlineStyles\\' => 
         array (
@@ -491,6 +499,7 @@ class ComposerStaticInitd270b2c2405293f0078dca28ea2f5c78
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
         'App\\Exports\\PhysicalInventoryExport' => __DIR__ . '/../..' . '/app/Exports/PhysicalInventoryExport.php',
+        'App\\Exports\\SummaryReportExport' => __DIR__ . '/../..' . '/app/Exports/SummaryReportExport.php',
         'App\\Http\\Controllers\\ActivityController' => __DIR__ . '/../..' . '/app/Http/Controllers/ActivityController.php',
         'App\\Http\\Controllers\\Auth\\ForgotPasswordController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/ForgotPasswordController.php',
         'App\\Http\\Controllers\\Auth\\LoginController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/LoginController.php',
@@ -508,6 +517,7 @@ class ComposerStaticInitd270b2c2405293f0078dca28ea2f5c78
         'App\\Http\\Controllers\\CustomerVisitController' => __DIR__ . '/../..' . '/app/Http/Controllers/CustomerVisitController.php',
         'App\\Http\\Controllers\\DailyManHourController' => __DIR__ . '/../..' . '/app/Http/Controllers/DailyManHourController.php',
         'App\\Http\\Controllers\\DeliveryDocumentController' => __DIR__ . '/../..' . '/app/Http/Controllers/DeliveryDocumentController.php',
+        'App\\Http\\Controllers\\EmailTemplateController' => __DIR__ . '/../..' . '/app/Http/Controllers/EmailTemplateController.php',
         'App\\Http\\Controllers\\EstimatorController' => __DIR__ . '/../..' . '/app/Http/Controllers/EstimatorController.php',
         'App\\Http\\Controllers\\GoodsIssueController' => __DIR__ . '/../..' . '/app/Http/Controllers/GoodsIssueController.php',
         'App\\Http\\Controllers\\GoodsMovementController' => __DIR__ . '/../..' . '/app/Http/Controllers/GoodsMovementController.php',
@@ -536,6 +546,7 @@ class ComposerStaticInitd270b2c2405293f0078dca28ea2f5c78
         'App\\Http\\Controllers\\RAPController' => __DIR__ . '/../..' . '/app/Http/Controllers/RAPController.php',
         'App\\Http\\Controllers\\ResourceController' => __DIR__ . '/../..' . '/app/Http/Controllers/ResourceController.php',
         'App\\Http\\Controllers\\ReverseTransactionController' => __DIR__ . '/../..' . '/app/Http/Controllers/ReverseTransactionController.php',
+        'App\\Http\\Controllers\\RfiController' => __DIR__ . '/../..' . '/app/Http/Controllers/RfiController.php',
         'App\\Http\\Controllers\\RoleController' => __DIR__ . '/../..' . '/app/Http/Controllers/RoleController.php',
         'App\\Http\\Controllers\\SalesOrderController' => __DIR__ . '/../..' . '/app/Http/Controllers/SalesOrderController.php',
         'App\\Http\\Controllers\\SalesPlanController' => __DIR__ . '/../..' . '/app/Http/Controllers/SalesPlanController.php',
@@ -581,6 +592,7 @@ class ComposerStaticInitd270b2c2405293f0078dca28ea2f5c78
         'App\\Models\\CustomerVisit' => __DIR__ . '/../..' . '/app/Models/CustomerVisit.php',
         'App\\Models\\DailyManHour' => __DIR__ . '/../..' . '/app/Models/DailyManHour.php',
         'App\\Models\\DeliveryDocument' => __DIR__ . '/../..' . '/app/Models/DeliveryDocument.php',
+        'App\\Models\\EmailTemplate' => __DIR__ . '/../..' . '/app/Models/EmailTemplate.php',
         'App\\Models\\EstimatorCostStandard' => __DIR__ . '/../..' . '/app/Models/EstimatorCostStandard.php',
         'App\\Models\\EstimatorProfile' => __DIR__ . '/../..' . '/app/Models/EstimatorProfile.php',
         'App\\Models\\EstimatorProfileDetail' => __DIR__ . '/../..' . '/app/Models/EstimatorProfileDetail.php',
@@ -636,6 +648,7 @@ class ComposerStaticInitd270b2c2405293f0078dca28ea2f5c78
         'App\\Models\\ResourceTrx' => __DIR__ . '/../..' . '/app/Models/ResourceTrx.php',
         'App\\Models\\ReverseTransaction' => __DIR__ . '/../..' . '/app/Models/ReverseTransaction.php',
         'App\\Models\\ReverseTransactionDetail' => __DIR__ . '/../..' . '/app/Models/ReverseTransactionDetail.php',
+        'App\\Models\\Rfi' => __DIR__ . '/../..' . '/app/Models/Rfi.php',
         'App\\Models\\Role' => __DIR__ . '/../..' . '/app/Models/Role.php',
         'App\\Models\\SalesOrder' => __DIR__ . '/../..' . '/app/Models/SalesOrder.php',
         'App\\Models\\SalesOrderDetail' => __DIR__ . '/../..' . '/app/Models/SalesOrderDetail.php',
@@ -4750,6 +4763,7 @@ class ComposerStaticInitd270b2c2405293f0078dca28ea2f5c78
         'TrxSalesOrderDetailTableSeeder' => __DIR__ . '/../..' . '/database/seeds/TrxSalesOrderDetailTableSeeder.php',
         'TrxSalesOrderTableSeeder' => __DIR__ . '/../..' . '/database/seeds/TrxSalesOrderTableSeeder.php',
         'UOMTableSeeder' => __DIR__ . '/../..' . '/database/seeds/UOMTableSeeder.php',
+        'Unisharp\\Ckeditor\\ServiceProvider' => __DIR__ . '/..' . '/unisharp/laravel-ckeditor/ServiceProvider.php',
         'UpdateHelper\\ComposerPlugin' => __DIR__ . '/..' . '/kylekatarnls/update-helper/src/UpdateHelper/ComposerPlugin.php',
         'UpdateHelper\\NotUpdateInterfaceInstanceException' => __DIR__ . '/..' . '/kylekatarnls/update-helper/src/UpdateHelper/NotUpdateInterfaceInstanceException.php',
         'UpdateHelper\\UpdateHelper' => __DIR__ . '/..' . '/kylekatarnls/update-helper/src/UpdateHelper/UpdateHelper.php',
