@@ -3,10 +3,10 @@
 @section('content-header')
     @breadcrumb(
         [
-            'title' => 'QC Summary Report » Select Project',
+            'title' => 'Create RFI » Select Project',
             'items' => [
                 'Dashboard' => route('index'),
-                'Select Project' => route('qc_task.selectProject'),
+                'Select Project' => route('rfi.selectProject'),
             ]
         ]
     )
@@ -21,7 +21,7 @@
                 <h3 class="box-title">List of Projects</h3>
             </div> <!-- /.box-header -->
             <div class="box-body">
-                <table class="table table-bordered" id="projects-table">
+                <table class="table table-bordered" id="project-table">
                     <thead>
                         <tr>
                             <th width="5%">No</th>
@@ -39,11 +39,7 @@
                                 <td>{{ $project->customer->name }}</td>
                                 <td>{{ $project->ship->type }}</td>
                                 <td class="p-l-5 p-r-5" align="center">
-                                    @if($route == "/qc_task")
-                                        <a class="btn btn-primary btn-xs" href="{{ route('qc_task.summaryReport', ['id'=>$project->id]) }}">SELECT</a>
-                                    @elseif($route == "/qc_task_repair")
-                                        <a class="btn btn-primary btn-xs" href="{{ route('qc_task_repair.summaryReport', ['id'=>$project->id]) }}">SELECT</a>
-                                    @endif
+                                    <a class="btn btn-primary btn-xs" href="{{ route('rfi.selectQcTask', ['id'=>$project->id]) }}">SELECT</a>
                                 </td>
                             </tr>
                         @endforeach
@@ -61,7 +57,7 @@
 @push('script')
 <script>
     $(document).ready(function(){
-        $('#projects-table').DataTable({
+        $('#project-table').DataTable({
             'paging'      : true,
             'lengthChange': false,
             'searching'   : false,

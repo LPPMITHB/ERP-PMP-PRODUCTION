@@ -1,27 +1,16 @@
 @extends('layouts.main')
 
 @section('content-header')
-@if ($route == "/qc_task")
-    @breadcrumb([
-        'title' => 'Show Quality Control Task',
-        'items' => [
-            'Dashboard' => route('index'),
-            'Show All Quality Control Task' => route('qc_task.index',$wbs->project_id),
-            $qcTask->description => route('qc_type.show',$qcTask->id),
-        ]
-    ])
-    @endbreadcrumb
-@elseif($route == "/qc_task_repair")
-    @breadcrumb([
-        'title' => 'Show Quality Control Task',
-        'items' => [
-            'Dashboard' => route('index'),
-            'Show All Quality Control Task' => route('qc_task_repair.index',$wbs->project_id),
-            $qcTask->description => route('qc_type.show',$qcTask->id),
-        ]
-    ])
-    @endbreadcrumb
-@endif
+@breadcrumb([
+    'title' => 'Create RFI',
+    'items' => [
+        'Dashboard' => route('index'),
+        'Select Project' => route('rfi.selectProject'),
+        'Select QC Task' => route('rfi.selectQcTask', $project->id),
+        "Create RFI"=> "",
+    ]
+])
+@endbreadcrumb
 @endsection
 
 @section('content')
@@ -32,12 +21,7 @@
         <div class="box">
             <div class="box-body">
                 <div class="box-tools pull-right">
-                    @if ($route == "/qc_task")
-                        <a href="{{ route('qc_task.edit',['id'=>$qcTask->id]) }}" class="btn btn-primary btn-sm">EDIT</a>
-                    @elseif($route == "/qc_task_repair")
-                        <a href="{{ route('qc_task_repair.edit',['id'=>$qcTask->id]) }}" class="btn btn-primary btn-sm">EDIT</a>
-                    @endif
-                    <a class="btn btn-primary btn-sm" data-toggle="modal" href="#show_modal_wbs_images">VIEW WBS IMAGES</a>
+                    <a href="{{ route('qc_task.edit',['id'=>$qcTask->id]) }}" class="btn btn-primary btn-sm">EDIT</a>
                 </div>
                 <div class="row">
                     <div class="col-xs-12 col-lg-4 col-md-12">    
@@ -118,66 +102,74 @@
             
             <div class="box-body">
                 @verbatim
-                <div id="index_qcTaskDetail" class="tab-pane active" id="general_info">
-                    <table id="qctd-table" class="table table-bordered showTable">
-                        <thead>
-                            <tr>
-                                <th style="width: 5%">No</th>
-                                <th style="width: 35%">Name</th>
-                                <th style="width: 45%">Description</th>
-                                <th style="width: 15%">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(data,index) in qcTaskDetail">
-                                <td>{{ index + 1 }}</td>
-                                <td class="tdEllipsis">{{ data.name }}</td>
-                                <td class="tdEllipsis">{{ data.description }}</td>
-                                <td class="tdEllipsis" v-if="data.status == null">NOT DONE</td>
-                                <td class="tdEllipsis" v-else>{{data.status}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="modal fade" id="show_modal_wbs_images">
-                        <div class="modal-dialog modalPredecessor modalFull">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">×</span>
-                                    </button>
-                                    <h4 class="modal-title">View WBS Images</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <table id="qctd-table" class="table table-bordered showTable">
-                                                <thead>
-                                                    <tr>
-                                                        <th style="width: 5%">No</th>
-                                                        <th style="width: 35%">File Name</th>
-                                                        <th style="width: 45%">Description</th>
-                                                        <th style="width: 4%"></th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr v-for="(data,index) in wbsImages">
-                                                        <td>{{ index + 1 }}</td>
-                                                        <td class="tdEllipsis" data-container="body" v-tooltip:top="tooltipText(data.drawing)">{{ data.drawing }}</td>
-                                                        <td class="tdEllipsis" data-container="body" v-tooltip:top="tooltipText(data.description)">{{ data.description }}</td>
-                                                        <td>
-                                                            <a class="btn btn-primary btn-sm" :href="view(data.drawing)">VIEW</a>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
+                <div id="create_rfi">
+                    <div class="nav-tabs-custom">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a href="#create_rfi_tab" data-toggle="tab" aria-expanded="true">Create RFI</a></li>
+                            <li class=""><a href="#qc_task_details" data-toggle="tab" aria-expanded="false">QC Task Details</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="create_rfi_tab">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <template v-if="emailTemplates.length > 0">
+                                            <label for="">Email Template</label>
+                                            <selectize v-model="email_template_id" :settings="emailTemplateSetting">
+                                                <option v-for="(email_template, index) in emailTemplates" :value="email_template.id">{{ qc_type.name }}
+                                                </option>
+                                            </selectize>
+                                        </template>
+
+                                        <template v-else>
+                                            <label for="">Email Template</label>
+                                            <selectize v-model="email_template_id" disabled :settings="emailTemplateEmptySetting">
+                                            </selectize>
+                                        </template>
+                                    </div>
+                                    <div class="col-sm-12"></div>
+                                    <div class="col-sm-6">
+                                        <label for="code" class="control-label">From</label>
+                                        <input type="text" class="form-control" id="code" name="code" v-model="input.from" placeholder="From">
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="code" class="control-label">To</label>
+                                        <input type="text" class="form-control" id="code" name="code" v-model="input.to" placeholder="To">
+                                    </div>
+                                    <div class="col-sm-12 p-t-10">
+                                        <label for="code" class="control-label">Subject</label>
+                                        <input type="text" class="form-control" id="code" name="code" v-model="input.subject" placeholder="Subject">
+                                    </div>
+                                    <div class="col-md-12 p-t-20">
+                                        <textarea class="form-control" id="email-editor" name="email-editor" rows='10'></textarea>
                                     </div>
                                 </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-primary" data-dismiss="modal">CLOSE</button>
-                                </div>
                             </div>
+                            <!-- /.tab-pane -->
+                            <div class="tab-pane" id="qc_task_details">
+                                <table id="qctd-table" class="table table-bordered showTable">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 5%">No</th>
+                                            <th style="width: 35%">Name</th>
+                                            <th style="width: 45%">Description</th>
+                                            <th style="width: 15%">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(data,index) in qcTaskDetail">
+                                            <td>{{ index + 1 }}</td>
+                                            <td class="tdEllipsis">{{ data.name }}</td>
+                                            <td class="tdEllipsis">{{ data.description }}</td>
+                                            <td class="tdEllipsis" v-if="data.status == null">NOT DONE</td>
+                                            <td class="tdEllipsis" v-else>{{data.status}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                
+                            </div>
+                            <!-- /.tab-pane -->
                         </div>
+                        <!-- /.tab-content -->
                     </div>
                 </div>
                 @endverbatim
@@ -188,13 +180,38 @@
 
 @endsection
 @push('script')
+<script src="{{ asset('vendor/unisharp/laravel-ckeditor/ckeditor.js') }}"></script>
 <script>
     $(document).ready(function(){
         $('div.overlay').hide();
+
+        var editor = CKEDITOR.replace( 'email-editor' ,{
+            language: 'en',
+            removeButtons : "",
+            toolbar : null,
+        });
+        $('div.overlay').hide();
+
+        editor.on( 'change', function( evt ) {
+            vm.input.body = evt.editor.getData();
+        });
     });
     var data = {
         qcTaskDetail: @json($qcTask->qualityControlTaskDetails),
-        wbsImages: @json($wbs_images),
+        emailTemplates : @json($emailTemplates),
+        email_template_id : "",
+        emailTemplateSetting:{
+            placeholder: 'Email Templates',
+        },
+        emailTemplateEmptySetting:{
+            placeholder: 'There are no Email Templates',
+        },
+        input:{
+            from : "",
+            to : "",
+            subject: "",
+            body : "",
+        }
     };
 
     Vue.directive('tooltip', function(el, binding){
@@ -206,16 +223,15 @@
     })
     
     var vm = new Vue({
-        el: '#index_qcTaskDetail',
+        el: '#create_rfi',
         data: data,
         methods: {
             tooltipText: function(text) {
                 return text
             },
-            view(drawing){
-                let path = '../../app/documents/wbs_images/'+drawing;
-                
-                return path;
+            createRouteEdit(id) {
+                var url = "/qc_task/" + id + "/edit";
+                return url;
             },
         }
     });
